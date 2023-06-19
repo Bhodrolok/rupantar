@@ -1,11 +1,11 @@
 from shutil import copytree, rmtree
-from os import path, makedirs
+from os import path, makedirs, chdir
 from glob import glob
 from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader
 from markdown2 import markdown
 
-def buildPidgey():
+def buildPidgey(project_folder, config_file_name):
     # Create Page
     def create_page(template,post_detail,md,filename):
         post_template = Environment(loader=FileSystemLoader(searchpath='./')).get_template(template)
@@ -62,9 +62,19 @@ def buildPidgey():
             return data.read()
 
 
-    # PROGRAM STARTS HERE
+    # Program entry
     try:
-        with open('config.yml') as conf:
+        # Location of current file
+        script_dir = path.dirname(path.dirname(path.abspath(__file__)))
+        # Location of project folder with all contents 
+        project_folder = path.join(script_dir, project_folder)
+        # Location of config file, assumed to be in abovementioned project folder
+        config_file = 'config.yml' if (config_file_name is None) else config_file_name
+        config_file_path = path.join(config_file)
+        # Change cwd to the pidgey project folder
+        chdir((project_folder))
+
+        with open(config_file_path) as conf:
             config = safe_load(conf.read())
             for key,val in config.items():
                 globals()[key] = val
