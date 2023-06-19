@@ -227,11 +227,11 @@ def createPidgey(pidgeyName):
         print("while generating pidgey "+ pidgeyName + ", some issue occured.")
         print("This can be due to \n\t1. Pidgey already exists.\n\t2. Memory issue.\n\t3. Invalid input.\n\t4. If none of these, report to developer.")
 
-def createNote(noteName, showInHome=True):
+def createNote(project_folder, post_filename, show_home_page = True):
     try:
-        if not noteName.lower().endswith('.md'):
-            noteName+='.md'
-        with open(path.join('content','note',noteName),'w') as f:
+        if not post_filename.lower().endswith('.md'):
+            post_filename+='.md'
+        with open(path.join(project_folder,'content','note',post_filename),'w') as f:
             conf_data = (
             """---
 title : "Title"
@@ -239,9 +239,9 @@ subtitle : "Subtitle"
 showInHome : {s}
 date : {t}
 ---
-            """).format(t=datetime.now().strftime("%Y-%m-%d"), s=showInHome)
+            """).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
             f.write(conf_data)
-            print(noteName+" is created at content/note/"+noteName )
+            print(post_filename+" is created at content/note/"+post_filename )
     except:
-        print("while generating page "+noteName+", some issue occured.")
+        print("while generating page "+post_filename+", some issue occured.")
         print("This can be due to \n\t1. Not a pidgey directory. \n\t2. Invalid filename")
