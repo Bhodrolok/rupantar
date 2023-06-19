@@ -17,11 +17,15 @@ def main():
     parser_new.add_argument("name", help="Filename of post without extension.")
     parser_new.add_argument("-sh", dest="show_home", help="If the post is to be shown in home page. Default True.", type=lambda x: x == 'True')
     
-    parser_build = subparsers.add_parser('build', help='Build and generate static website pages from template and data. Output directory is public/ by default.')
+    parser_build = subparsers.add_parser('build', help='Build and generate static website pages from template and data. Default output directory is public/.')
     parser_build.add_argument("mool", help="Name of project directory. Path relative to cwd.")
     parser_build.add_argument("-c", "--config", nargs='?', help="Name of config file to use. Path relative to project directory. Default config.yml")
 
-    parser_serve = subparsers.add_parser('serve', help='serve the pidgeotto')
+    parser_serve = subparsers.add_parser('serve', help='Start a local server for serving and previewing generated pages.')
+    parser_serve.add_argument("mool", help="Name of project directory. Path relative to cwd.")
+    parser_serve.add_argument("-c", "--config", nargs='?', help="Name of config file to use. Path relative to project directory. Default config.yml")
+    parser_serve.add_argument("-p", "--port", help="Network port where the server will listen for requests. Default is random ephemeral port.", type=int)
+    parser_serve.add_argument("-i", "--interface", help="Network interface to bind the server to. Default localhost/loopback interface")
     
     args = parser.parse_args()
     
@@ -31,8 +35,8 @@ def main():
         creator.createNote(args.mool, args.name, args.show_home)
     elif args.type == 'build' and args.mool:
         builder.buildPidgey(args.mool, args.config)
-    elif args.type == 'serve':
-        server.server()
+    elif args.type == 'serve' and args.mool:
+        server.start_server(args.mool, args.config, args.port, args.interface)
     
     else: 
         parser.print_help()
