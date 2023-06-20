@@ -25,12 +25,12 @@ def main():
     parser_serve.add_argument("mool", help="Name of project directory. Path relative to cwd.")
     parser_serve.add_argument("-c", "--config", nargs='?', help="Name of config file to use. Path relative to project directory. Default config.yml")
     parser_serve.add_argument("-p", "--port", help="Network port where the server will listen for requests. Default is random ephemeral port.", type=int)
-    parser_serve.add_argument("-i", "--interface", help="Network interface to bind the server to. Default localhost/loopback interface")
+    parser_serve.add_argument("-i", "--interface", help="Network interface to bind the server to. Default localhost/loopback interface.")
     
     args = parser.parse_args()
     
     if args.type == "init" and args.mool:
-        creator.createPidgey(args.mool)
+        creator.create_project(args.mool)
     elif args.type == "new" and args.mool and args.name:
         creator.createNote(args.mool, args.name, args.show_home)
     elif args.type == 'build' and args.mool:
