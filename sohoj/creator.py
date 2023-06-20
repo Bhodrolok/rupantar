@@ -8,22 +8,27 @@ def create_config(project_folder):
     with open(config_file_path,'w') as conf_file:
         conf_data = (
             """# Required 
-title : Demo website
-url : yourdomain.tld
-note_template : template/note_template.html   # Template of note page
-home_template : template/home_template.html   # Template of home page
-feed_template : template/feed_template.xml   # Template of feed/rss page
-home_path : public  # After built, static files will be generated here
-content_path : content # All post notes markdown location
-resource_path : static # All css, js, image location
-home_md : content/home.md # Homepage content
-header_md : content/header.md # Header content
-footer_md : content/footer.md # Footer content
+title : Demo website    # Title in home page
+url : domain.tld    # Site URL 
 
-# Optional Configuration, Add your own configs here
-site-title : Demo Pidgeotto
-css : demo.css
-desc : Write anything that human and machine can understand.
+# Jinja templates
+note_template : templates/note_template.html    # Template of note page
+home_template : templates/home_template.html    # Template of home page
+feed_template : templates/feed_template.xml     # Template of feed/rss page
+
+# Directories
+home_path : public      # Generated static files 
+content_path : content  # Markdown files (define page contents and front-matter metadata)
+resource_path : static  # Static assets (css, js, image, etc.) 
+
+home_md : content/home.md       # Home page stuff
+header_md : content/header.md   # Header 
+footer_md : content/footer.md   # Footer 
+
+# Optional (Add custom configs here)
+site-title : Demo Pidgeotto                     
+css : demo.css 
+desc : just another little corner on the interwebs.
 mail : some@mail.com
             """)
         conf_file.write(conf_data)
@@ -237,7 +242,30 @@ Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit am
         post_file.write(post_data)
         print(f'Example blog created at {posts_path}.')
 
-def createNote(project_folder, post_filename, show_home_page = True):
+# static asset(s)
+def create_static(project_folder):
+    static_path = path.join(project_folder, 'static')
+    with open(path.join(static_path, 'demo.css'), 'w') as css_file:
+        # adapted from nih.ar
+        css_data = (
+            """:root{--bg:#DDD;--txt:#333;--thm:#357670}
+body{background:var(--bg);color:var(--txt);font:1.2em/1.6em sans-serif;max-width:900px;margin:7% auto auto;padding:0 5%}
+h1,h2,h3{font-size:1em}
+a{color:var(--thm);text-decoration:none}
+a:hover{color:var(--bg);background-color:var(--thm);padding-top:3px}
+header h1{color:var(--thm);font-size:1.2em;display:inline}
+nav{font-weight:bold;display:inline}
+ul{padding-left:20px;list-style-type:'-- ';line-height:1.4}
+pre{border:1px solid var(--txt);padding:1em;overflow-x:auto}
+code{background:var(--thm)}
+pre code{background:none}
+@media (prefers-color-scheme: dark){:root{--bg:#080C0C;--txt:#C6DFDD;--thm:#42938C}}
+@media(max-width:480px){body{font:1em/1.4em sans-serif}}
+        """)
+        css_file.write(css_data)
+        print(f'demo.css created at {static_path}')
+
+def create_note(project_folder, post_filename, show_home_page = True):
     try:
         if not post_filename.lower().endswith('.md'):
             post_filename+='.md'
@@ -277,12 +305,14 @@ def create_project(project_folder):
         create_home_template(project_folder)
         create_note_template(project_folder)
         create_feed_template(project_folder)
+
+        create_static(project_folder)
         #create_content(project_folder)
         create_header(project_folder)
         create_footer(project_folder)
         create_home(project_folder)
         create_example_blog(project_folder)
-
+        # Finish init
         print(f"Project skeleton created at: {project_folder}")
     except:
         print("while generating pidgey "+ project_folder + ", some issue occured.")

@@ -32,7 +32,7 @@ def main():
     if args.type == "init" and args.mool:
         creator.create_project(args.mool)
     elif args.type == "new" and args.mool and args.name:
-        creator.createNote(args.mool, args.name, args.show_home)
+        creator.create_note(args.mool, args.name, args.show_home)
     elif args.type == 'build' and args.mool:
         builder.buildPidgey(args.mool, args.config)
     elif args.type == 'serve' and args.mool:
