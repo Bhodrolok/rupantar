@@ -2,22 +2,28 @@ from os import chdir, mkdir, path
 from datetime import datetime
 
 
-def create_config(project_folder):
+def create_config(project_folder, user_choices):
     # Default name is config.yml + located in root of project folder
     config_file_path = path.join(project_folder, 'config.yml')
+    default_conf_values = ['yourdomain.tld','Just another little corner on the interwebs.', '#']
+    # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
+    url = user_choices[0] if ( user_choices[0] and user_choices[0].strip()) else default_conf_values[0] 
+    desc = user_choices[1] if ( user_choices[1] and user_choices[1].strip()) else default_conf_values[1]
+    custom_needed = user_choices[-1] if ( user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
+
     with open(config_file_path,'w') as conf_file:
-        conf_data = (
-            """# Required 
+        conf_data = (f"""# Required 
 title : Demo website    # Title in home page
-url : domain.tld    # Site URL 
+url : {url}    # Site URL 
 
 # Jinja templates
 note_template : templates/note_template.html    # Template of note page
 home_template : templates/home_template.html    # Template of home page
-feed_template : templates/feed_template.xml     # Template of feed/rss page
+feed_template : templates/feed_template.xml     # Template of feed/RSS page
+{custom_needed}custom_templates: 
 
 # Directories
-home_path : public      # Generated static files 
+home_path : public      # Generated static files, served from here
 content_path : content  # Markdown files (define page contents and front-matter metadata)
 resource_path : static  # Static assets (css, js, image, etc.) 
 
@@ -26,9 +32,9 @@ header_md : content/header.md   # Header
 footer_md : content/footer.md   # Footer 
 
 # Optional (Add custom configs here)
-site-title : Demo Pidgeotto                     
+site-title : Demo Site Title!                     
 css : demo.css 
-desc : just another little corner on the interwebs.
+desc : {desc}
 mail : some@mail.com
             """)
         conf_file.write(conf_data)
@@ -284,7 +290,7 @@ date : {t}
         print("while generating page "+post_filename+", some issue occured.")
         print("This can be due to \n\t1. Not a pidgey directory. \n\t2. Invalid filename")
 
-def create_project(project_folder):
+def create_project(project_folder, user_choices):
     try:
         # Create project folder
         mkdir(project_folder)
@@ -300,7 +306,7 @@ def create_project(project_folder):
         mkdir('static')
         mkdir(path.join('content','notes'))
         # Generate default config, templates and site contents
-        create_config(project_folder)
+        create_config(project_folder, user_choices)
         #create_templates(project_folder)
         create_home_template(project_folder)
         create_note_template(project_folder)
