@@ -5,24 +5,25 @@ from datetime import datetime
 def create_config(project_folder, user_choices):
     # Default name is config.yml + located in root of project folder
     config_file_path = path.join(project_folder, 'config.yml')
-    url = user_choices[0] if (user_choices[0] is not None) else 'yourdomain.tld', 
-    desc = user_choices[1] if (user_choices[1] is not None) else 'Just another little corner on the interwebs', 
-    a = '' if ( user_choices[2] == 'Y' ) else '#'
-    print(f"Choices:\nSite URL: {url}\nSite Description: {desc}\nCustom: {a}")
+    default_conf_values = ['yourdomain.tld','Just another little corner on the interwebs.', '#']
+    # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
+    url = user_choices[0] if ( user_choices[0] and user_choices[0].strip()) else default_conf_values[0] 
+    desc = user_choices[1] if ( user_choices[1] and user_choices[1].strip()) else default_conf_values[1]
+    custom_needed = user_choices[-1] if ( user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
+
     with open(config_file_path,'w') as conf_file:
-        conf_data = (
-            """# Required 
+        conf_data = (f"""# Required 
 title : Demo website    # Title in home page
 url : {url}    # Site URL 
 
 # Jinja templates
 note_template : templates/note_template.html    # Template of note page
 home_template : templates/home_template.html    # Template of home page
-feed_template : templates/feed_template.xml     # Template of feed/rss page
-{a}custom_templates: 
+feed_template : templates/feed_template.xml     # Template of feed/RSS page
+{custom_needed}custom_templates: 
 
 # Directories
-home_path : public      # Generated static files 
+home_path : public      # Generated static files, served from here
 content_path : content  # Markdown files (define page contents and front-matter metadata)
 resource_path : static  # Static assets (css, js, image, etc.) 
 
@@ -35,11 +36,7 @@ site-title : Demo Site Title!
 css : demo.css 
 desc : {desc}
 mail : some@mail.com
-            """).format(
-            url = url, 
-            desc = desc, 
-            a = a
-            )
+            """)
         conf_file.write(conf_data)
         print(f"Created config.yml at {config_file_path}")
 
