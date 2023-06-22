@@ -9,9 +9,8 @@ def main():
     subparsers = parser.add_subparsers(dest='type', help='Supported commands', required=True)
     
     parser_init = subparsers.add_parser('init', help='Create new rupantar project skeleton at provided directory.')
-    # TODO prompt for config fields into --> conf_data("{a}{b}").format(a=input1,b=input2)etc.
-    # TODO add flag with no value if just want to init with all default (skip prompt!)
     parser_init.add_argument("mool", help="Name of project. Path relative to cwd.")
+    parser_init.add_argument("-s", "--skip", action="store_true", help="Skip prompts for choosing some config values. Can be updated by editing config.yml at project directory.")
 
     parser_new = subparsers.add_parser('new', help="Create new post at provided rupantar project's content/note directory.")
     parser_new.add_argument("mool", help="Name of project directory. Path relative to cwd.")
@@ -32,17 +31,20 @@ def main():
     
     if args.type == "init" and args.mool:
         # Interactive prompts for setting some default config.yml fields
-        print("Hello there!\nPlease answer the following questions to set up your website's configuration!")
-        print("Questions are completely optional and can be skipped by leaving them blank.")
-        print("Choices made can be updated by modifying the config.yml file at the project directory!")
-        user_prompts = []
-        site_url = input("Site URL? (yourdomain.tld): ")
-        user_prompts.append(site_url.replace(" ", ""))
-        site_desc = input("Site description? : ")
-        user_prompts.append(site_desc.replace(" ", ""))
-        need_custom = input("Do you want to add custom templates? (Y/N): ")
-        user_prompts.append(need_custom.replace(" ", ""))
-        creator.create_project(args.mool, user_prompts)
+        if args.skip:
+            creator.create_project(args.mool, [None, None, None])
+        else:
+            print("Hello there!\nPlease answer the following questions to set up your website's configuration!")
+            print("This is completely optional and the questions can be skipped by leaving them blank.")
+            print("Choices can always be updated by modifying the `config.yml` file at project directory!")
+            user_prompts = []
+            site_url = input("Site URL? (yourdomain.tld): ")
+            user_prompts.append(site_url.replace(" ", ""))
+            site_desc = input("Site description? : ")
+            user_prompts.append(site_desc.replace(" ", ""))
+            need_custom = input("Do you want to add custom templates? (Y/N): ")
+            user_prompts.append(need_custom.replace(" ", ""))
+            creator.create_project(args.mool, user_prompts)
     elif args.type == "new" and args.mool and args.name:
         creator.create_note(args.mool, args.name, args.show_home)
     elif args.type == 'build' and args.mool:
