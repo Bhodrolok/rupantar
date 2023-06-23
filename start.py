@@ -39,11 +39,11 @@ def main():
             print("Choices can always be updated by modifying the `config.yml` file at project directory!")
             user_prompts = []
             site_url = input("Site URL? (yourdomain.tld): ")
-            user_prompts.append(site_url.replace(" ", ""))
+            user_prompts.append(site_url)
             site_desc = input("Site description? : ")
-            user_prompts.append(site_desc.replace(" ", ""))
+            user_prompts.append(site_desc)
             need_custom = input("Do you want to add custom templates? (Y/N): ")
-            user_prompts.append(need_custom.replace(" ", ""))
+            user_prompts.append(need_custom)
             creator.create_project(args.mool, user_prompts)
     elif args.type == "new" and args.mool and args.name:
         creator.create_note(args.mool, args.name, args.show_home)
