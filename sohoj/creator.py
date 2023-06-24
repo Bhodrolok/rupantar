@@ -1,6 +1,10 @@
 from os import chdir, mkdir, path
 from datetime import datetime
+import logging
 
+# Use root logger = same instance from start.py [ https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial ]
+# 'Child loggers propagate messages up to the handlers associated with their ancestor loggers.'
+logger = logging.getLogger()
 
 def create_config(project_folder, user_choices):
 
@@ -39,10 +43,10 @@ desc : {desc}
 mail : some@mail.com
                 """)
             conf_file.write(conf_data)
-            print(f"Created config.yml at {config_file_path}")
+            logger.info("Created config.yml at %s", config_file_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create config.yml\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create config.yml\n")
 
 
 # templates
@@ -99,10 +103,10 @@ def create_home_template(project_folder):
 </html>
             """)
             temp_file.write(temp_data)
-            print(f'Created home_template.html at: {templates_path}')
+            logger.info("Created home_template.html at %s", templates_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create home_template.html\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create home_template.html\n")
 
     
 def create_note_template(project_folder):
@@ -145,10 +149,10 @@ def create_note_template(project_folder):
 </html>
                 """)
                 temp_file.write(temp_data)
-                print(f'Created note_template.html at: {templates_path}')
+                logger.info("Created note_template.html at %s", templates_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create note_template.html\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create note_template.html\n")
 
 def create_feed_template(project_folder):
 
@@ -186,10 +190,10 @@ def create_feed_template(project_folder):
 {% endif %}{% endfor %}
 </channel>""")
             feed_file.write(feed_data)
-            print(f'Created feed_template.xml at: {templates_path}.')
+            logger.info("Created feed_templat.xml at %s", templates_path)
 
-    except OSError as err:
-        print(f"Error: Failed to create feed_template.xml\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create feed_template.xml\n")
 
 # content/ data
 def create_header(project_folder):
@@ -203,10 +207,10 @@ def create_header(project_folder):
 </nav>
             """)
             header_file.write(header_data)
-            print(f'Created header at: {content_path}.')
+            logger.info("Created header.md at %s", content_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create header.md\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create header.md\n")
     
 def create_footer(project_folder):
 
@@ -220,10 +224,10 @@ def create_footer(project_folder):
 *   powered by [Rupantar](/https://github.com/bhodrolok/rupantar)
             """)
             footer_file.write(footer_data)
-            print(f'Created footer at: {content_path}.')
+            logger.info("Created footer.md at %s", content_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create footer.md\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create footer.md\n")
 
 def create_home(project_folder):
 
@@ -239,10 +243,10 @@ def create_home(project_folder):
     *   [Source code](/).
             """)
             homepage_file.write(homepage_data)
-            print(f'Created homepage at: {content_path}.')
+            logger.info("Created home.md at %s", content_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create home.md\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create home.md\n")
 
 def create_example_blog(project_folder):
 
@@ -286,10 +290,10 @@ date : {t}
 Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             """).format(t=datetime.now().strftime("%Y-%m-%d"))
             post_file.write(post_data)
-            print(f'Example blog created at {posts_path}.')
+            logger.info("Created example_blog.md at %s", posts_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create example_blog.md\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create example_blog.md\n")
 
 # static asset(s)
 def create_static(project_folder):
@@ -314,10 +318,10 @@ pre code{background:none}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
             """)
             css_file.write(css_data)
-            print(f'demo.css created at {static_path}')
+            logger.info("Created demo.css at %s", static_path)
     
-    except OSError as err:
-        print(f"Error: Failed to create demo.css\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create demo.css\n")
 
 def create_note(project_folder, post_filename, show_home_page = True):
     try:
@@ -336,7 +340,7 @@ date : {t}
             print(post_filename+" is created at content/note/"+post_filename )
 
     except OSError as err:
-        print(f"Error: Failed to create {post_filename}\n{str(err)}")
+        logger.error(f"Error: Failed to create {post_filename}\n{str(err)}")
 
 def create_project(project_folder, user_choices):
 
@@ -370,6 +374,6 @@ def create_project(project_folder, user_choices):
         # Finish init
         print(f"Project skeleton created at: {project_folder}")
 
-    except OSError as err:
-        print(f"Error: Failed to create rupantar project.\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create rupantar project\n")
 
