@@ -327,7 +327,10 @@ def create_note(project_folder, post_filename, show_home_page = True):
     try:
         if not post_filename.lower().endswith('.md'):
             post_filename+='.md'
-        with open(path.join(project_folder,'content','note',post_filename),'w') as f:
+
+        content_path = path.join(project_folder, 'content')
+        posts_path = path.join(content_path, 'notes')
+        with open(path.join(posts_path, post_filename),'w') as f:
             conf_data = (
             """---
 title : "Title"
@@ -339,8 +342,8 @@ date : {t}
             f.write(conf_data)
             print(post_filename+" is created at content/note/"+post_filename )
 
-    except OSError as err:
-        logger.error(f"Error: Failed to create {post_filename}\n{str(err)}")
+    except OSError:
+        logger.exception("Error: Failed to create %s", post_filename)
 
 def create_project(project_folder, user_choices):
 
