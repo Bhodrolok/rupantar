@@ -1,0 +1,20 @@
+
+[project]
+name = "rupantar"
+version = "0.6.0"
+description = "Simple hackable static website generator with a focus on minimalism"
+authors = [
+    {name = "Bhodrolok", email = "korbolorbo1214@proton.me"},
+]
+dependencies = [
+    "pyyaml",
+    "jinja2",
+    "markdown2",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
