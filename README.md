@@ -83,7 +83,7 @@ Rupantar has the following dependencies:
   - Clone this [git repository](https://github.com/bhodrolok/rupantar.git)
   - `cd` into `rupantar` directory
   - ```console
-    $ pip install 
+    $ pip install -r requirements
     ``` 
 
 - Direct installation using **Git**:
@@ -97,6 +97,12 @@ Rupantar has the following dependencies:
 
 
 <h2 id="usage"> Usage :crab: </h2>
+
+To get a comprehensive list of commands and flags:
+```console
+$ rupantar -h
+```
+
 
 To initiate a project called `notun`:
 
