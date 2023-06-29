@@ -38,6 +38,7 @@
   <summary>Table of Contents 🚩</summary>
   <ol>
     <li><a href="#description">Description</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
     <li><a href="#install">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#structure">Project Structure</a></li>
@@ -59,42 +60,74 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
-<h2 id="install"> Installation :coconut: </h2>
-
-- Ensure [Python](https://www.python.org/downloads/) is installed locally.
-<!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
+<h2 id="dependencies"> Dependencies :bridge_at_night: </h2>
 
 Rupantar has the following dependencies:
 
 - <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Reading config and setting page metadata
-- <a href="https://pypi.org/project/toml/" target="_blank">TOML</a>:  Reading data for page contents
+- <a href="https://pypi.org/project/toml/" target="_blank">TOML</a>:  Reading data for page contents/metadata
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
 
-These packages can be installed either by: 
-1. Cloning this [repo](https://github.com/Bhodrolok/rupantar.git) and running: `python setup.py install` in the `rupantar/` directory, or by
-2. Running: `pip install PyYAML TOML jinja2 markdown2`
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
+
+<h2 id="install"> Installation :coconut: </h2>
+
+- Ensure [Python](https://www.python.org/downloads/) is installed locally.
+  - **CPython** version compatibility: needs Python interpreter (**version 3.7 or higher**)
+
+- Installation from source:
+  - Install [Git](https://git-scm.com/downloads)
+  - Clone this [git repository](https://github.com/bhodrolok/rupantar.git)
+  - `cd` into `rupantar` directory
+  - ```console
+    $ pip install -r requirements
+    ``` 
+
+- Direct installation using **Git**:
+  - ```console
+    $ pip install git+https://github.com/bhodrolok/rupantar
+    ```
+<!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
+
+
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
+
+
 <h2 id="usage"> Usage :crab: </h2>
 
-To initiate a project:
-
+To get a comprehensive list of commands and flags:
 ```console
-$ pidgey init project
+$ rupantar -h
 ```
 
-To create a new page:
+
+To initiate a project called `notun`:
 
 ```console
-$ pidgey new pageName
+$ rupantar init notun
+```
+- NB: You will be asked some generic questions when running this command in order to set up some configuration values. 
+- To avoid this, pass the `-s` or `--skip` flag after `init`
+
+To add a new post/page, lets call it `kagoch`, to `notun`:
+
+```console
+$ rupantar new notun kagoch
 ```
 
-To build the static pages:
+To build the static pages for `notun`:
 
 ```console
-$ pidgey build pageName
+$ rupantar build notun
+```
+
+To preview the website, you can test it by serving via a local server:
+
+```console
+$ rupantar serve notun
 ```
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
@@ -102,29 +135,30 @@ $ pidgey build pageName
 
 <h2 id="structure"> Project Structure :fork_and_knife: </h2>
 
+The overall skeleton of the project looks something like this
 ```
-pidgeotto_project
-    ├── public
+rupantar_project/
     ├── config.yml
-    ├── content
+    ├── content/
     │   ├── header.md
     │   ├── footer.md
     │   ├── home.md
-    │   ├── archive.md
-    │   └── note
-    │       └── other_pages.md
-    ├── resource
-    └── templates
+    │   └── notes/
+    │       └── example_blog.md
+    └──static/
+    │   └── demo.css
+    ├── public/
+    └── templates/
         ├── home_template.html
         ├── note_template.html
-        └── rss_template.xml
+        └── feed_template.xml
 ```
 
-* config.yml:	To configure the title, name, CSS file, js file, and other configurations.
-* resource:	Location to store all CSS, js, image data and other static content.
-* content:	All markdown files are stored here.
-* template:	Layouts for different HTML pages are kept here.
-* public: All generated static files. It can be changed in config.yml
+* config.yml:	Configurations for the page title, name, CSS file, js file, and other custom configurations such as custom templates.
+* static:	Directory to store static content eg: CSS, js, image data, etc.
+* content:	Directory to store Markdown files. 
+* template:	Directory to store Jinja2 layouts for the pages.
+* public: Directory to store generated static files.
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -149,4 +183,12 @@ This project is licensed under the [MIT License](./LICENSE).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
+<h2 id="alternatives">Similar Projects :goat:</h2>
+
+- [pidgeotto](https://github.com/niharokz/pidgeotto) - Primary inspiration for this project.
+- [pelican](https://github.com/getpelican/pelican)
+- [eleventy](https://github.com/11ty/eleventy)
+- [zola](https://github.com/getzola/zola)
+
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
