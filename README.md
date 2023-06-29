@@ -38,6 +38,7 @@
   <summary>Table of Contents 🚩</summary>
   <ol>
     <li><a href="#description">Description</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
     <li><a href="#install">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#structure">Project Structure</a></li>
@@ -59,21 +60,41 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
-<h2 id="install"> Installation :coconut: </h2>
-
-- Ensure [Python](https://www.python.org/downloads/) is installed locally.
-<!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
+<h2 id="dependencies"> Dependencies :bridge_at_night: </h2>
 
 Rupantar has the following dependencies:
 
 - <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Reading config and setting page metadata
-- <a href="https://pypi.org/project/toml/" target="_blank">TOML</a>:  Reading data for page contents
+- <a href="https://pypi.org/project/toml/" target="_blank">TOML</a>:  Reading data for page contents/metadata
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
 
 
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
+
+
+<h2 id="install"> Installation :coconut: </h2>
+
+- Ensure [Python](https://www.python.org/downloads/) is installed locally.
+  - **CPython** version compatibility: needs Python interpreter (**version 3.7 or higher**)
+
+- Installation from source:
+  - Install [Git](https://git-scm.com/downloads)
+  - Clone this [git repository](https://github.com/bhodrolok/rupantar.git)
+  - `cd` into `rupantar` directory
+  - ```console
+    $ pip install 
+    ``` 
+
+- Direct installation using **Git**:
+  - ```console
+    $ pip install git+https://github.com/bhodrolok/rupantar
+    ```
+<!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
+
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
+
 
 <h2 id="usage"> Usage :crab: </h2>
 
@@ -82,6 +103,8 @@ To initiate a project called `notun`:
 ```console
 $ rupantar init notun
 ```
+- NB: You will be asked some generic questions when running this command in order to set up some configuration values. 
+- To avoid this, pass the `-s` or `--skip` flag after `init`
 
 To add a new post/page, lets call it `kagoch`, to `notun`:
 
