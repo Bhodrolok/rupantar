@@ -71,30 +71,34 @@ Rupantar has the following dependencies:
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
 
-These packages can be installed either by: 
-1. Cloning this [repo](https://github.com/Bhodrolok/rupantar.git) and running: `python setup.py install` in the `rupantar/` directory, or by
-2. Running: `pip install PyYAML TOML jinja2 markdown2`
+
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 <h2 id="usage"> Usage :crab: </h2>
 
-To initiate a project:
+To initiate a project called `notun`:
 
 ```console
-$ pidgey init project
+$ rupantar init notun
 ```
 
-To create a new page:
+To add a new post/page, lets call it `kagoch`, to `notun`:
 
 ```console
-$ pidgey new pageName
+$ rupantar new notun kagoch
 ```
 
-To build the static pages:
+To build the static pages for `notun`:
 
 ```console
-$ pidgey build pageName
+$ rupantar build notun
+```
+
+To preview the website, you can test it by serving via a local server:
+
+```console
+$ rupantar serve notun
 ```
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
@@ -102,29 +106,30 @@ $ pidgey build pageName
 
 <h2 id="structure"> Project Structure :fork_and_knife: </h2>
 
+The overall skeleton of the project looks something like this
 ```
-pidgeotto_project
-    ├── public
+rupantar_project/
     ├── config.yml
-    ├── content
+    ├── content/
     │   ├── header.md
     │   ├── footer.md
     │   ├── home.md
-    │   ├── archive.md
-    │   └── note
-    │       └── other_pages.md
-    ├── resource
-    └── templates
+    │   └── notes/
+    │       └── example_blog.md
+    └──static/
+    │   └── demo.css
+    ├── public/
+    └── templates/
         ├── home_template.html
         ├── note_template.html
-        └── rss_template.xml
+        └── feed_template.xml
 ```
 
-* config.yml:	To configure the title, name, CSS file, js file, and other configurations.
-* resource:	Location to store all CSS, js, image data and other static content.
-* content:	All markdown files are stored here.
-* template:	Layouts for different HTML pages are kept here.
-* public: All generated static files. It can be changed in config.yml
+* config.yml:	Configurations for the page title, name, CSS file, js file, and other custom configurations such as custom templates.
+* static:	Directory to store static content eg: CSS, js, image data, etc.
+* content:	Directory to store Markdown files. 
+* template:	Directory to store Jinja2 layouts for the pages.
+* public: Directory to store generated static files.
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -149,4 +154,12 @@ This project is licensed under the [MIT License](./LICENSE).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
+<h2 id="alternatives">Similar Projects :goat:</h2>
+
+- [pidgeotto](https://github.com/niharokz/pidgeotto) - Primary inspiration for this project.
+- [pelican](https://github.com/getpelican/pelican)
+- [eleventy](https://github.com/11ty/eleventy)
+- [zola](https://github.com/getzola/zola)
+
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
