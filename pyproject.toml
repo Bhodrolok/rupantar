@@ -11,15 +11,40 @@ dependencies = [
     "jinja2",
     "markdown2",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.7"
 readme = "README.md"
-license = {text = "MIT"}
+license = {file = "LICENSE"}
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: Unix",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Internet",
+    "Topic :: Terminals"
+    ]
 
 [tool.pdm.dev-dependencies]
 test = [
     "pytest>=7.4.0",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/bhodrolok/rupantar"
+"Source" = "https://github.com/bhodrolok/rupantar"
+"Bug Reports" = "https://github.com/bhodrolok/rupantar/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+rupantar = "start:main"
