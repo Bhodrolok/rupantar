@@ -8,7 +8,7 @@ def main():
     parser.add_argument("-v", "--version", action="version", version=f"{__version__}" )
     parser.add_argument("-l", "--log", dest="loglevel", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], default='INFO', help="Set logging level to control verbosity. Default INFO")
     subparsers = parser.add_subparsers(dest='type', help='Supported commands', required=True)
-    
+    # as
     parser_init = subparsers.add_parser('init', help='Create new rupantar project skeleton at provided directory.')
     parser_init.add_argument("mool", help="Name of project. Path relative to cwd.")
     parser_init.add_argument("-s", "--skip", action="store_true", help="Skip prompts for choosing some config values. Can be updated by editing config.yml at project directory.")
@@ -52,14 +52,12 @@ def main():
     elif args.type == "new" and args.mool and args.name:
         creator.create_note(args.mool, args.name, args.show_home)
     elif args.type == 'build' and args.mool:
-        builder.buildPidgey(args.mool, args.config)
+        builder.build_project(args.mool, args.config)
     elif args.type == 'serve' and args.mool:
-        server.start_server(args.mool, args.config, args.port, args.interface)
-    
-    else: 
+        server.start_server(args.mool, args.config, args.port, args.interface) 
+    else:
         parser.print_help()
 
 # Entry point
 if __name__ == '__main__':
     main()
-
