@@ -43,7 +43,7 @@ desc : {desc}
 mail : some@mail.com
                 """)
             conf_file.write(conf_data)
-            logger.info("Created config.yml at %s", config_file_path)
+            logger.warning("Created config.yml at %s", config_file_path)
     
     except OSError:
         logger.exception("Error: Failed to create config.yml\n")
@@ -318,7 +318,7 @@ pre code{background:none}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
             """)
             css_file.write(css_data)
-            logger.info("Created demo.css at %s", static_path)
+            logger.critical("Created demo.css at %s", static_path)
     
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
@@ -340,7 +340,7 @@ date : {t}
 ---
             """).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
             f.write(conf_data)
-            print(post_filename+" is created at content/note/"+post_filename )
+            logger.info(post_filename+" is created at content/note/"+post_filename )
 
     except OSError:
         logger.exception("Error: Failed to create %s", post_filename)
