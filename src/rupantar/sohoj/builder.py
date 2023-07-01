@@ -23,6 +23,35 @@ class Config:
         for key, val in config.items():
             setattr(self, key, val)
 
+def parse_md(md_file_path):
+
+    try:
+        with open(md_file_path) as infile:
+            print(f'Inside: {md_file_path}')
+            yaml_lines, ym_meta, md_contents = [], '', ''
+
+            for line in infile:
+                if line.startswith('---'):
+                    for line in infile:
+                        if line.startswith('---'):
+                            break
+                        else:
+                            yaml_lines.append(line)
+                    # ym = 'metadata' so stuff inside the --- ---
+                    ym_meta = ''.join(yaml_lines)
+                    # md = rest of page contents outside the --- ---
+                    md_contents = ''.join(infile)
+                    break
+        # Store file 'metadata', inside the front-matter, into post_detail
+        post_detail = yaml.safe_load(ym_meta)
+        # strip() to remove leading and trailing whitespace off of contents
+        page_contents = md_contents.strip()
+
+        return post_detail, page_contents
+    except OSError as err:
+        raise OSError(f"Error reading file: {md_file_path}") from err
+
+
 def build_project(project_folder, config_file_name):
     # Create Page
     def create_page(page_template, post_detail, md, filename):
@@ -125,24 +154,8 @@ def build_project(project_folder, config_file_name):
         posts = []
         notes_path = path.join(config.content_path, 'notes')
         for each_note_md in glob( path.join(notes_path, "*.md") ):
-            yaml_lines, ym, md = [],'',''
-            with open(each_note_md) as infile:
-                for s in infile:
-                    if s.startswith('---'):
-                        for s in infile:
-                            if s.startswith('---'):
-                                break;
-                            else:
-                                yaml_lines.append(s)
-                        # ym = 'metadata' so stuff inside the --- ---
-                        ym = ''.join(yaml_lines)
-                        # md = rest of page contents outside the --- ---
-                        md = ''.join(infile)
-                        break;
-
-            # Store file 'metadata', inside the front-matter, into post_detail
-            post_detail=yaml.safe_load(ym)
-            
+            print(each_note_md)
+            post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if (post_detail is not None):
                 post_url = create_page(config.note_template, post_detail, md, each_note_md)
@@ -155,7 +168,7 @@ def build_project(project_folder, config_file_name):
         posts = sorted(posts, key=lambda post : post['date'], reverse=True)
         
         # Create other pages
-        # home.
+        # home/
         create_page(config.home_template, None, md_to_str(config.home_md), "index.html")
         # RSS
         create_page(config.feed_template, None, md_to_str(config.home_md), "rss.xml")
