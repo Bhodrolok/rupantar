@@ -11,13 +11,13 @@ def create_config(project_folder, user_choices):
     # Default name is config.yml + located in root of project folder
     default_conf_values = ['yourdomain.tld','Just another little corner on the interwebs.', '#']
     # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
-    url = user_choices[0] if ( user_choices[0] and user_choices[0].strip()) else default_conf_values[0] 
+    url = user_choices[0] if ( user_choices[0] and user_choices[0].strip()) else default_conf_values[0]
     desc = user_choices[1] if ( user_choices[1] and user_choices[1].strip()) else default_conf_values[1]
     custom_needed = '' if ( user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
     try:
-        config_file_path = path.join(project_folder, 'config.yml') 
+        config_file_path = path.join(project_folder, 'config.yml')
         with open(config_file_path,'w') as conf_file:
-            conf_data = (f"""# Required 
+            conf_data = (f"""# Required
 title : Demo website    # Title in home page
 url : {url}    # Site URL 
 
@@ -44,7 +44,6 @@ mail : some@mail.com
                 """)
             conf_file.write(conf_data)
             logger.warning("Created config.yml at %s", config_file_path)
-    
     except OSError:
         logger.exception("Error: Failed to create config.yml\n")
 
@@ -52,7 +51,7 @@ mail : some@mail.com
 # templates
 def create_home_template(project_folder):
 
-    try: 
+    try:
         templates_path = path.join(project_folder, 'templates')
         with open(path.join(templates_path,'home_template.html'),'w') as temp_file:
             temp_data = (
@@ -103,8 +102,7 @@ def create_home_template(project_folder):
 </html>
             """)
             temp_file.write(temp_data)
-            logger.info("Created home_template.html at %s", templates_path)
-    
+            logger.info("Created home_template.html at %s", templates_path)   
     except OSError:
         logger.exception("Error: Failed to create home_template.html\n")
 
@@ -150,7 +148,6 @@ def create_note_template(project_folder):
                 """)
                 temp_file.write(temp_data)
                 logger.info("Created note_template.html at %s", templates_path)
-    
     except OSError:
         logger.exception("Error: Failed to create note_template.html\n")
 
@@ -198,7 +195,7 @@ def create_feed_template(project_folder):
 # content/ data
 def create_header(project_folder):
 
-    try: 
+    try:
         content_path = path.join(project_folder, 'content')
         with open(path.join(content_path,'header.md'),'w') as header_file:
             header_data = (
@@ -208,13 +205,12 @@ def create_header(project_folder):
             """)
             header_file.write(header_data)
             logger.info("Created header.md at %s", content_path)
-    
     except OSError:
         logger.exception("Error: Failed to create header.md\n")
     
 def create_footer(project_folder):
 
-    try: 
+    try:
         content_path = path.join(project_folder, 'content')
         with open(path.join(content_path,'footer.md'),'w') as footer_file:
             footer_data = (
@@ -225,13 +221,12 @@ def create_footer(project_folder):
             """)
             footer_file.write(footer_data)
             logger.info("Created footer.md at %s", content_path)
-    
     except OSError:
         logger.exception("Error: Failed to create footer.md\n")
 
 def create_home(project_folder):
 
-    try: 
+    try:
         content_path = path.join(project_folder, 'content')
         with open(path.join(content_path,'home.md'),'w') as homepage_file:
             homepage_data = (
@@ -244,13 +239,12 @@ def create_home(project_folder):
             """)
             homepage_file.write(homepage_data)
             logger.info("Created home.md at %s", content_path)
-    
     except OSError:
         logger.exception("Error: Failed to create home.md\n")
 
 def create_example_blog(project_folder):
 
-    try: 
+    try:
         content_path = path.join(project_folder, 'content')
         posts_path = path.join(content_path, 'notes')
         with open(path.join(posts_path,'example_blog.md'),'w') as post_file:
@@ -291,14 +285,13 @@ Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit am
             """).format(t=datetime.now().strftime("%Y-%m-%d"))
             post_file.write(post_data)
             logger.info("Created example_blog.md at %s", posts_path)
-    
     except OSError:
         logger.exception("Error: Failed to create example_blog.md\n")
 
 # static asset(s)
 def create_static(project_folder):
 
-    try: 
+    try:
         static_path = path.join(project_folder, 'static')
         with open(path.join(static_path, 'demo.css'), 'w') as css_file:
             # adapted from nih.ar
@@ -319,11 +312,11 @@ pre code{background:none}
             """)
             css_file.write(css_data)
             logger.critical("Created demo.css at %s", static_path)
-    
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
 def create_note(project_folder, post_filename, show_home_page = True):
+
     try:
         if not post_filename.lower().endswith('.md'):
             post_filename+='.md'
@@ -379,4 +372,4 @@ def create_project(project_folder, user_choices):
 
     except OSError:
         logger.exception("Error: Failed to create rupantar project\n")
-
+        
