@@ -1,8 +1,5 @@
 from argparse import ArgumentParser
-from os import mkdir, path
-from datetime import datetime
-import logging
-from sohoj import creator, builder, server, __version__
+from sohoj import logger, creator, builder, server, __version__
 
 
 def main():
@@ -34,34 +31,7 @@ def main():
     args = parser.parse_args()
 
     # Configure logging
-    # https://sematext.com/blog/python-logging/#basic-logging-configuration
-    log_format_string_default = "%(asctime)s | [%(levelname)s] @ %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) => %(message)s"
-    #logging.basicConfig(level=args.loglevel, format=log_formatter) # init root logger
-    logger = logging.getLogger()  # root logger
-    logger.setLevel(args.loglevel)
-
-    if not path.exists('logs'):
-        try:
-            mkdir('logs')
-        except OSError as err:
-            logging.exception("%s", err)
-
-    # Set handler for destination of logs, default to sys.stderr
-    # Log destination = console
-    logs_console_handler = logging.StreamHandler()
-    logs_console_handler.setLevel(args.loglevel)
-    #logger.addHandler(logs_console_handler)
-
-    # Log destination = file
-    log_filename = 'rupantar-' + datetime.now().strftime("%H-%M-%S_%p") + '.log'
-    log_filepath = 'logs/' + log_filename
-    logs_file_handler = logging.FileHandler(filename=log_filepath)
-    # Create formatter object 
-    file_handler_format = logging.Formatter(log_format_string_default)
-    logs_file_handler.setFormatter(file_handler_format)
-    logs_file_handler.setLevel(args.loglevel)
-    # Assign handler to root logger
-    logger.addHandler(logs_file_handler)
+    logger.setup_logging(args.loglevel)
     
     if args.type == "init" and args.mool:
         # Interactive prompts for setting some default config.yml fields
