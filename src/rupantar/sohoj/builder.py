@@ -1,9 +1,12 @@
 from shutil import copytree, rmtree
 from os import path, makedirs, chdir
 from glob import glob
+import logging
 import yaml
 from jinja2 import Environment, FileSystemLoader
 from markdown2 import markdown
+
+logger = logging.getLogger()
 
 class Config:
 
@@ -16,21 +19,25 @@ class Config:
             try:
                 with open(config_file_path, 'r') as yaml_file:
                     config = yaml.safe_load(yaml_file)
+                logger.info("Load configuration data from: %s", config_file_path)
             except OSError as err:
-                print(f"Error:{str(err)}")
+                logger.exception("Error reading and loading config data from %s: %s", config_file_path, str(err))
         # TODO: Add TOML support
         else:
-            raise ValueError(f"Config file format: {extension} is not supported!")
+            logger.warning("Config file format: %s is not supported!", extension)
 
         # Dynamically set attributes to the instance for each key-value pair in the config file
-        for key, val in config.items():
-            setattr(self, key, val)
+        if config:
+            for key, val in config.items():
+                setattr(self, key, val)
+                logger.debug("Setting attribute '%s' as: %s", key, val)
+        else:
+            logger.warning("Empty or invalid configuration. No attributes were set.")
 
 def parse_md(md_file_path):
 
     try:
         with open(md_file_path) as infile:
-            print(f'Inside: {md_file_path}')
             yaml_lines, ym_meta, md_contents = [], '', ''
 
             for line in infile:
@@ -47,12 +54,14 @@ def parse_md(md_file_path):
                     break
         # Store file 'metadata', inside the front-matter, into post_detail
         post_detail = yaml.safe_load(ym_meta)
+        logger.debug("Load post's metadata from: %s", md_file_path)
         # strip() to remove leading and trailing whitespace off of contents
         page_contents = md_contents.strip()
+        logger.debug("Load post's page contents from: %s", md_file_path)
 
         return post_detail, page_contents
     except OSError as err:
-        raise OSError(f"Error reading file: {md_file_path}") from err
+        logger.exception("Error loading metadata and page contents from %s: %s", md_file_path, str(err)) 
 
 
 def build_project(project_folder, config_file_name):
@@ -77,7 +86,7 @@ def build_project(project_folder, config_file_name):
             posts_list = posts
             last_date = posts_list[0].get('date')
         elif post_detail is None :
-            print(f"Converting: {just_filename} to .html format")
+            logger.info("Converting %s to .html format", just_filename)
             post_file = filename.replace('.md','.html')
 
         else:
@@ -97,7 +106,7 @@ def build_project(project_folder, config_file_name):
         # Define where new .html/.xml file will be located
         # Eg: public/file.html || public/file.xml
         post_file_new = path.join(post_path, post_file)
-        print(f"Creating: {post_file_new}")
+        logger.info("Creating: %s", post_file_new)
         with open(post_file_new, 'w') as output_file:
             try:
                 output_file.write(
@@ -118,13 +127,14 @@ def build_project(project_folder, config_file_name):
                         config = config.__dict__
                     )
                 )
+                logger.info('Rendering and writing page: %s complete', post_file_new)
             except OSError as err:
-                print(f"Error: {str(err)}")
+                logger.exception("Error rendering or writing to page %s: %s", post_file_new, str(err))
         return post_file
     
     # Markdown file to string
-    def md_to_str(md):
-        with open(md,'r') as data:
+    def md_to_str(md_file_path):
+        with open(md_file_path) as data:
             return data.read()
 
     # Program entry
@@ -142,23 +152,23 @@ def build_project(project_folder, config_file_name):
         config = Config(config_file_path)
         try:
             # Resource dir = Static assets (eg: static/); images, stylesheets, scrips, etc.
-            resource_path_abs = path.join(pidgey_folder, config.resource_path)
+            resource_path_abs = path.join(project_folder, config.resource_path)
             # Home dir = Files to be served (eg: public/); web-accessible 
-            home_path_abs = path.join(pidgey_folder, config.home_path)
+            home_path_abs = path.join(project_folder, config.home_path)
             # Clear out existing public/ folder
             if path.exists(home_path_abs):
                 rmtree(home_path_abs)
             # Recreate home path with resource
             copytree(resource_path_abs, home_path_abs)
-            print(f"Finish copying: {resource_path_abs} to {home_path_abs}\n")
+            logger.info("Finish copying: %s to %s", resource_path_abs, home_path_abs)
         except OSError as err:
-            print(f"Error: {str(err)}")
+            logger.info("Error: %s", str(err))
         
         #Create pages from content/notes/ all markdown files here...
         posts = []
         notes_path = path.join(config.content_path, 'notes')
         for each_note_md in glob( path.join(notes_path, "*.md") ):
-            print(each_note_md)
+            logger.debug(each_note_md)
             post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if (post_detail is not None):
@@ -178,15 +188,15 @@ def build_project(project_folder, config_file_name):
             # RSS
             create_page(config.feed_template, None, md_to_str(config.home_md), "rss.xml")
         except Exception as err:
-            print(f"Error: {str(err)}")
+            logger.exception("Error creating other pages: %s", str(err))
 
     except FileNotFoundError:
-        print(f"Error: {config_file_path} not found in {project_folder} directory. Make sure that both the file and directory exists.")
+        logger.exception("Error: %s not found in %s directory. Make sure that both the file and directory exists.", config_file_path, project_folder)
     
-    except Exception as e:
-        print(f"Error: Failed to read {config_file_path}.\n\t{str(e)}")
+    except Exception as err:
+        logger.exception("Error: Failed to read %s: %s", config_file_path, str(err))
     
     else:
-        print(f"Project built at: {path.join(project_folder, config.home_path)}.\tReady to serve...")
-
+        print("Project built successfully.")
+        logger.info("Project built at: %s", path.join(project_folder, config.home_path))
 
