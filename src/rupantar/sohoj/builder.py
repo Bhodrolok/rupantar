@@ -168,7 +168,7 @@ def build_project(project_folder, config_file_name):
         posts = []
         notes_path = path.join(config.content_path, 'notes')
         for each_note_md in glob( path.join(notes_path, "*.md") ):
-            print(each_note_md)
+            logger.debug(each_note_md)
             post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if (post_detail is not None):
@@ -191,7 +191,7 @@ def build_project(project_folder, config_file_name):
             logger.exception("Error creating other pages: %s", str(err))
 
     except FileNotFoundError:
-        print(f"Error: {config_file_path} not found in {project_folder} directory. Make sure that both the file and directory exists.")
+        logger.exception("Error: %s not found in %s directory. Make sure that both the file and directory exists.", config_file_path, project_folder)
     
     except Exception as err:
         logger.exception("Error: Failed to read %s: %s", config_file_path, str(err))
