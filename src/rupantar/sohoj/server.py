@@ -1,9 +1,10 @@
 from http.server import SimpleHTTPRequestHandler
+from socket import SOL_SOCKET, SO_REUSEADDR
 from socketserver import TCPServer
 from os import path, chdir
 import random
-import yaml
 import ipaddress
+import yaml
 
 class Config:
 
@@ -58,12 +59,15 @@ def start_server(project_folder, config_file_name, port, interface_address):
         config = Config(config_file_path)
          # Change cwd to folder from where generated static filed will be served (public/ for example)  
         chdir(path.join(project_folder_path, config.home_path))
-        httpd = TCPServer(("", PORT), SimpleHTTPRequestHandler)
-        print(f"HTTP server listening @ http://{HOST}:{PORT}:")
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("Stopping server...")
-        httpd.server_close() 
+        try:
+            with TCPServer((HOST, PORT), SimpleHTTPRequestHandler) as httpd:
+                # Allow immediate socket re-use
+                httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+                print(f"HTTP server listening @ http://{HOST}:{PORT}:")
+                httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("Stopping server...")
+            httpd.server_close() 
     except:
         print("while serving pidgey, some issue occured.")
         print("This can be due to \n\t1. Not a pidgey directory. \n\t2. Pidgey not built yet.")
