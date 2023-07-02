@@ -3,6 +3,7 @@ from socketserver import TCPServer
 from os import path, chdir
 import random
 import yaml
+import ipaddress
 
 class Config:
 
@@ -28,13 +29,25 @@ class Config:
         else:
             print("Empty or invalid configuration. No attributes were set.")
 
+def validate_network_address(interface_address):
+    #  validate the input to ensure a valid IP address
+    # True = Valid, False = Invalid
+    try:
+        ip = ipaddress.ip_address(interface_address)
+        # Invalid = NOT localhost OR 0.0.0.0
+        if ip.is_link_local or ip.is_multicast:
+            return False
+        return True
+    except ValueError:
+        return False
+
 def start_server(project_folder, config_file_name, port, interface_address):
 
     try:
         config_file = 'config.yml' if (config_file_name is None) else config_file_name
         # Ephemeral/dynamic/private ports, think good for temporary stuff 
         PORT = random.randint(49152, 65535) if ( (port is None) or (  ( port in range(0, 1024) ) ) ) else port
-        HOST = '127.0.0.1'
+        HOST = interface_address if ( validate_network_address(interface_address) ) else '127.0.0.1'
         # Location of current file
         script_dir = path.dirname(path.dirname(path.abspath(__file__)))
         # Location of project folder with all contents
