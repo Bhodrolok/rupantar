@@ -6,18 +6,34 @@ import logging
 # 'Child loggers propagate messages up to the handlers associated with their ancestor loggers.'
 logger = logging.getLogger()
 
-def create_config(project_folder, user_choices):
 
+def create_config(project_folder, user_choices):
     # Default name is config.yml + located in root of project folder
-    default_conf_values = ['yourdomain.tld','Just another little corner on the interwebs.', '#']
+    default_conf_values = [
+        "yourdomain.tld",
+        "Just another little corner on the interwebs.",
+        "#",
+    ]
     # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
-    url = user_choices[0] if ( user_choices[0] and user_choices[0].strip()) else default_conf_values[0]
-    desc = user_choices[1] if ( user_choices[1] and user_choices[1].strip()) else default_conf_values[1]
-    custom_needed = '' if ( user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
+    url = (
+        user_choices[0]
+        if (user_choices[0] and user_choices[0].strip())
+        else default_conf_values[0]
+    )
+    desc = (
+        user_choices[1]
+        if (user_choices[1] and user_choices[1].strip())
+        else default_conf_values[1]
+    )
+    custom_needed = (
+        ""
+        if (user_choices[-1] and user_choices[-1].strip())
+        else default_conf_values[-1]
+    )
     try:
-        config_file_path = path.join(project_folder, 'config.yml')
-        with open(config_file_path,'w') as conf_file:
-            conf_data = (f"""# Required
+        config_file_path = path.join(project_folder, "config.yml")
+        with open(config_file_path, "w") as conf_file:
+            conf_data = f"""# Required
 title : Demo website    # Title in home page
 url : {url}    # Site URL 
 
@@ -41,7 +57,7 @@ site-title : Demo Site Title!
 css : demo.css 
 desc : {desc}
 mail : some@mail.com
-                """)
+                """
             conf_file.write(conf_data)
             logger.warning("Created config.yml at %s", config_file_path)
     except OSError:
@@ -50,12 +66,10 @@ mail : some@mail.com
 
 # templates
 def create_home_template(project_folder):
-
     try:
-        templates_path = path.join(project_folder, 'templates')
-        with open(path.join(templates_path,'home_template.html'),'w') as temp_file:
-            temp_data = (
-        """<!DOCTYPE html>
+        templates_path = path.join(project_folder, "templates")
+        with open(path.join(templates_path, "home_template.html"), "w") as temp_file:
+            temp_data = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <title>{{ config.get('site-title') }}</title>
@@ -100,20 +114,18 @@ def create_home_template(project_folder):
     </footer>
 </body>
 </html>
-            """)
+            """
             temp_file.write(temp_data)
-            logger.info("Created home_template.html at %s", templates_path)   
+            logger.info("Created home_template.html at %s", templates_path)
     except OSError:
         logger.exception("Error: Failed to create home_template.html\n")
 
-    
-def create_note_template(project_folder):
 
+def create_note_template(project_folder):
     try:
-        templates_path = path.join(project_folder, 'templates')
-        with open(path.join(templates_path,'note_template.html'),'w') as temp_file:
-                temp_data = (
-                """<!DOCTYPE html>
+        templates_path = path.join(project_folder, "templates")
+        with open(path.join(templates_path, "note_template.html"), "w") as temp_file:
+            temp_data = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8">
@@ -145,19 +157,18 @@ def create_note_template(project_folder):
     </footer>
 </body>
 </html>
-                """)
-                temp_file.write(temp_data)
-                logger.info("Created note_template.html at %s", templates_path)
+                """
+            temp_file.write(temp_data)
+            logger.info("Created note_template.html at %s", templates_path)
     except OSError:
         logger.exception("Error: Failed to create note_template.html\n")
 
-def create_feed_template(project_folder):
 
-    try: 
-        templates_path = path.join(project_folder, 'templates')
-        with open(path.join(templates_path,'feed_template.xml'),'w') as feed_file:
-            feed_data = (
-                """<?xml version="1.0" encoding="UTF-8"?>
+def create_feed_template(project_folder):
+    try:
+        templates_path = path.join(project_folder, "templates")
+        with open(path.join(templates_path, "feed_template.xml"), "w") as feed_file:
+            feed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 
 <channel>
@@ -185,69 +196,66 @@ def create_feed_template(project_folder):
             <description><![CDATA[{{ post.subtitle }} - {{ post.note }} ]]></description>
 </item>
 {% endif %}{% endfor %}
-</channel>""")
+</channel>"""
             feed_file.write(feed_data)
             logger.info("Created feed_templat.xml at %s", templates_path)
 
     except OSError:
         logger.exception("Error: Failed to create feed_template.xml\n")
 
+
 # content/ data
 def create_header(project_folder):
-
     try:
-        content_path = path.join(project_folder, 'content')
-        with open(path.join(content_path,'header.md'),'w') as header_file:
-            header_data = (
-                """<nav> From content/header.md //
+        content_path = path.join(project_folder, "content")
+        with open(path.join(content_path, "header.md"), "w") as header_file:
+            header_data = """<nav> From content/header.md //
 <a href="/">homepage</a
 </nav>
-            """)
+            """
             header_file.write(header_data)
             logger.info("Created header.md at %s", content_path)
     except OSError:
         logger.exception("Error: Failed to create header.md\n")
-    
-def create_footer(project_folder):
 
+
+def create_footer(project_folder):
     try:
-        content_path = path.join(project_folder, 'content')
-        with open(path.join(content_path,'footer.md'),'w') as footer_file:
-            footer_data = (
-                """<a href="/">homepage</a> //
+        content_path = path.join(project_folder, "content")
+        with open(path.join(content_path, "footer.md"), "w") as footer_file:
+            footer_data = """<a href="/">homepage</a> //
 <a href="https://github.com">git</a> //
 <a href="https://linkedin.com">linkedin</a> 
 *   powered by [Rupantar](/https://github.com/bhodrolok/rupantar)
-            """)
+            """
             footer_file.write(footer_data)
             logger.info("Created footer.md at %s", content_path)
     except OSError:
         logger.exception("Error: Failed to create footer.md\n")
 
-def create_home(project_folder):
 
+def create_home(project_folder):
     try:
-        content_path = path.join(project_folder, 'content')
-        with open(path.join(content_path,'home.md'),'w') as homepage_file:
-            homepage_data = (
-                """Welcome to Rupantar!
+        content_path = path.join(project_folder, "content")
+        with open(path.join(content_path, "home.md"), "w") as homepage_file:
+            homepage_data = """Welcome to Rupantar!
     <br> This is a sample homepage which can be edited at /content/home.md
 
     ** Rupantar links: **
     *   [Documentation](/).
     *   [Source code](/).
-            """)
+            """
             homepage_file.write(homepage_data)
             logger.info("Created home.md at %s", content_path)
     except OSError:
         logger.exception("Error: Failed to create home.md\n")
 
-def create_example_blog(project_folder):
 
+def create_example_blog(project_folder):
     try:
-        content_path = path.join(project_folder, 'content')
-        posts_path = path.join(content_path, 'notes')
-        with open(path.join(posts_path,'example_blog.md'),'w') as post_file:
+        content_path = path.join(project_folder, "content")
+        posts_path = path.join(content_path, "notes")
+        with open(path.join(posts_path, "example_blog.md"), "w") as post_file:
             post_data = (
                 """---
 title : "Sample Blog."
@@ -282,21 +290,21 @@ date : {t}
 
 
 Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            """).format(t=datetime.now().strftime("%Y-%m-%d"))
+            """
+            ).format(t=datetime.now().strftime("%Y-%m-%d"))
             post_file.write(post_data)
             logger.info("Created example_blog.md at %s", posts_path)
     except OSError:
         logger.exception("Error: Failed to create example_blog.md\n")
 
+
 # static asset(s)
 def create_static(project_folder):
-
     try:
-        static_path = path.join(project_folder, 'static')
-        with open(path.join(static_path, 'demo.css'), 'w') as css_file:
+        static_path = path.join(project_folder, "static")
+        with open(path.join(static_path, "demo.css"), "w") as css_file:
             # adapted from nih.ar
-            css_data = (
-                """:root{--bg:#DDD;--txt:#333;--thm:#357670}
+            css_data = """:root{--bg:#DDD;--txt:#333;--thm:#357670}
 body{background:var(--bg);color:var(--txt);font:1.2em/1.6em sans-serif;max-width:900px;margin:7% auto auto;padding:0 5%}
 h1,h2,h3{font-size:1em}
 a{color:var(--thm);text-decoration:none}
@@ -309,37 +317,38 @@ code{background:var(--thm)}
 pre code{background:none}
 @media (prefers-color-scheme: dark){:root{--bg:#080C0C;--txt:#C6DFDD;--thm:#42938C}}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
-            """)
+            """
             css_file.write(css_data)
             logger.critical("Created demo.css at %s", static_path)
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
-def create_note(project_folder, post_filename, show_home_page = True):
 
+def create_note(project_folder, post_filename, show_home_page=True):
     try:
-        if not post_filename.lower().endswith('.md'):
-            post_filename+='.md'
+        if not post_filename.lower().endswith(".md"):
+            post_filename += ".md"
 
-        content_path = path.join(project_folder, 'content')
-        posts_path = path.join(content_path, 'notes')
-        with open(path.join(posts_path, post_filename),'w') as f:
+        content_path = path.join(project_folder, "content")
+        posts_path = path.join(content_path, "notes")
+        with open(path.join(posts_path, post_filename), "w") as f:
             conf_data = (
-            """---
+                """---
 title : "Title"
 subtitle : "Subtitle"
 showInHome : {s}
 date : {t}
 ---
-            """).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
+            """
+            ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
             f.write(conf_data)
-            logger.info(post_filename+" is created at content/note/"+post_filename )
+            logger.info(post_filename + " is created at content/note/" + post_filename)
 
     except OSError:
         logger.exception("Error: Failed to create %s", post_filename)
 
-def create_project(project_folder, user_choices):
 
+def create_project(project_folder, user_choices):
     try:
         # Create project folder
         mkdir(project_folder)
@@ -350,19 +359,19 @@ def create_project(project_folder, user_choices):
         # Change cwd to new project folder
         chdir((project_folder))
         # Create directories for storing: Templates, static assets and page data (under contents)
-        mkdir('templates')
-        mkdir('content')
-        mkdir('static')
-        mkdir(path.join('content','notes'))
+        mkdir("templates")
+        mkdir("content")
+        mkdir("static")
+        mkdir(path.join("content", "notes"))
         # Generate default config, templates and site contents
         create_config(project_folder, user_choices)
-        #create_templates(project_folder)
+        # create_templates(project_folder)
         create_home_template(project_folder)
         create_note_template(project_folder)
         create_feed_template(project_folder)
 
         create_static(project_folder)
-        #create_content(project_folder)
+        # create_content(project_folder)
         create_header(project_folder)
         create_footer(project_folder)
         create_home(project_folder)
@@ -372,4 +381,3 @@ def create_project(project_folder, user_choices):
 
     except OSError:
         logger.exception("Error: Failed to create rupantar project\n")
-        
