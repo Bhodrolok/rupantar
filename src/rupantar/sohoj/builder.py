@@ -1,5 +1,5 @@
 from shutil import copytree, rmtree
-from os import path, makedirs, chdir
+from os import path, makedirs, chdir, getcwd
 from glob import glob
 import logging
 import yaml
@@ -154,15 +154,14 @@ def build_project(project_folder, config_file_name):
 
     # Program entry
     try:
-        # Location of current file
-        script_dir = path.dirname(path.dirname(path.abspath(__file__)))
-        # Location of project folder with all contents
-        project_folder = path.join(script_dir, project_folder)
+        # Change cwd to project folder
+        chdir(project_folder)
+        curr_dir = getcwd()
+        logger.info(f"cwd is now: {curr_dir}")
         # Location of config file, assumed to be in abovementioned project folder
         config_file = "config.yml" if (config_file_name is None) else config_file_name
         config_file_path = path.join(config_file)
-        # Change cwd to project folder
-        chdir((project_folder))
+        project_folder = curr_dir
         # New Config object with data loaded from the config file
         config = Config(config_file_path)
         try:

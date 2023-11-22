@@ -1,7 +1,7 @@
 from http.server import SimpleHTTPRequestHandler
 from socket import SOL_SOCKET, SO_REUSEADDR
 from socketserver import TCPServer
-from os import path, chdir
+from os import path, chdir, getcwd
 import random
 import ipaddress
 import logging
@@ -68,15 +68,15 @@ def start_server(project_folder, config_file_name, port, interface_address):
             else "127.0.0.1"
         )
         logger.info("Using network address: %s", HOST)
-        # Location of current file
-        script_dir = path.dirname(path.dirname(path.abspath(__file__)))
-        logger.debug("Current file location: %s", script_dir)
-        # Location of project folder with all contents
-        project_folder_path = path.join(script_dir, project_folder)
-        logger.debug("Rupantar project directory location: %s", project_folder_path)
+        # Change cwd to project folder
+        chdir(project_folder)
+        curr_dir = getcwd()
+        logger.info(f"cwd is now: {curr_dir}")
+        project_folder_path = curr_dir
+        logger.info("Rupantar project directory location: %s", project_folder_path)
         # Location of config file, assumed to be in abovementioned project folder
         config_file_path = path.join(project_folder_path, config_file)
-        logger.debug("Config file location: %s", config_file_path)
+        logger.info("Config file location: %s", config_file_path)
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
         # Change cwd to folder from where generated static filed will be served (public/ for example)
@@ -89,7 +89,7 @@ def start_server(project_folder, config_file_name, port, interface_address):
             with TCPServer((HOST, PORT), SimpleHTTPRequestHandler) as httpd:
                 # Allow immediate socket re-use
                 httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-                print(f"HTTP server listening @ http://{HOST}:{PORT}")
+                print(f"HTTP server listening at http://{HOST}:{PORT}")
                 httpd.serve_forever()
         except KeyboardInterrupt:
             print("Stopping server...")

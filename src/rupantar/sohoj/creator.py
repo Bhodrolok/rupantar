@@ -1,4 +1,5 @@
-from os import chdir, mkdir, path
+from os import chdir, mkdir, path, getcwd
+from shutil import rmtree
 from datetime import datetime
 import logging
 
@@ -31,7 +32,8 @@ def create_config(project_folder, user_choices):
         else default_conf_values[-1]
     )
     try:
-        config_file_path = path.join(project_folder, "config.yml")
+        config_file_path = path.join(path.abspath(project_folder), "config.yml")
+        logger.info(f"config.yml file will be created at: {config_file_path}")
         with open(config_file_path, "w") as conf_file:
             conf_data = f"""# Required
 title : Demo website    # Title in home page
@@ -319,7 +321,7 @@ pre code{background:none}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
             """
             css_file.write(css_data)
-            logger.critical("Created demo.css at %s", static_path)
+            logger.info("Created demo.css at %s", static_path)
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
@@ -350,34 +352,47 @@ date : {t}
 
 def create_project(project_folder, user_choices):
     try:
-        # Create project folder
-        mkdir(project_folder)
-        # Use location of current file to get to parent directory(oustide sohoj/)
-        script_dir = path.dirname(path.dirname(path.abspath(__file__)))
-        # Location of project folder with all contents (absolute)
-        project_folder = path.join(script_dir, project_folder)
+        # Delete existing folder (https://stackoverflow.com/a/53492792)
+        if path.exists(project_folder):
+            logger.warning(f"Existing rupantar project with name: {project_folder} found. Overwriting...")
+            rmtree(project_folder)
+            logger.warning(f"Old {project_folder} removed. Proceeding to start anew...")
+        while True:
+            try:
+                mkdir(project_folder)
+                break
+            except PermissionError:
+                logger.exception(f"Error: Creating {project_folder}. Trying again...")
+                continue
+        # mkdir(project_folder)
+        logger.info(f"{project_folder} created at: {path.abspath(project_folder)}")
         # Change cwd to new project folder
-        chdir((project_folder))
+        chdir(project_folder)
+        curr_dir = getcwd()
+        logger.info(f"cwd is now: {curr_dir}")
         # Create directories for storing: Templates, static assets and page data (under contents)
         mkdir("templates")
         mkdir("content")
         mkdir("static")
         mkdir(path.join("content", "notes"))
         # Generate default config, templates and site contents
+        project_folder = curr_dir
+        logger.info(f"project_folder = {project_folder}")
         create_config(project_folder, user_choices)
-        # create_templates(project_folder)
+        #create_templates(project_folder)
         create_home_template(project_folder)
         create_note_template(project_folder)
         create_feed_template(project_folder)
 
         create_static(project_folder)
-        # create_content(project_folder)
+        # # create_content(project_folder)
         create_header(project_folder)
         create_footer(project_folder)
         create_home(project_folder)
         create_example_blog(project_folder)
         # Finish init
-        print(f"Project skeleton created at: {project_folder}")
+        print(f"Project skeleton created at: {path.abspath(project_folder)}")
+        logger.info(f"Project skeleton has been initialized at: {path.abspath(project_folder)}")
 
     except OSError:
-        logger.exception("Error: Failed to create rupantar project\n")
+        logger.exception("Error: Failed to initialize rupantar project\n")
