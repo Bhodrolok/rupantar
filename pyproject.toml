@@ -1,25 +1,42 @@
-
-[project]
+[tool.poetry]
 name = "rupantar"
 version = "0.6.0"
 description = "Simple hackable static website generator with a focus on minimalism"
-authors = [
-    {name = "Bhodrolok", email = "korbolorbo1214@proton.me"},
-]
-dependencies = [
-    "pyyaml",
-    "jinja2",
-    "markdown2",
-]
-requires-python = ">=3.11"
+authors = ["bhodrolok <korbolorbo1214@proton.me>"]
+license = "MIT"
 readme = "README.md"
-license = {text = "MIT"}
+repository = "https://github.com/bhodrolok/rupantar"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: Unix",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Internet",
+    "Topic :: Terminals"
+    ]
+    
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/python-poetry/poetry/issues"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+jinja2 = "^3.1.2"
+pyyaml = "^6.0.1"
+markdown2 = "^2.4.10"
+xdg-base-dirs = "^6.0.1"
+tomli = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-[tool.pdm.dev-dependencies]
-test = [
-    "pytest>=7.4.0",
-]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

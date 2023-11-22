@@ -6,3 +6,5 @@ dist
 logs
 # https://pdm.fming.dev/latest/usage/project/#working-with-version-control
 .pdm-python
+test.txt
+temp*
