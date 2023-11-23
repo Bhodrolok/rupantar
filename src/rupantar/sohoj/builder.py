@@ -1,10 +1,17 @@
 from shutil import copytree, rmtree
 from os import path, makedirs, chdir, getcwd
+import sys
 from glob import glob
 import logging
 import yaml
 from jinja2 import Environment, FileSystemLoader
 from markdown2 import markdown
+
+# Python 3.11 and above ships with a TOML library out-of-the-box, use tomli (https://github.com/hukkin/tomli) otherwise
+if sys.version_info <= (3, 10):
+    import tomli as tomllib
+else:
+    import tomllib
 
 logger = logging.getLogger()
 
@@ -14,18 +21,32 @@ class Config:
         # basic constructor for the class for instantiation
         # '_' variable = not intendeded to be used = throwaway value holder (in this case the filename without ext)
         _, extension = path.splitext(config_file_path)
-        if extension == ".yaml" or extension == ".yml":
+
+        # YAML handling
+        if (extension == ".yaml") or (extension == ".yml"):
             try:
                 with open(config_file_path, "r") as yaml_file:
                     config = yaml.safe_load(yaml_file)
-                logger.info("Load configuration data from: %s", config_file_path)
+                logger.info(f"Loaded configuration data from: {config_file_path}")
             except OSError as err:
                 logger.exception(
-                    "Error reading and loading config data from %s: %s",
-                    config_file_path,
-                    str(err),
+                    f"Error reading and loading config data from {config_file_path}: {err}"
                 )
+
         # TODO: Add TOML support
+        # TOML handling
+        elif (extension == ".toml") or (extension == ".tml"):
+            try:
+                # https://github.com/hukkin/tomli#parse-a-toml-file
+                with open(config_file_path, "rb") as toml_file:
+                    config = tomllib.load(toml_file)
+                logger.info(f"Loaded configuration data from: {config_file_path}")
+            except OSError as err:
+                logger.exception(
+                    f"Error reading and loading config data from {config_file_path}: {err}"
+                )
+
+        # Only TOML/YAML file formats supported
         else:
             logger.warning("Config file format: %s is not supported!", extension)
 
@@ -63,6 +84,7 @@ def parse_md(md_file_path):
         logger.debug("Load post's page contents from: %s", md_file_path)
 
         return post_detail, page_contents
+
     except OSError as err:
         logger.exception(
             "Error loading metadata and page contents from %s: %s",
@@ -147,7 +169,7 @@ def build_project(project_folder, config_file_name):
                 )
         return post_file
 
-    # Markdown file to string
+    # Convert given Markdown file to string
     def md_to_str(md_file_path):
         with open(md_file_path) as data:
             return data.read()
@@ -162,6 +184,9 @@ def build_project(project_folder, config_file_name):
         config_file = "config.yml" if (config_file_name is None) else config_file_name
         config_file_path = path.join(config_file)
         project_folder = curr_dir
+        logger.info(
+            f"Config file path: {config_file_path}\nProject folder path: {project_folder}"
+        )
         # New Config object with data loaded from the config file
         config = Config(config_file_path)
         try:
@@ -222,4 +247,6 @@ def build_project(project_folder, config_file_name):
 
     else:
         print("Project built successfully.")
-        logger.info("Project built at: %s", path.join(project_folder, config.home_path))
+        logger.info(
+            f"rupantar Project built at: {path.join(project_folder, config.home_path)}"
+        )

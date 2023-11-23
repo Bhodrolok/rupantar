@@ -354,7 +354,9 @@ def create_project(project_folder, user_choices):
     try:
         # Delete existing folder (https://stackoverflow.com/a/53492792)
         if path.exists(project_folder):
-            logger.warning(f"Existing rupantar project with name: {project_folder} found. Overwriting...")
+            logger.warning(
+                f"Existing rupantar project with name: {project_folder} found. Overwriting..."
+            )
             rmtree(project_folder)
             logger.warning(f"Old {project_folder} removed. Proceeding to start anew...")
         while True:
@@ -370,29 +372,35 @@ def create_project(project_folder, user_choices):
         chdir(project_folder)
         curr_dir = getcwd()
         logger.info(f"cwd is now: {curr_dir}")
+
         # Create directories for storing: Templates, static assets and page data (under contents)
         mkdir("templates")
         mkdir("content")
         mkdir("static")
         mkdir(path.join("content", "notes"))
-        # Generate default config, templates and site contents
+
+        # Generate default config, templates...
         project_folder = curr_dir
         logger.info(f"project_folder = {project_folder}")
         create_config(project_folder, user_choices)
-        #create_templates(project_folder)
+        # create_templates(project_folder)
         create_home_template(project_folder)
         create_note_template(project_folder)
         create_feed_template(project_folder)
 
+        # ... and site contents
         create_static(project_folder)
         # # create_content(project_folder)
         create_header(project_folder)
         create_footer(project_folder)
         create_home(project_folder)
         create_example_blog(project_folder)
+
         # Finish init
         print(f"Project skeleton created at: {path.abspath(project_folder)}")
-        logger.info(f"Project skeleton has been initialized at: {path.abspath(project_folder)}")
+        logger.info(
+            f"Project skeleton has been initialized at: {path.abspath(project_folder)}"
+        )
 
     except OSError:
         logger.exception("Error: Failed to initialize rupantar project\n")

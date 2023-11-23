@@ -8,3 +8,6 @@ logs
 .pdm-python
 test.txt
 temp*
+
+*.sublime*
+*/sublime*/*
