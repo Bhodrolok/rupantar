@@ -17,8 +17,19 @@ logger = logging.getLogger()
 
 
 class Config:
+    """Class to represent a literal Configuration object. Makes loading and managing configuration data, from TOML or YAML files, easier.
+
+    Object instantiation accomplished by the __init__ method.
+
+    Args:
+      config_file_path(str): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
+
+    Raises:
+      OSError: If any error opening or reading the configuration file.
+
+    """
+
     def __init__(self, config_file_path):
-        # basic constructor for the class for instantiation
         # '_' variable = not intendeded to be used = throwaway value holder (in this case the filename without ext)
         _, extension = path.splitext(config_file_path)
 
@@ -33,7 +44,6 @@ class Config:
                     f"Error reading and loading config data from {config_file_path}: {err}"
                 )
 
-        # TODO: Add TOML support
         # TOML handling
         elif (extension == ".toml") or (extension == ".tml"):
             try:
@@ -48,7 +58,7 @@ class Config:
 
         # Only TOML/YAML file formats supported
         else:
-            logger.warning("Config file format: %s is not supported!", extension)
+            logger.warning(f"Config file format: {extension} NOT supported")
 
         # Dynamically set attributes to the instance for each key-value pair in the config file
         if config:
@@ -60,8 +70,26 @@ class Config:
 
 
 def parse_md(md_file_path):
+    """Parse a given Markdown file and extracts it's metadata and contents.
+
+    Metadata = stuff enclosed within the front-matter ('---')
+    Contents = Rest of page contents, for example the actual body of a post
+
+    Returns the metadata, as a dictionary, and the page contents, as a string.
+
+    Args:
+      md_file_path(str): The path to the markdown file
+
+    Returns:
+      tuple: A tuple containing the post's metadata and the page contents
+
+    Raises:
+      OSError: If any error opening or reading the markdown file
+
+    """
     try:
         with open(md_file_path) as infile:
+            logger.debug(f".md file: {md_file_path}")
             yaml_lines, ym_meta, md_contents = [], "", ""
 
             for line in infile:
@@ -76,26 +104,83 @@ def parse_md(md_file_path):
                     # md = rest of page contents outside the --- ---
                     md_contents = "".join(infile)
                     break
-        # Store file 'metadata', inside the front-matter, into post_detail
+        # Store file 'metadata', inside the front-matter, in post_detail
         post_detail = yaml.safe_load(ym_meta)
-        logger.debug("Load post's metadata from: %s", md_file_path)
+        logger.debug(f"Loaded post's metadata from: {md_file_path}")
+        logger.debug(f"Metadata: {post_detail}")
         # strip() to remove leading and trailing whitespace off of contents
         page_contents = md_contents.strip()
-        logger.debug("Load post's page contents from: %s", md_file_path)
+        logger.debug(f"Page contents: {page_contents}")
 
         return post_detail, page_contents
 
     except OSError as err:
         logger.exception(
-            "Error loading metadata and page contents from %s: %s",
-            md_file_path,
-            str(err),
+            f"Error loading metadata and page contents from {md_file_path}: {err}"
         )
 
 
+def md_to_str(md_file_path):
+    """Convert a given Markdown file to plain-text string.
+
+    Args:
+      md_file_path(str): The path to the markdown file
+
+    Returns:
+      string: A string containing the entire contents of the markdown file.
+
+    Raises:
+      OSError: If any error opening or reading the markdown file
+
+    """
+    # Possible TODO: Use a better(?) Markdown library for this
+    try:
+        with open(md_file_path) as md_data:
+            return md_data.read()
+
+    except OSError as err:
+        logger.exception(f"Error reading data from file: {md_file_path} :: {err}")
+
+
 def build_project(project_folder, config_file_name):
-    # Create Page
+    """Build a rupantar project, using an optional config file if provided.
+
+    Generate the actual static site pages using data loaded from the config file.
+    Store the output files in a public/ directory, within the rupantar project folder, ready to serve to clients at a web server.
+    Overwrites existing public/ directory.
+
+    Note:
+        Applies Jinja2 templates in order to generate the static files.
+
+    Args:
+      project_folder: The name of an existing rupantar project.
+      config_file_name(str): The name of the config file to load relevant project-specific configurations. Defaults to 'config.yml' that is created by creator.py when initializing a rupantar project.
+
+    Raises:
+      OSError: If any error opening or writing file
+      FileNotFoundError: Missing rupantar project/config file
+
+    """
+
     def create_page(page_template, post_detail, md, filename):
+        """Create a new HTML page from a given Jinja2 template and markdown content.
+
+        Take a Jinja2 page template, post details, markdown content, and a filename,
+        and create a new page with the given details. The new page will be saved to the same location as the original file.
+
+        Args:
+          page_template(str): The Jinja2 template to use for the new page
+          post_detail(dict): The details of the post to include in the new page
+          md(str): The markdown content to include in the new page
+          filename(str): The name of the file to create
+
+        Returns:
+          str: The name of the new static file
+
+        Raises:
+          OSError: If any error opening or writing file
+
+        """
         just_filename = path.basename(filename)
         post_template = Environment(
             loader=FileSystemLoader(searchpath=project_folder)
@@ -163,20 +248,17 @@ def build_project(project_folder, config_file_name):
                     )
                 )
                 logger.info("Rendering and writing page: %s complete", post_file_new)
+
             except OSError as err:
                 logger.exception(
                     "Error rendering or writing to page %s: %s", post_file_new, str(err)
                 )
-        return post_file
 
-    # Convert given Markdown file to string
-    def md_to_str(md_file_path):
-        with open(md_file_path) as data:
-            return data.read()
+        return post_file
 
     # Program entry
     try:
-        # Change cwd to project folder
+        # Change cwd to the rupantar project folder
         chdir(project_folder)
         curr_dir = getcwd()
         logger.info(f"cwd is now: {curr_dir}")
@@ -196,6 +278,7 @@ def build_project(project_folder, config_file_name):
             home_path_abs = path.join(project_folder, config.home_path)
             # Clear out existing public/ folder
             if path.exists(home_path_abs):
+                logger.warning("Found existing public/ folder. Removing it.")
                 rmtree(home_path_abs)
             # Recreate home path with resource
             copytree(resource_path_abs, home_path_abs)
@@ -219,7 +302,7 @@ def build_project(project_folder, config_file_name):
                 ymd.update({"note": markdown(md)})
                 posts += [ymd]
 
-        # Sort posts based on date in descending order
+        # Sort all blog pages/posts based on date in a descending order
         posts = sorted(posts, key=lambda post: post["date"], reverse=True)
 
         # Create other pages
@@ -242,11 +325,11 @@ def build_project(project_folder, config_file_name):
             project_folder,
         )
 
-    except Exception as err:
+    except OSError as err:
         logger.exception("Error: Failed to read %s: %s", config_file_path, str(err))
 
     else:
-        print("Project built successfully.")
+        print("Project has been built successfully.")
         logger.info(
             f"rupantar Project built at: {path.join(project_folder, config.home_path)}"
         )
