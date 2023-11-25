@@ -1,0 +1,6 @@
+jinja2==3.1.2 ; python_version >= "3.10" and python_version < "4.0"
+markdown2==2.4.10 ; python_version >= "3.10" and python_version < "4"
+markupsafe==2.1.3 ; python_version >= "3.10" and python_version < "4.0"
+pyyaml==6.0.1 ; python_version >= "3.10" and python_version < "4.0"
+tomli==2.0.1 ; python_version >= "3.10" and python_version < "3.11"
+xdg-base-dirs==6.0.1 ; python_version >= "3.10" and python_version < "4.0"
