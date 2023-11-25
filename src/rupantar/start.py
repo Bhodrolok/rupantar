@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
-from sohoj import logger, creator, builder, server, __version__
+from rupantar.sohoj import builder, creator, logger, server
+from rupantar import __version__
 
 
 def main():

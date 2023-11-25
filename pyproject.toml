@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "rupantar"
-version = "0.6.0"
+version = "0.6.1"
 description = "Simple hackable static website generator with a focus on minimalism"
 authors = ["bhodrolok <korbolorbo1214@proton.me>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/bhodrolok/rupantar"
+packages = [{include = "rupantar", from = "src"}]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -24,7 +25,7 @@ classifiers = [
     ]
     
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/python-poetry/poetry/issues"
+"Bug Tracker" = "https://github.com/bhodrolok/rupantar/issues"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -32,14 +33,34 @@ jinja2 = "^3.1.2"
 pyyaml = "^6.0.1"
 markdown2 = "^2.4.10"
 xdg-base-dirs = "^6.0.1"
-tomli = "^2.0.1"
+tomli = { version = "^2.0.1", python = "<3.11" }
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.3"
 
-
 [tool.poetry.group.docu.dependencies]
 pyment = "^0.3.3"
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.12.2"
+black = "^23.11.0"
+ruff = "^0.1.6"
+
+[tool.poetry.scripts]
+rupantar = "src.rupantar.start:main"
+
+[tool.taskipy.settings]
+use_vars = true
+
+[tool.taskipy.variables]
+rup_path = "src/rupantar"
+rup_start_path = "src.rupantar.start"
+
+[tool.taskipy.tasks]
+rupantar = { cmd = "python -m {rup_start_path}", help = "Run rupantar start script as a module" }
+fmt_black = { cmd = "black {rup_path}", help = "PEP-8 compliant formatting!" }
+check_ruff = { cmd = "ruff check {rup_path}", help = "Run ruff as a linter" }
+fmt_ruff = { cmd = "ruff format {rup_path}", help = "Run ruff as a formatter" }
 
 [build-system]
 requires = ["poetry-core"]

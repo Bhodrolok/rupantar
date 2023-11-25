@@ -11,3 +11,6 @@ temp*
 
 *.sublime*
 */sublime*/*
+
+*.html
+*.txt
