@@ -9,12 +9,29 @@ logger = logging.getLogger()
 
 
 def create_config(project_folder, user_choices):
-    # Default name is config.yml + located in root of project folder
+    """Create a configuration file for a rupantar project based on some user input.
+
+    Expects the first param to be a project folder and the second to be a list of user choices.
+    If the user skips providing any choices, default values will be used instead.
+    Using these, a new 'config.yml' file is generated at the root of the rupantar project folder.
+    The configuration file includes settings for the rupantar project (eg: site URL, templates, directories, and any other optional custom configurations).
+
+    Args:
+      project_folder(str): The relative path to the project folder where the configuration file will be created
+      user_choices(list): A list of user choices to set some configuration values
+
+    Raises:
+      OSError: If any error opening or writing to file
+
+    """
+
+    # Define the default values of the choices incase the user skips/provides blank input
     default_conf_values = [
         "yourdomain.tld",
         "Just another little corner on the interwebs.",
         "#",
     ]
+
     # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
     url = (
         user_choices[0]
@@ -36,7 +53,7 @@ def create_config(project_folder, user_choices):
         logger.info(f"config.yml file will be created at: {config_file_path}")
         with open(config_file_path, "w") as conf_file:
             conf_data = f"""# Required
-title : Demo website    # Title in home page
+title : Demo website    # Title in home/landing page
 url : {url}    # Site URL 
 
 # Jinja templates
@@ -61,13 +78,25 @@ desc : {desc}
 mail : some@mail.com
                 """
             conf_file.write(conf_data)
-            logger.warning("Created config.yml at %s", config_file_path)
-    except OSError:
-        logger.exception("Error: Failed to create config.yml\n")
+            logger.info(f"Created config.yml at {config_file_path}")
+    except OSError as err:
+        logger.exception(f"Failed to create config.yml: {err}")
 
 
-# templates
 def create_home_template(project_folder):
+    """Create a home-page/landing-page template HTML file in the templates/ directory of the given rupantar project folder.
+
+    Generate a basic HTML structure for a home page, including placeholders for the title, header,
+    article content, blogposts list, and footer.
+    The generated HTML file is saved to the 'templates' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'templates' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         templates_path = path.join(project_folder, "templates")
         with open(path.join(templates_path, "home_template.html"), "w") as temp_file:
@@ -124,6 +153,19 @@ def create_home_template(project_folder):
 
 
 def create_note_template(project_folder):
+    """Create a generic blog-post template HTML file in the templates/ directory of the given rupantar project folder.
+
+    Generate a basic HTML structure for a blog-post/note page, including placeholders for the title, header,
+    article content, blogposts list, and footer.
+    The generated HTML file is saved to the 'templates' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'templates' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         templates_path = path.join(project_folder, "templates")
         with open(path.join(templates_path, "note_template.html"), "w") as temp_file:
@@ -167,6 +209,15 @@ def create_note_template(project_folder):
 
 
 def create_feed_template(project_folder):
+    """Create a RSS feed template file in the templates/ directory of the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'templates' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         templates_path = path.join(project_folder, "templates")
         with open(path.join(templates_path, "feed_template.xml"), "w") as feed_file:
@@ -208,6 +259,17 @@ def create_feed_template(project_folder):
 
 # content/ data
 def create_header(project_folder):
+    """Create a header markdown file in the content/ directory of the given rupantar project folder.
+
+    Generate a basic markdown structure for a header, including a navigation bar with a link to the homepage.
+    The generated markdown file is saved to the 'content' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'content' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+    """
     try:
         content_path = path.join(project_folder, "content")
         with open(path.join(content_path, "header.md"), "w") as header_file:
@@ -222,6 +284,18 @@ def create_header(project_folder):
 
 
 def create_footer(project_folder):
+    """Create a footer markdown file in the content/ directory of the given rupantar project folder.
+
+    Generate a basic markdown structure for a page's footer, including a mini-navigation 'bar' with links elsewhere.
+    The generated markdown file is saved to the 'content' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'content' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         content_path = path.join(project_folder, "content")
         with open(path.join(content_path, "footer.md"), "w") as footer_file:
@@ -237,6 +311,18 @@ def create_footer(project_folder):
 
 
 def create_home(project_folder):
+    """Create a home/landing page markdown file in the content/ directory of the given rupantar project folder.
+
+    Generate a basic markdown structure for a simple home page, the body of the home page contents so to say.
+    The generated markdown file is saved to the 'content' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'content' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         content_path = path.join(project_folder, "content")
         with open(path.join(content_path, "home.md"), "w") as homepage_file:
@@ -254,6 +340,18 @@ def create_home(project_folder):
 
 
 def create_example_blog(project_folder):
+    """Create a header markdown file in the content/ directory of the given rupantar project folder.
+
+    Generate a basic markdown structure for a header, including a navigation bar with a link to the homepage.
+    The generated markdown file is saved to the 'content' directory in the given rupantar project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'content' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         content_path = path.join(project_folder, "content")
         posts_path = path.join(content_path, "notes")
@@ -285,12 +383,6 @@ date : {t}
 [About Markdown](https://daringfireball.net/projects/markdown/)
 [Markdown syntax guide](/https://www.markdownguide.org/basic-syntax/)
 
-| Syntax      | Description |
-| ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
-
-
 Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             """
             ).format(t=datetime.now().strftime("%Y-%m-%d"))
@@ -300,8 +392,18 @@ Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit am
         logger.exception("Error: Failed to create example_blog.md\n")
 
 
-# static asset(s)
 def create_static(project_folder):
+    """Create a static/ directory at the root of the given rupantar project folder along with a demo CSS for the static pages.
+
+    The CSS is adopted from: https://nih.ar, the creator of pidgeotto, the OG project that rupantar is forked out of.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder where the 'content' directory is located.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         static_path = path.join(project_folder, "static")
         with open(path.join(static_path, "demo.css"), "w") as css_file:
@@ -327,6 +429,23 @@ pre code{background:none}
 
 
 def create_note(project_folder, post_filename, show_home_page=True):
+    """Create a new markdown note file in the notes directory of the given project folder.
+
+    Note:
+        Note = Blog = Post = BlogPost. Puns not fully intended.
+
+    Generate the markdown file with a front-matter header containing page meta-data info like title, subtitle, showInHome flag, and date.
+    The generated markdown file is saved to the 'notes' directory in the 'content' directory of the given project folder.
+
+    Args:
+        project_folder (str): The path to the rupantar project folder, where the 'content' and 'notes' directories are also located.
+        post_filename (str): The name of the markdown file to create.
+        show_home_page (bool, optional): A simple flag to indicate whether the note should be shown on the home page or not. Defaults to True.
+
+    Raises:
+        OSError: If any error opening or writing to the file.
+
+    """
     try:
         if not post_filename.lower().endswith(".md"):
             post_filename += ".md"
@@ -351,10 +470,27 @@ date : {t}
 
 
 def create_project(project_folder, user_choices):
+    """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values.
+
+    Creates the rupantar project skeleton and populates it with some default templates to be used when building the project.
+
+    Note:
+        If an exising rupantar project is found from the relative path at which the script is run, the folder will be overwritten from scratch.
+
+    Args:
+      project_folder: The name of the rupantar project.
+      user_choices: A list with 3 string values to give user some freedom when creating the project and populating the config file.
+
+    Raises:
+        OSError: If any error opening or writing to the file/folder.
+
+    """
     try:
         # Delete existing folder (https://stackoverflow.com/a/53492792)
         if path.exists(project_folder):
-            logger.warning(f"Existing rupantar project with name: {project_folder} found. Overwriting...")
+            logger.warning(
+                f"Existing rupantar project with name: {project_folder} found. Overwriting..."
+            )
             rmtree(project_folder)
             logger.warning(f"Old {project_folder} removed. Proceeding to start anew...")
         while True:
@@ -370,29 +506,35 @@ def create_project(project_folder, user_choices):
         chdir(project_folder)
         curr_dir = getcwd()
         logger.info(f"cwd is now: {curr_dir}")
+
         # Create directories for storing: Templates, static assets and page data (under contents)
         mkdir("templates")
         mkdir("content")
         mkdir("static")
         mkdir(path.join("content", "notes"))
-        # Generate default config, templates and site contents
+
+        # Generate default config, templates...
         project_folder = curr_dir
         logger.info(f"project_folder = {project_folder}")
         create_config(project_folder, user_choices)
-        #create_templates(project_folder)
+        # create_templates(project_folder)
         create_home_template(project_folder)
         create_note_template(project_folder)
         create_feed_template(project_folder)
 
+        # ... and site contents
         create_static(project_folder)
         # # create_content(project_folder)
         create_header(project_folder)
         create_footer(project_folder)
         create_home(project_folder)
         create_example_blog(project_folder)
+
         # Finish init
         print(f"Project skeleton created at: {path.abspath(project_folder)}")
-        logger.info(f"Project skeleton has been initialized at: {path.abspath(project_folder)}")
+        logger.info(
+            f"Project skeleton has been initialized at: {path.abspath(project_folder)}"
+        )
 
     except OSError:
         logger.exception("Error: Failed to initialize rupantar project\n")

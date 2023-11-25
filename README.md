@@ -1,7 +1,7 @@
 <div align="center">
 <h1>
     <a name="readme-top"></a>
-    <img src="./assets/visuals/proj_logo.png" style="background-color:white" width="42px">
+    <img src="./assets/visuals/proj_logo.png" style="background-color:white" width="43px">
     <b> Rupantar </b>
     <p style="font-size: medium">No-frills website generation, powered by Python</p>
 </h1>
@@ -64,10 +64,11 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 
 Rupantar has the following dependencies:
 
-- <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Reading config and setting page metadata
-- <a href="https://pypi.org/project/toml/" target="_blank">TOML</a>:  Reading data for page contents/metadata
+- <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Config and setting page metadata
+- <a href="https://pypi.org/project/tomli/" target="_blank">tomli</a>:  Config and setting page metadata, not required if running Python 3.11 (or above)
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
+- <a href="https://pypi.org/project/xdg-base-dirs/" target="_blank">xdg-base-dirs</a>:  App-runtime data storage location as per XDG Base Dir spec
 
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
@@ -75,13 +76,15 @@ Rupantar has the following dependencies:
 
 <h2 id="install"> Installation :coconut: </h2>
 
-- Ensure [Python](https://www.python.org/downloads/) is installed locally.
-  - **CPython** version compatibility: needs Python interpreter (**version 3.7 or higher**)
+- Rupantar needs [Python](https://www.python.org/downloads/) installed locally.
+  - **CPython** version compatibility: needs Python interpreter (**version 3.10 or higher**)
 
-- Installation from source:
+- `pip`, Python's default package management tool, can be used for either of the methods.
+
+- Installation from **source**:
   - Install [Git](https://git-scm.com/downloads)
   - Clone this [git repository](https://github.com/bhodrolok/rupantar.git)
-  - `cd` into `rupantar` directory
+  - `cd` into the `rupantar` directory
   - ```console
     $ pip install -r requirements
     ``` 
@@ -90,6 +93,7 @@ Rupantar has the following dependencies:
   - ```console
     $ pip install git+https://github.com/bhodrolok/rupantar
     ```
+
 <!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
 
 
@@ -98,81 +102,99 @@ Rupantar has the following dependencies:
 
 <h2 id="usage"> Usage :crab: </h2>
 
+- NB: Rupantar is a pure CLI tool, without any GUI.
+
 To get a comprehensive list of commands and flags:
 ```console
 $ rupantar -h
 ```
 
 
-To initiate a project called `notun`:
+To initiate a project ( say for example `notun`):
 
 ```console
 $ rupantar init notun
 ```
-- NB: You will be asked some generic questions when running this command in order to set up some configuration values. 
-- To avoid this, pass the `-s` or `--skip` flag after `init`
+- NB: Some generic questions will be asked running this command in order to set up some configuration values. 
+- To avoid this, pass the `-s` or `--skip` flag after `init`.
 
-To add a new post/page, lets call it `kagoch`, to `notun`:
+To add a new post/page (say for example `kagoch`, to the existing `notun`):
 
 ```console
 $ rupantar new notun kagoch
 ```
 
-To build the static pages for `notun`:
+To build the static pages (for `notun`):
 
 ```console
 $ rupantar build notun
 ```
 
-To preview the website, you can test it by serving via a local server:
+To preview the website locally:
 
 ```console
 $ rupantar serve notun
 ```
+- Useful for quick and simple testing via a local HTTP web server.
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 
 <h2 id="structure"> Project Structure :fork_and_knife: </h2>
 
-The overall skeleton of the project looks something like this
+The overall skeleton of a fully built & ready-to-serve rupantar project looks something like:
 ```
 rupantar_project/
-    ├── config.yml
-    ├── content/
-    │   ├── header.md
+    ├── config.yml  <-- Config for the page title, CSS file, and other custom config (custom templates, etc.) 
+    ├── content/  <-- Directory to store Markdown files. 
+    │   ├── header.md 
     │   ├── footer.md
     │   ├── home.md
-    │   └── notes/
+    │   └── notes/  <-- Directory to store Markdown files for content of extra pages.
     │       └── example_blog.md
-    └──static/
-    │   └── demo.css
-    ├── public/
-    └── templates/
+    └──static/  <-- Directory to store static content eg: CSS, images, etc.
+    │   └── demo.css  
+    ├── public/   <-- Directory to store generated static files.
+    └── templates/  <-- Directory to store Jinja2 layouts for the pages.
         ├── home_template.html
         ├── note_template.html
         └── feed_template.xml
 ```
 
-* config.yml:	Configurations for the page title, name, CSS file, js file, and other custom configurations such as custom templates.
-* static:	Directory to store static content eg: CSS, js, image data, etc.
-* content:	Directory to store Markdown files. 
-* template:	Directory to store Jinja2 layouts for the pages.
-* public: Directory to store generated static files.
+Rupantar itself is developed with a "src layout" so as to follow a more standardized and organized way of managing everything. To read more about that, click (<a href="#readme-top">here</a>)
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 
-<h2 id="extra"> Configuration :plate_with_cutlery:</h2>
+<h2 id="extra"> Development & Configuration :plate_with_cutlery:</h2>
 
-<p>TODO</p>
+- It is recommended to use [Poetry](https://github.com/python-poetry/poetry) for better dependency management, packaging, and release.
+  - A big reason is the ease in managing virtual environments. 
+  - Why consider `venvs` in the first place? Well you get an isolated environment, better reproducibility, better dependency management, and (most importantly!) minimize risk of any conflicts with other existing Python projects/dependencies locally on the system. Especially if they were installed globally system-wide using `pip`. 
+  - Just overall makes the development process more smoother.
+
+- After forking and cloning the repository:
+  - Navigate to the cloned project directory.
+  - Install **all** the dependencies, including the optional ones:
+    ```console
+    $ poetry install --with=dev,test,docu
+    ```
+  - Activate a virtual env:
+    ```console
+    $ poetry shell
+    ```
+  - Run rupantar:
+    ```console
+    $ python src/rupantar/start.py -h
+    ```
+
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 
 <h2 id="contributing">Contributing :scroll: </h2>
 
-This is an open source project. Suggestions, bug fixes, documentation improvements, translations, etc. are welcome through Pull Requests and Issues.
+This is an open source project. Suggestions, bug fixes, documentation improvements, etc. are welcome through [Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and [Issues](https://github.com/Bhodrolok/rupantar/issues).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
