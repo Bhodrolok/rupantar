@@ -8,6 +8,7 @@
 
 <div align="center">
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e9466c9451174ae9a82d2941941d37e9)](https://app.codacy.com/gh/Bhodrolok/rupantar?utm_source=github.com&utm_medium=referral&utm_content=Bhodrolok/rupantar&utm_campaign=Badge_Grade)
 [![GitHub issues](https://img.shields.io/github/issues-raw/bhodrolok/rupantar?color=blue&style=plastic)](https://github.com/Bhodrolok/rupantar/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/bhodrolok/rupantar)](https://github.com/Bhodrolok/rupantar/issues?q=is%3Aissue+is%3Aclosed)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
