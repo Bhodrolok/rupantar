@@ -53,28 +53,28 @@ def create_config(project_folder, user_choices):
         logger.info(f"config.yml file will be created at: {config_file_path}")
         with open(config_file_path, "w") as conf_file:
             conf_data = f"""# Required
-title : Demo website    # Title in home/landing page
+title : Demo website    # Title in home/landing page (NOT the Page Title!)
 url : {url}    # Site URL 
 
 # Jinja templates
-note_template : templates/note_template.html    # Template of note page
-home_template : templates/home_template.html    # Template of home page
-feed_template : templates/feed_template.xml     # Template of feed/RSS page
+note_template : templates/note_template.html.jinja    # Blog posts i.e. notes page
+home_template : templates/home_template.html.jinja    # Home page
+feed_template : templates/feed_template.xml.jinja     # RSS feed
 {custom_needed}custom_templates: 
 
 # Directories
-home_path : public      # Generated static files, served from here
+home_path : public      # Generated static files (served from here)
 content_path : content  # Markdown files (define page contents and front-matter metadata)
-resource_path : static  # Static assets (css, js, image, etc.) 
+resource_path : static  # Static assets (css, images, favicons, etc.) 
 
-home_md : content/home.md       # Home page stuff
-header_md : content/header.md   # Header 
+home_md : content/home.md       # Home page body
+header_md : content/header.md   # Header
 footer_md : content/footer.md   # Footer 
 
-# Optional (Add custom configs here)
-site-title : Demo Site Title!                     
-css : demo.css 
-desc : {desc}
+# Optional (Custom configs included here)
+site-title : Demo Page Title                     
+css : demo.css
+desc : {desc}   # page description
 mail : some@mail.com
                 """
             conf_file.write(conf_data)
@@ -99,16 +99,17 @@ def create_home_template(project_folder):
     """
     try:
         templates_path = path.join(project_folder, "templates")
-        with open(path.join(templates_path, "home_template.html"), "w") as temp_file:
+        with open(
+            path.join(templates_path, "home_template.html.jinja"), "w"
+        ) as temp_file:
             temp_data = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <title>{{ config.get('site-title') }}</title>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content=" {{ config.get('desc') }}">
-    <!--<link rel="shortcut icon" href="{{ config.get('fav') }}" />-->
+    <link rel="icon" href="{{ config.get('fav') }}" />
     <link rel="alternate" type="application/atom+xml" title="Recent blog posts" href="/rss.xml">
     <link rel="stylesheet" type="text/css" media="screen" href="{{ config.get('css') }}" />
 </head>
@@ -144,8 +145,7 @@ def create_home_template(project_folder):
     {{ footer | safe}}
     </footer>
 </body>
-</html>
-            """
+</html>"""
             temp_file.write(temp_data)
             logger.info("Created home_template.html at %s", templates_path)
     except OSError:
@@ -168,7 +168,9 @@ def create_note_template(project_folder):
     """
     try:
         templates_path = path.join(project_folder, "templates")
-        with open(path.join(templates_path, "note_template.html"), "w") as temp_file:
+        with open(
+            path.join(templates_path, "note_template.html.jinja"), "w"
+        ) as temp_file:
             temp_data = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -177,6 +179,7 @@ def create_note_template(project_folder):
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content=" {{ post_subtitle }}">
+    <link rel="icon" href="{{ config.get('fav') }}" />
     <meta property="og:type" content="article" >
     <meta property="og:url" content="{{ url }}" >
     <meta property="article:modified_time" content="{{ date.strftime('%Y-%m-%d') }}" >
@@ -200,8 +203,7 @@ def create_note_template(project_folder):
     {{ footer | safe }}
     </footer>
 </body>
-</html>
-                """
+</html>"""
             temp_file.write(temp_data)
             logger.info("Created note_template.html at %s", templates_path)
     except OSError:
@@ -251,7 +253,7 @@ def create_feed_template(project_folder):
 {% endif %}{% endfor %}
 </channel>"""
             feed_file.write(feed_data)
-            logger.info("Created feed_templat.xml at %s", templates_path)
+            logger.info("Created feed_template.xml at %s", templates_path)
 
     except OSError:
         logger.exception("Error: Failed to create feed_template.xml\n")
