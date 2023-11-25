@@ -4,7 +4,7 @@ import sys
 from glob import glob
 import logging
 import yaml
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
 
 # Python 3.11 and above ships with a TOML library out-of-the-box, use tomli (https://github.com/hukkin/tomli) otherwise
@@ -183,7 +183,8 @@ def build_project(project_folder, config_file_name):
         """
         just_filename = path.basename(filename)
         post_template = Environment(
-            loader=FileSystemLoader(searchpath=project_folder)
+            loader=FileSystemLoader(searchpath=project_folder),
+            autoescape=select_autoescape(["html", "htm", "xml"]),
         ).get_template(page_template)
         post_title = config.title
         post_date = (

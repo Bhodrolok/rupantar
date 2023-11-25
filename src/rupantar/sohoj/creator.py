@@ -116,12 +116,12 @@ def create_home_template(project_folder):
 <body>
     <header>
     <h1><a href="/">{% filter lower %} {{ title }} {% endfilter %}</a></h1>
-    {{ header }}
+    {{ header | safe }}
     </header>
 
     <section>
     <!-- article = markdown contents beyond the '---title=...etc.---' -->
-    {{article}}
+    {{article | safe}}
     <ul>
     {% for post in posts %}
     {% if (post.showInHome is undefined) or post.showInHome %}
@@ -141,7 +141,7 @@ def create_home_template(project_folder):
     </section>
     -->
     <footer>
-    {{ footer }}
+    {{ footer | safe}}
     </footer>
 </body>
 </html>
@@ -191,13 +191,13 @@ def create_note_template(project_folder):
     <h1>{{ post_title }} </h1>  
     </header>
     <article>
-    {{ article }}
+    {{ article | safe }}
     {% if date %} 
     <p># Last updated on <time>{{ date.strftime('%d %b %Y') }}.</time></p>
     {% endif %}
     </article>
     <footer>
-    {{ footer }}
+    {{ footer | safe }}
     </footer>
 </body>
 </html>
@@ -463,7 +463,12 @@ date : {t}
             """
             ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
             f.write(conf_data)
-            logger.info(post_filename + " is created at content/note/" + post_filename)
+            print(
+                f"Created new page {post_filename} Edit it at: {path.abspath(post_filename)}"
+            )
+            logger.info(
+                f"Created new page/post: {post_filename} at: {path.abspath(post_filename)}"
+            )
 
     except OSError:
         logger.exception("Error: Failed to create %s", post_filename)
