@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rupantar"
-version = "0.6.2"
+version = "0.7.0"
 description = "Simple hackable static website generator with a focus on minimalism"
 authors = ["bhodrolok <korbolorbo1214@proton.me>"]
 license = "MIT"
@@ -52,12 +52,23 @@ use_vars = true
 [tool.taskipy.variables]
 rup_path = "src/rupantar"
 rup_start_path = "src.rupantar.start"
+rup_script = { var = "python -m {rup_start_path}", recursive = true }
+
 
 [tool.taskipy.tasks]
-rupantar = { cmd = "python -m {rup_start_path}", help = "Run rupantar start script as a module" }
-fmt_black = { cmd = "black {rup_path}", help = "PEP-8 compliant formatting!" }
+rupantar = { cmd = "{rup_script}", help = "Run rupantar start script as a module. Works as you'd expect..." }
+init = { cmd = "{rup_script} init -s hello", help = "Init. a default rupantar project, resulting dir is 'hello'" }
+just_work = { cmd = "{rup_script} init -s hello", help = "Initialize default rupantar project, build it, and serve it at port 12345." }
+post_just_work = "task build"
+build = { cmd = "{rup_script} build hello", help = "Build an existing rupantar project ('hello')!" }
+post_build = "task serve"
+serve = {cmd = "{rup_script} serve -p 12345 hello", help = "Serve an existing built rupantar project at port 12345 ('hello')!" }
+
+fmt_black = { cmd = "black {rup_path}", help = "PEP-8 compliant formatting" }
 check_ruff = { cmd = "ruff check {rup_path}", help = "Run ruff as a linter" }
 fmt_ruff = { cmd = "ruff format {rup_path}", help = "Run ruff as a formatter" }
+
+lint_check = "task fmt_black && task check_ruff && task fmt_ruff"
 
 [build-system]
 requires = ["poetry-core"]
