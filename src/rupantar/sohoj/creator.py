@@ -1,11 +1,12 @@
 from os import chdir, mkdir, path, getcwd
 from shutil import rmtree
 from datetime import datetime
-import logging
+from logging import getLogger
+from rupantar.sohoj.utils import get_func_exec_time
 
 # Use root logger = same instance from start.py [ https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial ]
 # 'Child loggers propagate messages up to the handlers associated with their ancestor loggers.'
-logger = logging.getLogger()
+logger = getLogger()
 
 
 def create_config(project_folder, user_choices):
@@ -211,7 +212,11 @@ def create_note_template(project_folder):
 
 
 def create_feed_template(project_folder):
-    """Create a RSS feed template file in the templates/ directory of the given rupantar project folder.
+    """Create a Really Simple Syndication feed template file in the templates/ directory of the given rupantar project folder.
+
+    Note:
+        Good RSS reference: https://www.w3schools.com/xml/xml_rss.asp
+        RSS XML elements reference: https://www.w3schools.com/xml/xml_rss.asp#rssref
 
     Args:
         project_folder (str): The path to the rupantar project folder where the 'templates' directory is located.
@@ -222,38 +227,39 @@ def create_feed_template(project_folder):
     """
     try:
         templates_path = path.join(project_folder, "templates")
-        with open(path.join(templates_path, "feed_template.xml"), "w") as feed_file:
+        with open(
+            path.join(templates_path, "feed_template.xml.jinja"), "w"
+        ) as feed_file:
             feed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 
 <channel>
-<title>{{title}}</title>
+
+<title>{{ title }}</title>
 <atom:link href="{{ url }}" rel="self" type="application/rss+xml" />
 <link>{{ url }}</link>
 <description>{{ subtitle }}</description>
-<lastBuildDate>{{ last_date.strftime('%a, %d %b %Y %H:%M:%S GMT') }}</lastBuildDate>
-<language>en-IN</language>
+<!-- Required channel child elements defined -->
 
-<image>
-<url>{{ config.get('url') }}/{{ config.get('pht') }}</url>
-<title>{{ title }}</title>
-<link>{{ url }}</link>
-<width>32</width>
-<height>32</height>
-</image>
+<lastBuildDate>{{ last_date.strftime('%a, %d %b %Y %H:%M:%S') }}</lastBuildDate>
+<language>en-ca</language>
 
+<!-- Link to other blog posts -->
 {% for post in posts %}{% if (post.showInHome is undefined) or post.showInHome %}
 <item>
 <title>{{ post.title }}</title>
 <link>{{ config.get('url') }}{{ post.url }}</link>
-<pubDate>{{ post.date.strftime('%a, %d %b %Y %H:%M:%S GMT') }}</pubDate>
+<pubDate>{{ post.date.strftime('%a, %d %b %Y %H:%M:%S') }}</pubDate>
 <guid isPermaLink="false">{{ config.get('url') }}{{ post.url }}</guid>
-            <description><![CDATA[{{ post.subtitle }} - {{ post.note }} ]]></description>
+<description><![CDATA[{{ post.subtitle }} - {{ post.note }} ]]></description>
 </item>
-{% endif %}{% endfor %}
-</channel>"""
+{% endif %}
+{% endfor %}
+</channel>
+
+</rss>"""
             feed_file.write(feed_data)
-            logger.info("Created feed_template.xml at %s", templates_path)
+            logger.info("Created feed_template.xml.jinja at  %s", templates_path)
 
     except OSError:
         logger.exception("Error: Failed to create feed_template.xml\n")
@@ -385,8 +391,7 @@ date : {t}
 [About Markdown](https://daringfireball.net/projects/markdown/)
 [Markdown syntax guide](/https://www.markdownguide.org/basic-syntax/)
 
-Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            """
+Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."""
             ).format(t=datetime.now().strftime("%Y-%m-%d"))
             post_file.write(post_data)
             logger.info("Created example_blog.md at %s", posts_path)
@@ -476,6 +481,7 @@ date : {t}
         logger.exception("Error: Failed to create %s", post_filename)
 
 
+@get_func_exec_time
 def create_project(project_folder, user_choices):
     """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values.
 

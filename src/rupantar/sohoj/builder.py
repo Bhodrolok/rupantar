@@ -1,20 +1,22 @@
 from shutil import copytree, rmtree
 from os import path, makedirs, chdir, getcwd
 from glob import glob
-import logging
+from logging import getLogger
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
 from rupantar.sohoj.configger import Config
+from rupantar.sohoj.utils import get_func_exec_time
 
-logger = logging.getLogger()
+logger = getLogger()
 
 
+# @get_func_exec_time
 def parse_md(md_file_path):
     """Parse a given Markdown file and extracts it's metadata and contents.
 
     Metadata = stuff enclosed within the front-matter ('---')
-    Contents = Rest of page contents, for example the actual body of a post
+    Contents = Rest of the page contents, outside the front-matter
 
     Returns the metadata, as a dictionary, and the page contents, as a string.
 
@@ -40,9 +42,9 @@ def parse_md(md_file_path):
                             break
                         else:
                             yaml_lines.append(line)
-                    # ym = 'metadata' so stuff inside the --- ---
+                    # ym_meta = 'metadata' so stuff inside the --- ---
                     ym_meta = "".join(yaml_lines)
-                    # md = rest of page contents outside the --- ---
+                    # md_contents = rest of page contents outside the --- ---
                     md_contents = "".join(infile)
                     break
         # Store file 'metadata', inside the front-matter, in post_detail
@@ -61,6 +63,7 @@ def parse_md(md_file_path):
         )
 
 
+# @get_func_exec_time
 def md_to_str(md_file_path):
     """Convert a given Markdown file to plain-text string.
 
@@ -83,6 +86,7 @@ def md_to_str(md_file_path):
         logger.exception(f"Error reading data from file: {md_file_path} :: {err}")
 
 
+@get_func_exec_time
 def build_project(project_folder, config_file_name):
     """Build a rupantar project, using an optional config file if provided.
 
@@ -103,6 +107,7 @@ def build_project(project_folder, config_file_name):
 
     """
 
+    # @get_func_exec_time
     def create_page(page_template, post_detail, md, filename):
         """Create a new HTML page from a given Jinja2 template and markdown content.
 
@@ -227,13 +232,13 @@ def build_project(project_folder, config_file_name):
             copytree(resource_path_abs, home_path_abs)
             logger.info("Finish copying: %s to %s", resource_path_abs, home_path_abs)
         except OSError as err:
-            logger.info("Error: %s", str(err))
+            logger.exception("Error: %s", str(err))
 
         # Create pages from content/notes/ all markdown files here...
         posts = []
         notes_path = path.join(config.content_path, "notes")
         for each_note_md in glob(path.join(notes_path, "*.md")):
-            logger.debug(each_note_md)
+            logger.debug(f"Creating page using: {each_note_md}")
             post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if post_detail is not None:
@@ -248,16 +253,18 @@ def build_project(project_folder, config_file_name):
         # Sort all blog pages/posts based on date in a descending order
         posts = sorted(posts, key=lambda post: post["date"], reverse=True)
 
-        # Create other pages
+        # Create other pages using data in content/ (outside content/notes/)
         try:
             # home/
-            create_page(
+            home_page = create_page(
                 config.home_template, None, md_to_str(config.home_md), "index.html"
             )
-            # RSS
-            create_page(
+            logger.info(f"Home page created at:  {home_page}")
+            # RSS feed
+            rss_feed = create_page(
                 config.feed_template, None, md_to_str(config.home_md), "rss.xml"
             )
+            logger.info(f"RSS feed created at:  {rss_feed}")
         except Exception as err:
             logger.exception("Error creating other pages: %s", str(err))
 
@@ -272,7 +279,7 @@ def build_project(project_folder, config_file_name):
         logger.exception("Error: Failed to read %s: %s", config_file_path, str(err))
 
     else:
-        print("Project has been built successfully.")
+        print(f"Project built successfully.")
         logger.info(
             f"rupantar Project built at: {path.join(project_folder, config.home_path)}"
         )

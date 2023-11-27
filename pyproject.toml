@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rupantar"
-version = "0.7.0"
+version = "0.7.1"
 description = "Simple hackable static website generator with a focus on minimalism"
 authors = ["bhodrolok <korbolorbo1214@proton.me>"]
 license = "MIT"
@@ -42,6 +42,7 @@ pyment = "^0.3.3"
 taskipy = "^1.12.2"
 black = "^23.11.0"
 ruff = "^0.1.6"
+# watchfiles = "^0.21.0"
 
 [tool.poetry.scripts]
 rupantar = "src.rupantar.start:main"

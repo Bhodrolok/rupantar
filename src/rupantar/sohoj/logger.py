@@ -9,7 +9,8 @@ to both the console and/or a log file. The log file is created in the applicatio
 """
 
 
-import logging
+# import logging
+from logging import StreamHandler, getLogger, FileHandler, Formatter
 from os import path, mkdir
 from datetime import datetime
 from xdg_base_dirs import xdg_data_home
@@ -62,22 +63,23 @@ def setup_logging(loglevel):
     # https://sematext.com/blog/python-logging/#basic-logging-configuration
     log_format_string_default = "%(asctime)s | [%(levelname)s] @ %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) => %(message)s"
     # logging.basicConfig(level=loglevel, format=log_formatter) # init root logger
-    logger = logging.getLogger()  # root logger
+    logger = getLogger()  # root logger
     logger.setLevel(loglevel)
 
     # Set handler for destination of logs, default to sys.stderr
     # Log destination = console
-    logs_console_handler = logging.StreamHandler()
+    logs_console_handler = StreamHandler()
     logs_console_handler.setLevel(loglevel)
+    logs_console_handler.setFormatter(Formatter(log_format_string_default))
     # logger.addHandler(logs_console_handler)
 
     # Log destination = file
     log_filename = "rupantar-" + datetime.now().strftime("%H-%M-%S_%p") + ".log"
     # log_filename = f"rupantar-{datetime.datetime.now():%H-%M-%S_%p}.log"
     log_filepath = path.join(rupantar_logs_dir, log_filename)
-    logs_file_handler = logging.FileHandler(filename=log_filepath)
+    logs_file_handler = FileHandler(filename=log_filepath)
     # Create formatter object
-    file_handler_format = logging.Formatter(log_format_string_default)
+    file_handler_format = Formatter(log_format_string_default)
     logs_file_handler.setFormatter(file_handler_format)
     logs_file_handler.setLevel(loglevel)
     # Assign handler to root logger

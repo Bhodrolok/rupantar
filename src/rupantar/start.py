@@ -22,72 +22,79 @@ def main():
     )
     # as
     parser_init = subparsers.add_parser(
-        "init", help="Create new rupantar project skeleton at provided directory."
+        "init", help="Create a new rupantar project at the given directory."
     )
-    parser_init.add_argument("mool", help="Name of project. Path relative to cwd.")
+    parser_init.add_argument(
+        "mool",
+        help="Name of project. A new directory with this name will be created in the current directory. ",
+    )
     parser_init.add_argument(
         "-s",
         "--skip",
         action="store_true",
-        help="Skip prompts for choosing some config values. Can be updated by editing config.yml at project directory.",
+        help="Skip the prompts for selecting some config values. Can be updated by editing `config.yml` in the project directory.",
     )
 
     parser_new = subparsers.add_parser(
         "new",
-        help="Create new post at provided rupantar project's content/note directory.",
+        help="Create a new blog post at the given rupantar project's content/notes directory.",
     )
     parser_new.add_argument(
-        "mool", help="Name of project directory. Path relative to cwd."
+        "mool",
+        help="Name of rupantar project. Path is relative to the current directory.",
     )
-    parser_new.add_argument("name", help="Filename of post without extension.")
+    parser_new.add_argument("name", help="New blog post filename (without extension).")
     parser_new.add_argument(
         "-sh",
         dest="show_home",
-        help="If the post is to be shown in home page. Default True.",
+        help="If the post is to be shown in the home page. Default True.",
         type=lambda x: x == "True",
     )
 
     parser_build = subparsers.add_parser(
         "build",
-        help="Build rupantar project, generate static pages. Deletes pre-existing output directory and creates a new one.",
+        help="Build a rupantar project, generate the static pages. Deletes pre-existing output directory and creates a new one.",
     )
     parser_build.add_argument(
-        "mool", help="Name of project directory. Path relative to cwd."
+        "mool",
+        help="Name of project directory. Path is relative to the current directory.",
     )
     parser_build.add_argument(
         "-c",
         "--config",
         nargs="?",
-        help="Name of config file to use. Path relative to project directory. Default config.yml",
+        help="Name of the config file to use. Path to this file is relative to the project directory. Default `config.yml`",
     )
 
     parser_serve = subparsers.add_parser(
-        "serve", help="Start a local server for serving and previewing generated pages."
+        "serve",
+        help="Start a local web server for serving and previewing generated pages.",
     )
     parser_serve.add_argument(
-        "mool", help="Name of project directory. Path relative to cwd."
+        "mool",
+        help="Name of rupantar project. Path to this project is relative to the current directory.",
     )
     parser_serve.add_argument(
         "-c",
         "--config",
         nargs="?",
-        help="Name of config file to use. Path relative to project directory. Default config.yml",
+        help="Name of the config file to use. Path to this file is relative to the project directory. Default `config.yml`",
     )
     parser_serve.add_argument(
         "-p",
         "--port",
-        help="Network port where the server will listen for requests. Default random ephemeral port.",
+        help="Network port where the server will listen for requests. Default random ephemeral port (between 49152 and 65535).",
         type=int,
     )
     parser_serve.add_argument(
         "-i",
         "--interface",
-        help="Network interface to bind the server to. Default localhost/loopback interface.",
+        help="Network interface to bind the server to. Default localhost/loopback interface (127.0.0.1).",
     )
 
     args = parser.parse_args()
 
-    # Configure logging
+    # Configure logging, log level based on input
     logger.setup_logging(args.loglevel)
 
     if args.type == "init" and args.mool:
