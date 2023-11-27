@@ -5,7 +5,7 @@ from os import path, chdir, getcwd
 from random import randint
 from ipaddress import ip_address
 from logging import getLogger
-
+import webbrowser as wb
 from rupantar.sohoj.configger import Config
 
 logger = getLogger()
@@ -36,7 +36,11 @@ def validate_network_address(interface_address: str):
 
 
 def start_server(
-    project_folder: str, config_file_name: str, port: int, interface_address: str
+    project_folder: str,
+    config_file_name: str,
+    port: int,
+    interface_address: str,
+    openURL=False,
 ):
     """Start a basic HTTP server to serve the static files of a existing rupantar project.
 
@@ -93,6 +97,12 @@ def start_server(
                 # Allow immediate socket re-use
                 httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
                 print(f"Web server available at: {serving_url}")
+                # If ran with `-O/--open`, open the URL in a new tab of the default browser
+                # https://docs.python.org/3/library/webbrowser.html#webbrowser.open_new_tab
+                if openURL:
+                    browser = wb.get()
+                    logger.debug(f"Using system default web browser: {str(browser)}")
+                    browser.open_new_tab(serving_url)
                 httpd.serve_forever()
         except KeyboardInterrupt:
             print("Stopping server...")

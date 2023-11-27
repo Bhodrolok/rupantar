@@ -15,12 +15,11 @@ def main():
         dest="loglevel",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="INFO",
-        help="Set logging level to control verbosity. Default INFO",
+        help="Set logging level to control verbosity of log messages. Default INFO",
     )
     subparsers = parser.add_subparsers(
         dest="type", help="Supported commands", required=True
     )
-    # as
     parser_init = subparsers.add_parser(
         "init", help="Create a new rupantar project at the given directory."
     )
@@ -47,7 +46,7 @@ def main():
     parser_new.add_argument(
         "-sh",
         dest="show_home",
-        help="If the post is to be shown in the home page. Default True.",
+        help="If the post is to be shown in home page. Default True.",
         type=lambda x: x == "True",
     )
 
@@ -57,7 +56,7 @@ def main():
     )
     parser_build.add_argument(
         "mool",
-        help="Name of project directory. Path is relative to the current directory.",
+        help="Name of rupantar project. Path is relative to the current directory.",
     )
     parser_build.add_argument(
         "-c",
@@ -90,6 +89,12 @@ def main():
         "-i",
         "--interface",
         help="Network interface to bind the server to. Default localhost/loopback interface (127.0.0.1).",
+    )
+    parser_serve.add_argument(
+        "-O",
+        "--open",
+        action="store_true",
+        help="Open the generated site using the default browser. Tries to do so in a new tab.",
     )
 
     args = parser.parse_args()
@@ -124,7 +129,9 @@ def main():
     elif args.type == "build" and args.mool:
         builder.build_project(args.mool, args.config)
     elif args.type == "serve" and args.mool:
-        server.start_server(args.mool, args.config, args.port, args.interface)
+        server.start_server(
+            args.mool, args.config, args.port, args.interface, args.open
+        )
     else:
         parser.print_help()
 
