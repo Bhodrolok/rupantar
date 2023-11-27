@@ -25,7 +25,7 @@ def main():
     )
     parser_init.add_argument(
         "mool",
-        help="Name of project. A new directory with this name will be created in the current directory. ",
+        help="Name of project. A new (sub-)directory with this name will be created in the current directory. ",
     )
     parser_init.add_argument(
         "-s",
@@ -45,9 +45,10 @@ def main():
     parser_new.add_argument("name", help="New blog post filename (without extension).")
     parser_new.add_argument(
         "-sh",
+        "--show-home",
         dest="show_home",
-        help="If the post is to be shown in home page. Default True.",
-        type=lambda x: x == "True",
+        action="store_true",
+        help="If the post is to be shown in the home page. Default True.",
     )
 
     parser_build = subparsers.add_parser(
