@@ -435,7 +435,7 @@ pre code{background:none}
         logger.exception("Error: Failed to create demo.css\n")
 
 
-def create_note(project_folder, post_filename, show_home_page=True):
+def create_note(project_folder, post_filename, show_in_home=False):
     """Create a new markdown note file in the notes directory of the given project folder.
 
     Note:
@@ -447,7 +447,7 @@ def create_note(project_folder, post_filename, show_home_page=True):
     Args:
         project_folder (str): The path to the rupantar project folder, where the 'content' and 'notes' directories are also located.
         post_filename (str): The name of the markdown file to create.
-        show_home_page (bool, optional): A simple flag to indicate whether the note should be shown on the home page or not. Defaults to True.
+        show_in_home (bool, optional): Flag to indicate whether the new note should be shown on the home page or not. Defaults to False.
 
     Raises:
         OSError: If any error opening or writing to the file.
@@ -468,7 +468,7 @@ showInHome : {s}
 date : {t}
 ---
             """
-            ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_home_page)
+            ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_in_home)
             f.write(conf_data)
             print(
                 f"Created new page {post_filename} Edit it at: {path.abspath(post_filename)}"

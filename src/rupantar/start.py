@@ -48,7 +48,7 @@ def main():
         "--show-home",
         dest="show_home",
         action="store_true",
-        help="If the post is to be shown in the home page. Default True.",
+        help="If the post is to be shown in the home page.",
     )
 
     parser_build = subparsers.add_parser(
