@@ -1,14 +1,17 @@
-import yaml
-from os import path
-import logging
-import sys
+from sys import version_info
 
-logger = logging.getLogger()
 # Python 3.11 and above ships with a TOML library out-of-the-box, use tomli (https://github.com/hukkin/tomli) otherwise
-if sys.version_info <= (3, 10):
+if version_info <= (3, 10):
     import tomli as tomllib
 else:
     import tomllib
+from typing import Union
+from yaml import safe_load
+from pathlib import Path
+from logging import getLogger
+
+
+logger = getLogger()
 
 
 class Config:
@@ -17,22 +20,20 @@ class Config:
     Object instantiation accomplished by the __init__ method.
 
     Args:
-      config_file_path(str): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
+      config_file_path(str or Path): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
 
     Raises:
       OSError: If any error opening or reading the configuration file.
 
     """
 
-    def __init__(self, config_file_path):
-        # '_' variable = not intendeded to be used = throwaway value holder (in this case the filename without ext)
-        _, extension = path.splitext(config_file_path)
-
+    def __init__(self, config_file_path: Union[Path, str]) -> None:
+        config_file_extension = Path(config_file_path).resolve().suffix
         # YAML handling
-        if (extension == ".yaml") or (extension == ".yml"):
+        if config_file_extension in {".yaml", ".yml"}:
             try:
                 with open(config_file_path, "r") as yaml_file:
-                    config = yaml.safe_load(yaml_file)
+                    config = safe_load(yaml_file)
                 logger.info(f"Loaded configuration data from: {config_file_path}")
             except OSError as err:
                 logger.exception(
@@ -40,7 +41,7 @@ class Config:
                 )
 
         # TOML handling
-        elif (extension == ".toml") or (extension == ".tml"):
+        elif config_file_extension in {".toml", ".tml"}:
             try:
                 # https://github.com/hukkin/tomli#parse-a-toml-file
                 with open(config_file_path, "rb") as toml_file:
@@ -53,7 +54,7 @@ class Config:
 
         # Only TOML/YAML file formats supported
         else:
-            logger.warning(f"Config file format: {extension} NOT supported")
+            logger.warning(f"Config file format: {config_file_extension} NOT supported")
 
         # Dynamically set attributes to the instance for each key-value pair in the config file
         if config:

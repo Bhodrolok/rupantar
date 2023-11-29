@@ -1,8 +1,10 @@
 from shutil import copytree, rmtree
-from os import path, makedirs, chdir, getcwd
-from glob import glob
+from os import makedirs
+from pathlib import Path
 from logging import getLogger
-import yaml
+
+# from typing import Union
+from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
 from rupantar.sohoj.configger import Config
@@ -11,8 +13,8 @@ from rupantar.sohoj.utils import get_func_exec_time
 logger = getLogger()
 
 
-# @get_func_exec_time
-def parse_md(md_file_path):
+@get_func_exec_time
+def parse_md(md_file_path: str) -> tuple[str, str]:
     """Parse a given Markdown file and extracts it's metadata and contents.
 
     Metadata = stuff enclosed within the front-matter ('---')
@@ -31,8 +33,9 @@ def parse_md(md_file_path):
 
     """
     try:
-        with open(md_file_path) as infile:
-            logger.debug(f".md file: {md_file_path}")
+        md_path = Path(md_file_path).resolve()
+        with open(md_path) as infile:
+            logger.info(f"Parsing file: {md_file_path}")
             yaml_lines, ym_meta, md_contents = [], "", ""
 
             for line in infile:
@@ -48,8 +51,7 @@ def parse_md(md_file_path):
                     md_contents = "".join(infile)
                     break
         # Store file 'metadata', inside the front-matter, in post_detail
-        post_detail = yaml.safe_load(ym_meta)
-        logger.debug(f"Loaded post's metadata from: {md_file_path}")
+        post_detail = safe_load(ym_meta)
         logger.debug(f"Metadata: {post_detail}")
         # strip() to remove leading and trailing whitespace off of contents
         page_contents = md_contents.strip()
@@ -59,12 +61,12 @@ def parse_md(md_file_path):
 
     except OSError as err:
         logger.exception(
-            f"Error loading metadata and page contents from {md_file_path}: {err}"
+            f"Error loading metadata and page contents from {md_file_path}\n {err}"
         )
 
 
-# @get_func_exec_time
-def md_to_str(md_file_path):
+@get_func_exec_time
+def md_to_str(md_file_path: str) -> str:
     """Convert a given Markdown file to plain-text string.
 
     Args:
@@ -79,7 +81,9 @@ def md_to_str(md_file_path):
     """
     # Possible TODO: Use a better(?) Markdown library for this
     try:
-        with open(md_file_path) as md_data:
+        md_path = Path(md_file_path).resolve()
+        logger.debug(f"md path: {md_path}")
+        with open(md_path) as md_data:
             return md_data.read()
 
     except OSError as err:
@@ -87,7 +91,7 @@ def md_to_str(md_file_path):
 
 
 @get_func_exec_time
-def build_project(project_folder, config_file_name):
+def build_project(project_folder: str, config_file_name: str) -> None:
     """Build a rupantar project, using an optional config file if provided.
 
     Generate the actual static site pages using data loaded from the config file.
@@ -98,8 +102,8 @@ def build_project(project_folder, config_file_name):
         Applies Jinja2 templates in order to generate the static files.
 
     Args:
-      project_folder: The name of an existing rupantar project.
-      config_file_name(str): The name of the config file to load relevant project-specific configurations. Defaults to 'config.yml' that is created by creator.py when initializing a rupantar project.
+      project_folder (str): The name of an existing rupantar project.
+      config_file_name (str): The name of the config file to load relevant project-specific configurations. Defaults to 'config.yml' that is created by creator.py when initializing a rupantar project.
 
     Raises:
       OSError: If any error opening or writing file
@@ -107,8 +111,10 @@ def build_project(project_folder, config_file_name):
 
     """
 
-    # @get_func_exec_time
-    def create_page(page_template, post_detail, md, filename):
+    @get_func_exec_time
+    def create_page(
+        page_template: str, post_detail: dict, md: str, filename: str
+    ) -> str:
         """Create a new HTML page from a given Jinja2 template and markdown content.
 
         Take a Jinja2 page template, post details, markdown content, and a filename,
@@ -127,30 +133,43 @@ def build_project(project_folder, config_file_name):
           OSError: If any error opening or writing file
 
         """
-        just_filename = path.basename(filename)
-        logger.info(f"Using template: {page_template} at {path.abspath(page_template)}")
+
+        logger.debug(
+            f"create_page() called with the following args:\npage_template = {page_template}\npost_detail = {post_detail}\nmd = {md}\nfilename = {filename}"
+        )
+        output_file = Path(filename).resolve()
+        output_filename = output_file.name
+        project_folder_path = Path(project_folder).resolve()
+        page_template_path = Path(project_folder_path, page_template).resolve()
+        logger.info(
+            f"Creating page using Jinja template: {page_template}\nfrom: {page_template_path}"
+        )
         post_template = Environment(
-            loader=FileSystemLoader(searchpath=project_folder),
+            loader=FileSystemLoader(searchpath=project_folder_path),
             autoescape=select_autoescape(["html", "htm", "xml"]),
         ).get_template(page_template)
+
         post_title = config.title
         post_date = (
             post_data
         ) = posts_list = last_date = nextpage = post_meta = post_subtitle = ""
         post_path = config.home_path
 
-        if just_filename == "index.html":
+        if output_filename == "index.html":
             post_file = filename
             posts_list = posts
-        elif just_filename.endswith(".html"):
+            post_path = Path(project_folder_path, config.home_path)
+
+        elif output_filename.endswith(".html"):
             post_file = filename
             posts_list = posts
-        elif just_filename.endswith(".xml"):
+        elif output_filename.endswith(".xml"):
             post_file = filename
             posts_list = posts
+            post_path = Path(project_folder_path, config.home_path)
             last_date = posts_list[0].get("date")
         elif post_detail is None:
-            logger.info("Converting %s to .html format", just_filename)
+            logger.info("Converting %s to .html format", output_file)
             post_file = filename.replace(".md", ".html")
 
         else:
@@ -159,18 +178,19 @@ def build_project(project_folder, config_file_name):
             post_date = post_detail.get("date")
             post_meta = post_detail.get("meta")
             # post_data = filename.split('/')
-            post_path = path.join(project_folder, config.home_path)
+            post_path = Path(project_folder, config.home_path)
             # post_file = post_data[2].replace('.md','.html')
             # Convert to HTML
-            post_file = path.basename(filename).replace(".md", ".html")
+            post_file = output_filename.replace(".md", ".html")
             # post_data = post_data[1]
-            post_data = path.dirname(filename)
+            post_data = output_file.parent
             makedirs(post_path, exist_ok=True)
 
         # Define where new .html/.xml file will be located
         # Eg: public/file.html || public/file.xml
-        post_file_new = path.join(post_path, post_file)
-        logger.info("Creating: %s", post_file_new)
+        logger.debug(f"Post data: {post_data}")
+        post_file_new = Path(post_path, post_file).resolve()
+        logger.info(f"Creating: {post_file_new.name} at: {post_file_new}")
         with open(post_file_new, "w") as output_file:
             try:
                 output_file.write(
@@ -180,65 +200,63 @@ def build_project(project_folder, config_file_name):
                         post_subtitle=post_subtitle,
                         date=post_date,
                         metad=post_meta,
-                        url=path.join(config.url, post_file),
+                        url=Path(config.url, post_file),
                         article=markdown(md),
                         posts=posts_list,
                         home=config.home_md,
                         header=markdown(
-                            md_to_str(path.join(project_folder, config.header_md))
+                            md_to_str(Path(project_folder, config.header_md))
                         ),
                         footer=markdown(
-                            md_to_str(path.join(project_folder, config.footer_md))
+                            md_to_str(Path(project_folder, config.footer_md))
                         ),
                         nextpage=nextpage,
                         last_date=last_date,
                         config=config.__dict__,
                     )
                 )
-                logger.info("Rendering and writing page: %s complete", post_file_new)
+                logger.info(f"Rendering and writing page: {post_file_new} complete")
 
             except OSError as err:
                 logger.exception(
                     "Error rendering or writing to page %s: %s", post_file_new, str(err)
                 )
-
         return post_file
 
     # Program entry
     try:
-        # Change cwd to the rupantar project folder
-        chdir(project_folder)
-        curr_dir = getcwd()
-        logger.info(f"cwd is now: {curr_dir}")
-        # Location of config file, assumed to be in abovementioned project folder
         config_file = "config.yml" if (config_file_name is None) else config_file_name
-        config_file_path = path.join(config_file)
-        project_folder = curr_dir
-        logger.info(
-            f"Config file path: {config_file_path}\nProject folder path: {project_folder}"
-        )
-        # New Config object with data loaded from the config file
+        # Get absolute paths for both the rupantar project and the config file (rather than keep 'em relative!)
+        project_folder_path = Path(project_folder).resolve()
+        logger.info(f"Rupantar project directory location: {project_folder_path}")
+        config_file_path = Path(project_folder_path, config_file).resolve()
+        logger.info(f"Config file location: {config_file_path}")
+        # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
+
         try:
             # Resource dir = Static assets (eg: static/); images, stylesheets, scrips, etc.
-            resource_path_abs = path.join(project_folder, config.resource_path)
+            resource_path_abs = Path(project_folder, config.resource_path).resolve()
             # Home dir = Files to be served (eg: public/); web-accessible
-            home_path_abs = path.join(project_folder, config.home_path)
+            home_path_abs = Path(project_folder, config.home_path).resolve()
             # Clear out existing public/ folder
-            if path.exists(home_path_abs):
-                logger.warning("Found existing public/ folder. Removing it.")
+            if Path.exists(home_path_abs):
+                logger.info("Found existing public/ folder. Removing it.")
                 rmtree(home_path_abs)
             # Recreate home path with resource
             copytree(resource_path_abs, home_path_abs)
-            logger.info("Finish copying: %s to %s", resource_path_abs, home_path_abs)
+            logger.info(
+                f"Finish copying static resources from {resource_path_abs}\n to output directory:  {home_path_abs}"
+            )
         except OSError as err:
             logger.exception("Error: %s", str(err))
 
         # Create pages from content/notes/ all markdown files here...
         posts = []
-        notes_path = path.join(config.content_path, "notes")
-        for each_note_md in glob(path.join(notes_path, "*.md")):
-            logger.debug(f"Creating page using: {each_note_md}")
+        notes_path = Path(project_folder_path, config.content_path, "notes").resolve()
+        logger.info(f"Notes path is: {notes_path}")
+        for each_note_md in Path(notes_path).glob("*.md"):
+            logger.info(f"Creating page using: {each_note_md}")
             post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if post_detail is not None:
@@ -250,36 +268,34 @@ def build_project(project_folder, config_file_name):
                 ymd.update({"note": markdown(md)})
                 posts += [ymd]
 
-        # Sort all blog pages/posts based on date in a descending order
+        # Sort all blog posts based on date in a descending order
         posts = sorted(posts, key=lambda post: post["date"], reverse=True)
 
         # Create other pages using data in content/ (outside content/notes/)
         try:
             # home/
+            home_content_path = Path(project_folder_path, config.home_md)
             home_page = create_page(
-                config.home_template, None, md_to_str(config.home_md), "index.html"
+                config.home_template, None, md_to_str(home_content_path), "index.html"
             )
-            logger.info(f"Home page created at:  {home_page}")
+            logger.info(f"Home page created at:  {Path(home_page).resolve()}")
             # RSS feed
+            # TODO: Check RSS content (.md)
             rss_feed = create_page(
-                config.feed_template, None, md_to_str(config.home_md), "rss.xml"
+                config.feed_template, None, md_to_str(home_content_path), "rss.xml"
             )
-            logger.info(f"RSS feed created at:  {rss_feed}")
+            logger.info(f"RSS feed created at:  {Path(rss_feed).resolve()}")
         except Exception as err:
             logger.exception("Error creating other pages: %s", str(err))
 
-    except FileNotFoundError:
-        logger.exception(
-            "Error: %s not found in %s directory. Make sure that both the file and directory exists.",
-            config_file_path,
-            project_folder,
-        )
+    except FileNotFoundError as err:
+        logger.exception(f"{err}")
 
     except OSError as err:
-        logger.exception("Error: Failed to read %s: %s", config_file_path, str(err))
+        logger.exception(f"{err}")
 
     else:
         print(f"Project built successfully.")
         logger.info(
-            f"rupantar Project built at: {path.join(project_folder, config.home_path)}"
+            f"rupantar Project built at: {Path(project_folder, config.home_path).resolve()}"
         )

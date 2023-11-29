@@ -8,15 +8,13 @@ to both the console and/or a log file. The log file is created in the applicatio
    http://google.github.io/styleguide/pyguide.html
 """
 
-
-# import logging
 from logging import StreamHandler, getLogger, FileHandler, Formatter
-from os import path, mkdir
+from pathlib import Path
 from datetime import datetime
 from xdg_base_dirs import xdg_data_home
 
 
-def setup_logging(loglevel):
+def setup_logging(loglevel: int) -> None:
     """Set up logging configuration for rupantar, app-wide.
 
     Create a centralized directory for storing application logs, where will this be created in the machine running rupantar?
@@ -41,18 +39,19 @@ def setup_logging(loglevel):
     # Create directory for storing app info in running machine's application data files directory
     # as per XDG Base Directory specs (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
     app_data_dir = xdg_data_home()
-    rupantar_data_dir = path.join(app_data_dir, "rupantar")
-    rupantar_logs_dir = path.join(rupantar_data_dir, "logs")
+    rupantar_data_dir = Path(app_data_dir, "rupantar").absolute()
+    rupantar_logs_dir = Path(rupantar_data_dir, "logs").absolute()
 
     # print(f"Application data files in this machine stored in: {str(app_data_dir)}")
 
-    if not path.exists(rupantar_data_dir):
+    if not (rupantar_data_dir.exists()):
+        # Think Path.mkdir(rupantar_logs_dir,511,True) also works, no?
         try:
-            mkdir(rupantar_data_dir)
+            Path.mkdir(rupantar_data_dir)
             # Also create a logs/ subdirectory in this location
-            if not path.exists(rupantar_logs_dir):
+            if not (rupantar_logs_dir.exists()):
                 try:
-                    mkdir(rupantar_logs_dir)
+                    Path.mkdir(rupantar_logs_dir)
                 except OSError as err:
                     print(f"Error creating rupantar logs directory: {err}")
 
@@ -76,7 +75,7 @@ def setup_logging(loglevel):
     # Log destination = file
     log_filename = "rupantar-" + datetime.now().strftime("%H-%M-%S_%p") + ".log"
     # log_filename = f"rupantar-{datetime.datetime.now():%H-%M-%S_%p}.log"
-    log_filepath = path.join(rupantar_logs_dir, log_filename)
+    log_filepath = Path(rupantar_logs_dir, log_filename).absolute()
     logs_file_handler = FileHandler(filename=log_filepath)
     # Create formatter object
     file_handler_format = Formatter(log_format_string_default)
