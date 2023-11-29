@@ -1,7 +1,8 @@
 from http.server import SimpleHTTPRequestHandler
 from socket import SOL_SOCKET, SO_REUSEADDR
 from socketserver import TCPServer
-from os import path, chdir, getcwd
+from functools import partial
+from pathlib import Path
 from random import randint
 from ipaddress import ip_address
 from logging import getLogger
@@ -11,7 +12,7 @@ from rupantar.sohoj.configger import Config
 logger = getLogger()
 
 
-def validate_network_address(interface_address: str):
+def validate_network_address(interface_address: str) -> bool:
     """Validate a given network address to check if it is a valid IP address.
 
     Link-local and multicast addresses are considered to be invalid.
@@ -41,7 +42,7 @@ def start_server(
     port: int,
     interface_address: str,
     openURL=False,
-):
+) -> None:
     """Start a basic HTTP server to serve the static files of a existing rupantar project.
 
     Ideal for testing the pages locally on any machine.
@@ -75,25 +76,22 @@ def start_server(
         serving_url = f"http://{HOST}:{PORT}"
         logger.info("Using network address: %s", HOST)
         logger.info(f"Web server address: {serving_url}")
-        # Change cwd to project folder
-        chdir(project_folder)
-        curr_dir = getcwd()
-        logger.info(f"cwd is now: {curr_dir}")
-        project_folder_path = curr_dir
-        logger.info("Rupantar project directory location: %s", project_folder_path)
-        # Location of config file, assumed to be in abovementioned project folder
-        config_file_path = path.join(project_folder_path, config_file)
-        logger.info("Config file location: %s", config_file_path)
+
+        project_folder_path = Path(project_folder).resolve()
+        logger.info(f"Rupantar project directory location: {project_folder_path}")
+        # Location of tconfig file, assumed to be in abovementioned project folder
+        config_file_path = Path(project_folder_path, config_file).resolve()
+        logger.info(f"Config file location: {config_file_path}")
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
-        # Change cwd to folder from where generated static filed will be served (public/ for example)
-        chdir(path.join(project_folder_path, config.home_path))
-        logger.debug(
-            "Current working directory: %s",
-            path.abspath(path.expanduser(path.expandvars(path.curdir))),
-        )  # https://stackoverflow.com/a/55034470
+
+        # Define the dir which contains the (built) static sites, and serve out of that instead of the cwd
+        serving_dir = Path(project_folder_path, config.home_path)
+        logger.info(f"Serving out of directory:  {serving_dir}")
+
         try:
-            with TCPServer((HOST, PORT), SimpleHTTPRequestHandler) as httpd:
+            handler = partial(SimpleHTTPRequestHandler, directory=serving_dir)
+            with TCPServer((HOST, PORT), handler) as httpd:
                 # Allow immediate socket re-use
                 httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
                 print(f"Web server available at: {serving_url}")
