@@ -238,7 +238,7 @@ def build_project(project_folder: str, config_file_name: str) -> None:
             home_path_abs = Path(project_folder, config.home_path).resolve()
             # Clear out existing public/ folder
             if Path.exists(home_path_abs):
-                logger.warning("Found existing public/ folder. Removing it.")
+                logger.info("Found existing public/ folder. Removing it.")
                 rmtree(home_path_abs)
             # Recreate home path with resource
             copytree(resource_path_abs, home_path_abs)

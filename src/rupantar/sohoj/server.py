@@ -5,8 +5,6 @@ from functools import partial
 from pathlib import Path
 from random import randint
 from logging import getLogger
-
-# from typing import Union
 import webbrowser as wb
 
 from rupantar.sohoj.configger import Config
@@ -14,6 +12,16 @@ from rupantar.sohoj.utils import validate_network_address
 from rupantar.sohoj.builder import build_project
 
 logger = getLogger()
+
+
+class QuietHTTPRequestHandler(SimpleHTTPRequestHandler):
+    # log_message() of BaseHTTPRequestHandler class
+    # https://stackoverflow.com/a/53422952
+    # https://docs.python.org/3/library/http.server.html#http.server.SimpleHTTPRequestHandler
+
+    def log_message(self, format, *args):
+        # Don't do anything in the log_message method to suppress output
+        pass
 
 
 def run_web_server(
@@ -35,7 +43,7 @@ def run_web_server(
     """
     try:
         # stackoverflow.com/a/69088143
-        handler = partial(SimpleHTTPRequestHandler, directory=serving_dir)
+        handler = partial(QuietHTTPRequestHandler, directory=serving_dir)
         with TCPServer((HOST, PORT), handler) as httpd:
             # Allow immediate socket re-use
             httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
@@ -75,6 +83,8 @@ def start_server(
         config_file_name (str): The name of the configuration file. Defaults to config.yml if not explicitly provided.
         port (int): The port number to use for the server. If the port is None or in the range 0-1024, a random port in the range 49152-65535 is used as default.
         interface_address (str): The network address to use for the server. If the address is not valid, '127.0.0.1' i.e. localhost is used as default.
+        openURL (bool): If True, opens the serving URL in a new tab of the default browser.
+
 
     Raises:
         Exception: If any error starting the HTTP server or while serving the files.

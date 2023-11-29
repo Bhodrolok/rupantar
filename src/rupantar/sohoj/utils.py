@@ -6,6 +6,8 @@ from pathlib import Path
 from watchfiles import watch
 from datetime import datetime
 
+# from rupantar.sohoj.builder import build_project
+
 logger = getLogger()
 
 
@@ -83,7 +85,9 @@ def get_current_time() -> str:
     return dt_string
 
 
-def watch_dir(monitored_dir: Union[Path, str]):
+def watch_dir(
+    monitored_dir: Union[Path, str], project_folder: str, config_file_name: str
+) -> None:
     """Monitor the provided directory and print/log information about changes, if any.
 
     Types of change = For any file/dir: Create new, Delete old, and Modify old.
@@ -100,6 +104,8 @@ def watch_dir(monitored_dir: Union[Path, str]):
     for changes in watch(monitored_dir, raise_interrupt=False):
         # FileChange = Tuple[Change, str]; 'changes' = FileChange
         logger.debug("Change detected.")
+        # Re-build project
+        # build_project(project_folder, config_file_name)
         # As multiple sets of FileChanges can be returned, iterate through 'em
         for each_change in changes:
             _, change_location = each_change
@@ -109,17 +115,20 @@ def watch_dir(monitored_dir: Union[Path, str]):
 
 
 def watch_dir_v2(changes):
-    """Pretty much carbon copy of 'watch_dir' but this one expects a 'change' as argument.
+    """Print/log information based on file/directory changes.
+
+    Currently used as a callback for watchfiles.run_process()
 
     Note:
+        https://watchfiles.helpmanual.io/api/run_process/#watchfiles.run_process
         https://watchfiles.helpmanual.io/api/watch/#watchfiles.main.FileChange
 
     Args:
         changes (FileChange)
     """
-    logger.debug("Change detected.")
     for each_change in changes:
         _, change_location = each_change
         logger.debug(f"Full change: {each_change}")
         print(f"Change detected at: {get_current_time()}")
         print(f"File(s) changed: {change_location}")
+        print("Re-building...\n")

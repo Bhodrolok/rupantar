@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from rupantar.sohoj import builder, creator, logger, server, server_watcher
+from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
 
 
@@ -130,12 +130,9 @@ def main():
     elif args.type == "build" and args.mool:
         builder.build_project(args.mool, args.config)
     elif args.type == "serve" and args.mool:
-        server.start_server(
+        server_watcher.start_watchful_server(
             args.mool, args.config, args.port, args.interface, args.open
         )
-        # server_watcher.start_watchful_server(
-        #     args.mool, args.config, args.port, args.interface, args.open
-        # )
     else:
         parser.print_help()
 
