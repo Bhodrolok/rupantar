@@ -5,12 +5,55 @@ from functools import partial
 from pathlib import Path
 from random import randint
 from logging import getLogger
+
+# from typing import Union
 import webbrowser as wb
 
 from rupantar.sohoj.configger import Config
 from rupantar.sohoj.utils import validate_network_address
 
 logger = getLogger()
+
+
+def run_web_server(
+    HOST: str, PORT: int, serving_url: str, serving_dir: str, openURL: bool
+) -> None:
+    """Run a HTTP web server at the given host and port, serving files from the given directory.
+
+    Args:
+        HOST (str): The hostname to use for the web server.
+        PORT (int): The port number to use for the web server.
+        serving_url (str): The URL where the web server will be available at.
+        serving_dir (Path or str): The directory from which files will be served.
+        openURL (bool): If True, opens the serving URL in a new tab of the default browser.
+
+    Raises:
+        KeyboardInterrupt: If the web server is stopped by user intervention (pressing Ctrl + C or Delete).
+        Exception: If any other error while serving the web server.
+
+    """
+    try:
+        # stackoverflow.com/a/69088143
+        handler = partial(SimpleHTTPRequestHandler, directory=serving_dir)
+        with TCPServer((HOST, PORT), handler) as httpd:
+            # Allow immediate socket re-use
+            httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+            print(f"Web server available at: {serving_url}")
+            # If ran with `-O/--open`, open the URL in a new tab of the default browser
+            # https://docs.python.org/3/library/webbrowser.html#webbrowser.open_new_tab
+            if openURL:
+                browser = wb.get()
+                logger.debug(f"Using system default web browser: {str(browser)}")
+                browser.open_new_tab(serving_url)
+
+            httpd.serve_forever()
+
+    except KeyboardInterrupt:
+        print("Stopping server...")
+        httpd.server_close()
+
+    except Exception as err:
+        logger.exception(f"Error while serving the server: {err}")
 
 
 def start_server(
@@ -66,24 +109,7 @@ def start_server(
         serving_dir = Path(project_folder_path, config.home_path)
         logger.info(f"Serving out of directory:  {serving_dir}")
 
-        try:
-            handler = partial(SimpleHTTPRequestHandler, directory=serving_dir)
-            with TCPServer((HOST, PORT), handler) as httpd:
-                # Allow immediate socket re-use
-                httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-                print(f"Web server available at: {serving_url}")
-                # If ran with `-O/--open`, open the URL in a new tab of the default browser
-                # https://docs.python.org/3/library/webbrowser.html#webbrowser.open_new_tab
-                if openURL:
-                    browser = wb.get()
-                    logger.debug(f"Using system default web browser: {str(browser)}")
-                    browser.open_new_tab(serving_url)
-                httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("Stopping server...")
-            httpd.server_close()
-        except Exception as err:
-            logger.exception("Error while serving the server: %s", str(err))
+        run_web_server(HOST, PORT, serving_url, str(serving_dir), openURL)
 
     except Exception as err:
         logger.exception("Error starting server: %s", str(err))
