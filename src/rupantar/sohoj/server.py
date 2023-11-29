@@ -11,6 +11,7 @@ import webbrowser as wb
 
 from rupantar.sohoj.configger import Config
 from rupantar.sohoj.utils import validate_network_address
+from rupantar.sohoj.builder import build_project
 
 logger = getLogger()
 
@@ -105,10 +106,15 @@ def start_server(
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
 
+        # Build the rupantar project prior to serving the files
+        # TODO: Keep as Default behavior?
+        build_project(project_folder, "config.yml")
+
         # Define the dir which contains the (built) static sites, and serve out of that instead of the cwd
         serving_dir = Path(project_folder_path, config.home_path)
         logger.info(f"Serving out of directory:  {serving_dir}")
 
+        # print(f"Listening for changes in: {project_folder_path}")
         run_web_server(HOST, PORT, serving_url, str(serving_dir), openURL)
 
     except Exception as err:

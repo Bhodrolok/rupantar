@@ -1,6 +1,10 @@
 from time import perf_counter
 from logging import getLogger
 from ipaddress import ip_address
+from typing import Union
+from pathlib import Path
+from watchfiles import watch
+from datetime import datetime
 
 logger = getLogger()
 
@@ -64,3 +68,58 @@ def validate_network_address(interface_address: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def get_current_time() -> str:
+    """Get the current local time.
+
+    Formatted as Year-Month-Day Hour:Min:Second
+
+    Returns:
+        str: String containing the datetime object
+    """
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+    return dt_string
+
+
+def watch_dir(monitored_dir: Union[Path, str]):
+    """Monitor the provided directory and print/log information about changes, if any.
+
+    Types of change = For any file/dir: Create new, Delete old, and Modify old.
+    Directories watched recursively, so also informs of changes in sub-directories and not just the top-level parent directory.
+
+    Note:
+        Reference: https://watchfiles.helpmanual.io/api/watch/#watchfiles.watch
+
+    Args:
+        monitored_dir (Path or str): Directory to be watched for changes.
+
+    """
+    print(f"Listening for changes in: {monitored_dir}")
+    for changes in watch(monitored_dir, raise_interrupt=False):
+        # FileChange = Tuple[Change, str]; 'changes' = FileChange
+        logger.debug("Change detected.")
+        # As multiple sets of FileChanges can be returned, iterate through 'em
+        for each_change in changes:
+            _, change_location = each_change
+            logger.debug(f"Full change: {each_change}")
+            print(f"Change detected at: {get_current_time()}")
+            print(f"File(s) changed: {change_location}")
+
+
+def watch_dir_v2(changes):
+    """Pretty much carbon copy of 'watch_dir' but this one expects a 'change' as argument.
+
+    Note:
+        https://watchfiles.helpmanual.io/api/watch/#watchfiles.main.FileChange
+
+    Args:
+        changes (FileChange)
+    """
+    logger.debug("Change detected.")
+    for each_change in changes:
+        _, change_location = each_change
+        logger.debug(f"Full change: {each_change}")
+        print(f"Change detected at: {get_current_time()}")
+        print(f"File(s) changed: {change_location}")

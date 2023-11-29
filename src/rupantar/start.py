@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from rupantar.sohoj import builder, creator, logger, server
+from rupantar.sohoj import builder, creator, logger, server, server_watcher
 from rupantar import __version__
 
 
@@ -133,6 +133,9 @@ def main():
         server.start_server(
             args.mool, args.config, args.port, args.interface, args.open
         )
+        # server_watcher.start_watchful_server(
+        #     args.mool, args.config, args.port, args.interface, args.open
+        # )
     else:
         parser.print_help()
 
