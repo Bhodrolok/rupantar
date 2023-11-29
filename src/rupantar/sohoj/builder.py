@@ -139,8 +139,7 @@ def build_project(project_folder: str, config_file_name: str) -> None:
         output_filename = output_file.name
         project_folder_path = Path(project_folder).resolve()
         page_template_path = Path(project_folder_path, page_template).resolve()
-        template_search_path = page_template_path.parent.resolve()
-        print(
+        logger.info(
             f"Creating page using Jinja template: {page_template}\nfrom: {page_template_path}"
         )
         post_template = Environment(
@@ -188,7 +187,7 @@ def build_project(project_folder: str, config_file_name: str) -> None:
         # Define where new .html/.xml file will be located
         # Eg: public/file.html || public/file.xml
         post_file_new = Path(post_path, post_file).resolve()
-        print(f"Creating: {post_file_new.name} @ {post_file_new}")
+        logger.info(f"Creating: {post_file_new.name} at: {post_file_new}")
         with open(post_file_new, "w") as output_file:
             try:
                 output_file.write(
@@ -239,7 +238,7 @@ def build_project(project_folder: str, config_file_name: str) -> None:
             home_path_abs = Path(project_folder, config.home_path).resolve()
             # Clear out existing public/ folder
             if Path.exists(home_path_abs):
-                logger.warning("Found existing public/ folder. Removing it.")
+                logger.info("Found existing public/ folder. Removing it.")
                 rmtree(home_path_abs)
             # Recreate home path with resource
             copytree(resource_path_abs, home_path_abs)
@@ -252,9 +251,9 @@ def build_project(project_folder: str, config_file_name: str) -> None:
         # Create pages from content/notes/ all markdown files here...
         posts = []
         notes_path = Path(project_folder_path, config.content_path, "notes").resolve()
-        print(f"Notes path is: {notes_path}")
+        logger.info(f"Notes path is: {notes_path}")
         for each_note_md in Path(notes_path).glob("*.md"):
-            print(f"Creating page using: {each_note_md}")
+            logger.info(f"Creating page using: {each_note_md}")
             post_detail, md = parse_md(each_note_md)
             # Create blog pages
             if post_detail is not None:
