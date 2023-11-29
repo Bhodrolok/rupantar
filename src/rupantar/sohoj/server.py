@@ -4,36 +4,13 @@ from socketserver import TCPServer
 from functools import partial
 from pathlib import Path
 from random import randint
-from ipaddress import ip_address
 from logging import getLogger
 import webbrowser as wb
+
 from rupantar.sohoj.configger import Config
+from rupantar.sohoj.utils import validate_network_address
 
 logger = getLogger()
-
-
-def validate_network_address(interface_address: str) -> bool:
-    """Validate a given network address to check if it is a valid IP address.
-
-    Link-local and multicast addresses are considered to be invalid.
-
-    Note:
-        The link-local addresses = reserved range of 169.254.1.0 to 169.254.254.255, as per the IETF.
-
-    Args:
-      interface_address: Network address to validate
-
-    Returns:
-        bool: True if the given network address is a valid, non-link-local, non-multicast IP address. False otherwise.
-
-    """
-    try:
-        ip = ip_address(interface_address)
-        if ip.is_link_local or ip.is_multicast:
-            return False
-        return True
-    except ValueError:
-        return False
 
 
 def start_server(
