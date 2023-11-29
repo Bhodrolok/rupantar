@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rupantar"
-version = "0.8.0"
+version = "0.9.0"
 description = "Simple hackable static website generator with a focus on minimalism"
 authors = ["bhodrolok <korbolorbo1214@proton.me>"]
 license = "MIT"
