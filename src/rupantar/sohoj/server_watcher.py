@@ -1,9 +1,9 @@
-from typing import Sequence, Union
-from watchfiles import run_process, DefaultFilter, Change
+from typing import Sequence
+from watchfiles import run_process, DefaultFilter
 from logging import getLogger
 from pathlib import Path
 from rupantar.sohoj.server import start_server
-from rupantar.sohoj.utils import watch_dir, watch_dir_v2
+from rupantar.sohoj.utils import watch_dir_v2
 from rupantar.sohoj.configger import Config
 
 logger = getLogger()
@@ -22,7 +22,10 @@ class OutputDirFilter(DefaultFilter):
 
     """
 
-    def __init__(self, *, exclude_dirs: Sequence[str] = ["public"]) -> None:
+    def __init__(self, *, exclude_dirs: Sequence[str] = None) -> None:
+        if exclude_dirs is None:
+            exclude_dirs = ["public"]
+
         super().__init__(ignore_dirs=exclude_dirs)
 
 

@@ -2,7 +2,8 @@ from shutil import copytree, rmtree
 from os import makedirs
 from pathlib import Path
 from logging import getLogger
-from typing import Union
+
+# from typing import Union
 from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
@@ -81,6 +82,7 @@ def md_to_str(md_file_path: str) -> str:
     # Possible TODO: Use a better(?) Markdown library for this
     try:
         md_path = Path(md_file_path).resolve()
+        logger.debug(f"md path: {md_path}")
         with open(md_path) as md_data:
             return md_data.read()
 
@@ -186,6 +188,7 @@ def build_project(project_folder: str, config_file_name: str) -> None:
 
         # Define where new .html/.xml file will be located
         # Eg: public/file.html || public/file.xml
+        logger.debug(f"Post data: {post_data}")
         post_file_new = Path(post_path, post_file).resolve()
         logger.info(f"Creating: {post_file_new.name} at: {post_file_new}")
         with open(post_file_new, "w") as output_file:
