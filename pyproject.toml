@@ -107,4 +107,3 @@ pythonpath = ["src"]
 # log_cli = "True"
 # log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 testpaths = ["tests"]
-
