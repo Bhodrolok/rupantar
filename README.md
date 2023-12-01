@@ -197,7 +197,7 @@ A :construction: roadmap of this Python project can be found [here](https://gith
 
 <h2 id="contributing">Contributing :scroll: </h2>
 
-This is an open source project. Suggestions, bug fixes, documentation improvements, etc. are welcome through [Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and [Issues](https://github.com/Bhodrolok/rupantar/issues).
+This is an open source project. Suggestions, bug fixes, documentation improvements, etc. are welcome through [Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and the [GitHub Issue Tracker](https://github.com/Bhodrolok/rupantar/issues).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
