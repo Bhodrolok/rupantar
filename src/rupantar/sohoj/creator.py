@@ -2,7 +2,6 @@ from pathlib import Path
 from shutil import rmtree
 from datetime import datetime
 from logging import getLogger
-from typing import Union
 from rupantar.sohoj.utils import get_func_exec_time
 
 # Use root logger = same instance from start.py [ https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial ]
@@ -10,7 +9,9 @@ from rupantar.sohoj.utils import get_func_exec_time
 logger = getLogger()
 
 
-def create_config(project_folder: Union[Path, str], user_choices: list[str]) -> None:
+def create_config(
+    project_folder: Path | str, user_choices: list[str | None]
+) -> None | OSError:
     """Create a configuration file for a rupantar project based on some user input.
 
     Expects the first param to be a project folder and the second to be a list of user choices.
@@ -46,9 +47,7 @@ def create_config(project_folder: Union[Path, str], user_choices: list[str]) -> 
         else default_conf_values[1]
     )
     custom_needed = (
-        ""
-        if (user_choices[-1] and user_choices[-1].strip())
-        else default_conf_values[-1]
+        "" if (user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
     )
     try:
         config_file_path = Path(project_folder, "config.yml").resolve()
@@ -158,7 +157,7 @@ def create_home_template(project_folder: Union[Path, str]) -> None:
         logger.exception(f"Error: Failed to create home_template.html.jinja\n{err}")
 
 
-def create_note_template(project_folder: Union[Path, str]) -> None:
+def create_note_template(project_folder: Path | str) -> None | OSError:
     """Create a generic blog-post template HTML file in the templates/ directory of the given rupantar project folder.
 
     Generate a basic HTML structure for a blog-post/note page, including placeholders for the title, header,
@@ -218,7 +217,7 @@ def create_note_template(project_folder: Union[Path, str]) -> None:
         logger.exception(f"Error: Failed to create note_template.html.jinja\n{err}")
 
 
-def create_feed_template(project_folder: Union[Path, str]) -> None:
+def create_feed_template(project_folder: Path | str) -> None | OSError:
     """Create a Really Simple Syndication feed template file in the templates/ directory of the given rupantar project folder.
 
     Note:
@@ -273,7 +272,7 @@ def create_feed_template(project_folder: Union[Path, str]) -> None:
 
 
 # content/ data
-def create_header(project_folder: Union[Path, str]) -> None:
+def create_header(project_folder: Path | str) -> None | OSError:
     """Create a header markdown file in the content/ directory of the given rupantar project folder.
 
     Generate a basic markdown structure for a header, including a navigation bar with a link to the homepage.
@@ -300,7 +299,7 @@ def create_header(project_folder: Union[Path, str]) -> None:
         logger.exception("Error: Failed to create header.md\n")
 
 
-def create_footer(project_folder: Union[Path, str]) -> None:
+def create_footer(project_folder: Path | str) -> None | OSError:
     """Create a footer markdown file in the content/ directory of the given rupantar project folder.
 
     Generate a basic markdown structure for a page's footer, including a mini-navigation 'bar' with links elsewhere.
@@ -329,7 +328,7 @@ def create_footer(project_folder: Union[Path, str]) -> None:
         logger.exception("Error: Failed to create footer.md\n")
 
 
-def create_home(project_folder: Union[Path, str]) -> None:
+def create_home(project_folder: Path | str) -> None | OSError:
     """Create a home/landing page markdown file in the content/ directory of the given rupantar project folder.
 
     Generate a basic markdown structure for a simple home page, the body of the home page contents so to say.
@@ -359,7 +358,7 @@ def create_home(project_folder: Union[Path, str]) -> None:
         logger.exception("Error: Failed to create home.md\n")
 
 
-def create_example_blog(project_folder: Union[Path, str]) -> None:
+def create_example_blog(project_folder: Path | str) -> None | OSError:
     """Create a sample blog markdown file in the content/ directory of the given rupantar project folder.
 
     Very barebones ngl.
@@ -416,7 +415,7 @@ Sample paragraph is written like this with lorem ipsum. Lorem ipsum dolor sit am
         logger.exception("Error: Failed to create example_blog.md\n")
 
 
-def create_static(project_folder: Union[Path, str]) -> None:
+def create_static(project_folder: Path | str) -> None | OSError:
     """Create a static/ directory at the root of the given rupantar project folder along with a demo CSS for the static pages.
 
     The CSS is adopted from: https://nih.ar, the creator of pidgeotto, the OG project that rupantar is forked out of.
@@ -448,16 +447,14 @@ pre code{background:none}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
             """
             css_file.write(css_data)
-            logger.info(
-                f"Created {demo_css_static_path.name} at: {demo_css_static_path}"
-            )
+            logger.info(f"Created {demo_css_static_path.name} at: {demo_css_static_path}")
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
 
 def create_note(
-    project_folder: Union[Path, str], post_filename: str, show_in_home=False
-) -> None:
+    project_folder: Path, str, post_filename: str, show_in_home=False
+) -> None | OSError:
     """Create a new markdown note file in the notes directory of the given project folder.
 
     Note:
@@ -503,7 +500,7 @@ date : {t}
 
 
 @get_func_exec_time
-def create_project(project_folder: str, user_choices: list[str]) -> None:
+def create_project(project_folder: str, user_choices: list[str | None]) -> None | OSError:
     """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values.
 
     Creates the rupantar project skeleton and populates it with some default templates to be used when building the project.
@@ -563,9 +560,7 @@ def create_project(project_folder: str, user_choices: list[str]) -> None:
 
         # Finish init
         print(f"Project skeleton has been created at: {rupantar_project_path}")
-        logger.info(
-            f"Project skeleton has been initialized at: {rupantar_project_path}"
-        )
+        logger.info(f"Project skeleton has been initialized at: {rupantar_project_path}")
 
     except OSError as err:
         logger.exception(f"Error: Failed to initialize rupantar project.\n{err}")
