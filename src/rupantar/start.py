@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
+from sys import argv, exit
 from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
 
 
-def main():
+def main(args=argv[1:]):
     parser = ArgumentParser(
         prog="rupantar",
         description="Easily configurable static website generator with a focus on minimalism.",
@@ -98,7 +99,7 @@ def main():
         help="Open the generated site using the default browser. Tries to do so in a new tab.",
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     # Configure logging, log level based on input
     logger.setup_logging(args.loglevel)
@@ -139,4 +140,4 @@ def main():
 
 # Entry point
 if __name__ == "__main__":
-    main()
+    exit(main())
