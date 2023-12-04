@@ -86,7 +86,7 @@ mail : some@mail.com
         logger.exception(f"Failed to create config.yml: {err}")
 
 
-def create_home_template(project_folder: Union[Path, str]) -> None:
+def create_home_template(project_folder: Path | str) -> None | OSError:
     """Create a home-page/landing-page template HTML file in the templates/ directory of the given rupantar project folder.
 
     Generate a basic HTML structure for a home page, including placeholders for the title, header,
