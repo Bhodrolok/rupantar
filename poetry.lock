@@ -531,6 +531,20 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-order"
+version = "1.2.0"
+description = "pytest plugin to run your tests in a specific order"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pytest-order-1.2.0.tar.gz", hash = "sha256:944f86b6d441aa7b1da80f801c6ab65b84bbeba472d0a7a12eb43ba26650101a"},
+    {file = "pytest_order-1.2.0-py3-none-any.whl", hash = "sha256:9d65c3b6dc6d6ee984d6ae2c6c4aa4f1331e5b915116219075c888c8bcbb93b8"},
+]
+
+[package.dependencies]
+pytest = {version = ">=6.2.4", markers = "python_version >= \"3.10\""}
+
+[[package]]
 name = "pyupgrade"
 version = "3.15.0"
 description = "A tool to automatically upgrade syntax for newer versions."
@@ -827,4 +841,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "002c60d1686a0c3f8aa1bc1bedc69ea5703c5b1c460244b7f1534174c75ad176"
+content-hash = "629d259ea76dba5c699fdabc34418db68585bcc579dd5d44147bbc72d7c66606"

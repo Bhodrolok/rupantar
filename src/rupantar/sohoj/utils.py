@@ -40,6 +40,7 @@ def get_func_exec_time(function):
         # print(
         #     f"{function.__name__} was completed in: {perf_counter() - start_time} seconds"
         # )
+        # end_time = perf_counter()
         logger.debug(
             f"{function.__name__} was completed in: {perf_counter() - start_time} seconds"
         )

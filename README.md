@@ -204,16 +204,21 @@ This is an open source project. Suggestions, bug fixes, documentation improvemen
 
 <h2 id="license">License :bookmark:</h2>
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [MIT License](./LICENSE). 
+
+_tldr_ is that `rupantar` is Free and Open Source Software (FOSS)!
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 <h2 id="alternatives">Similar Projects :goat:</h2>
 
 - [pidgeotto](https://github.com/niharokz/pidgeotto) - Primary inspiration for this project.
-- [pelican](https://github.com/getpelican/pelican)
-- [eleventy](https://github.com/11ty/eleventy)
-- [zola](https://github.com/getzola/zola)
+- [Pelican](https://github.com/getpelican/pelican) - Python-based
+- [Jekyll](github.com/jekyll/jekyll) - Ruby-based
+- [Hugo](https://github.com/gohugoio/hugo) - Go-based
+- [Zola](https://github.com/getzola/zola) - Rust-based
+- [Eleventy](https://github.com/11ty/eleventy) - JavaScript-based alternative to Jekyll
+- Some more Python-based static site generators can be found [here](https://wiki.python.org/moin/StaticSiteGenerator).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
