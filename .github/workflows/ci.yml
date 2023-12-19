@@ -1,0 +1,41 @@
+name: Setup Python environment with Poetry
+run-name: ${{ github.actor }} is setting up a Python environment! 
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Set up Python environment with Poetry complete with linting & formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code so the workflow can be accessed
+        uses: actions/checkout@v4
+
+      # https://github.com/actions/setup-python
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      
+      - name: Install poetry
+        uses: pipx install poetry
+
+      - name: Install main & dev dependencies
+        run: poetry install --with dev
+      
+      - name: Ruff
+        run: |
+          poetry run ruff check . -v
+          poetry run ruff format . -v
+
+      - name: Black
+        run: poetry run black . -v
+      
