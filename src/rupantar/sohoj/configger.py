@@ -29,7 +29,7 @@ class Config:
 
     def __init__(self, config_file_path: Union[Path, str]) -> None:
         config_file_extension = Path(config_file_path).resolve().suffix
-        global config
+        # global config
         # YAML handling
         if config_file_extension in {".yaml", ".yml"}:
             try:
