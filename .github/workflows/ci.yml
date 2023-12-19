@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - develop
-
+      - ci-setup
   pull_request:
   workflow_dispatch:
 
