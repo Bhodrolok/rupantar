@@ -7,7 +7,7 @@ repos:
     # with --fix
       args: [ --fix ]
     # Run formatter
-    - id: ruff-format
+    # - id: ruff-format
 
 - repo: https://github.com/psf/black
   rev: 23.11.0

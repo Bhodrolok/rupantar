@@ -56,6 +56,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Local testing
+hello/
+yo
 
 *.sublime*
 */sublime*/*

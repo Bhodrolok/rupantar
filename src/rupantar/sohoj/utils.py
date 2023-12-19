@@ -6,19 +6,18 @@ from pathlib import Path
 from watchfiles import watch
 from datetime import datetime
 
-# from rupantar.sohoj.builder import build_project
-
 logger = getLogger()
 
-
-def resolve_path(path: str) -> Path | FileNotFoundError:
+def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
     """Resolve the (absolute) path to a file or directory.
 
+    Accepts either a single argument or a tuple of arguments (multiple 'paths').
+
     Note:
-        Path to a File or Directory!
+        Path to a File or Directory
         Exception notes reference: https://docs.python.org/3/tutorial/errors.html#enriching-exceptions-with-notes
         and https://peps.python.org/pep-0678/
-        Resolving: https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
+        Pathlib in general: https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
 
     Args:
         path (Path): Path to check for existence.
@@ -30,11 +29,16 @@ def resolve_path(path: str) -> Path | FileNotFoundError:
         FileNotFoundError: File/Directory not found.
     """
     try:
-        return Path(path).resolve(strict=True)
+        # If args = single element
+        if len(args) == 1:
+            return Path(args[0]).resolve()
+        # Otherwise, treat it as a tuple eg: ('path', 'to', 'dest')
+        else:
+            return Path(*args).resolve()
 
     except FileNotFoundError as err:
-        logger.exception(f"{path} does not exist")
-        err.add_note(f"Unable to resolve: {path}")
+        logger.exception(f"{str(args)} does not exist")
+        err.add_note(f"Unable to resolve: {str(args)}")
         raise
 
 
