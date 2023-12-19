@@ -11,6 +11,33 @@ from datetime import datetime
 logger = getLogger()
 
 
+def resolve_path(path: str) -> Path | FileNotFoundError:
+    """Resolve the (absolute) path to a file or directory.
+
+    Note:
+        Path to a File or Directory!
+        Exception notes reference: https://docs.python.org/3/tutorial/errors.html#enriching-exceptions-with-notes
+        and https://peps.python.org/pep-0678/
+        Resolving: https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
+
+    Args:
+        path (Path): Path to check for existence.
+
+    Returns:
+        Path: The resolved Path to the file or directory.
+
+    Raises:
+        FileNotFoundError: File/Directory not found.
+    """
+    try:
+        return Path(path).resolve(strict=True)
+
+    except FileNotFoundError as err:
+        logger.exception(f"{path} does not exist")
+        err.add_note(f"Unable to resolve: {path}")
+        raise
+
+
 def get_func_exec_time(function):
     """Simple decorator function to get a function's execution time, start to finish.
 

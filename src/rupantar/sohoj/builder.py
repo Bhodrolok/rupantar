@@ -3,25 +3,26 @@ from shutil import copytree, rmtree
 from os import makedirs
 from pathlib import Path
 from logging import getLogger
-import inspect
 from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
 from rupantar.sohoj.configger import Config
-from rupantar.sohoj.utils import get_func_exec_time
+from rupantar.sohoj.utils import get_func_exec_time, resolve_path
 
 logger = getLogger()
 
 
 @get_func_exec_time
-def parse_md(md_file_path: str) -> tuple[str, str] | OSError | FileNotFoundError:
+def parse_md(md_file_path: str) -> tuple[dict(str), str] | OSError | FileNotFoundError:
     """Parse a given Markdown file and extracts it's metadata and contents.
 
-    Metadata is defined as whatever is enclosed within the front-matter ('---') of the markdown file.
-    Format is same as YAML front-matter key-value syntax.
-    Contents is defined as the rest of the page contents so to speak i.e. outside the front-matter.
+    Metadata is defined as whatever is enclosed within the front matter ('---'), in the top of the markdown file.
+    Contents is defined as the rest of the page contents so to speak i.e. outside the front matter.
 
-    Returns a tuple containing the metadata, as a dictionary, and the page contents, as a string.
+    Returns the metadata, as a dictionary, and the page contents, as a string.
+
+    Note:
+        The front matter format is that of YAML's key-value syntax, NOT MMD i.e. multi-markdown.
 
     Args:
       md_file_path(str): The path to the markdown file.
@@ -31,14 +32,13 @@ def parse_md(md_file_path: str) -> tuple[str, str] | OSError | FileNotFoundError
 
     Raises:
       OSError: If any error opening or reading the markdown file.
-      FileNotFoundError: If the markdown file does not exist.
+      FileNotFoundError: If the markdown file at the given path does not exist.
 
     """
+    # TODO: Possibly look at: https://github.com/eyeseast/python-frontmatter ?
     try:
-        md_path = Path(md_file_path).resolve()
+        md_path = resolve_path(md_file_path)
         with open(md_path) as infile:
-            # ym_meta = 'metadata' so stuff (inside the --- ---)
-            # md_contents = rest of page contents
             logger.info(f"Parsing file: {md_file_path}")
             yaml_lines, ym_meta, md_contents = [], "", ""
 
@@ -52,32 +52,29 @@ def parse_md(md_file_path: str) -> tuple[str, str] | OSError | FileNotFoundError
                     ym_meta = "".join(yaml_lines)
                     md_contents = "".join(infile)
                     break
-        # Store file 'metadata', inside the front-matter, in post_detail
+
         post_detail = safe_load(ym_meta)
         logger.debug(f"Metadata: {post_detail}")
         # strip() to remove leading and trailing whitespace off of contents
         page_contents = md_contents.strip()
         logger.debug(f"Page contents: {page_contents}")
-
         return post_detail, page_contents
 
     except FileNotFoundError as err:
-        logger.exception(f"Cannot find file: {md_file_path}")
-        raise FileNotFoundError(f"File not found: {md_file_path}")
+        logger.exception(f"Could not find markdown file: {md_file_path}\n {err}")
 
     except OSError as err:
         logger.exception(
             f"Error loading metadata and page contents from {md_file_path}\n {err}"
         )
-        raise OSError
 
 
 @get_func_exec_time
-def md_to_str(md_file_path: str) -> str | FileNotFoundError | OSError:
+def md_to_str(md_file: str) -> str:
     """Convert a given Markdown file to plain-text string.
 
     Args:
-      md_file_path(str): The path to the markdown file.
+      md_file(str): The path to the markdown file.
 
     Returns:
       string: A string containing the entire contents of the markdown file.
@@ -86,20 +83,17 @@ def md_to_str(md_file_path: str) -> str | FileNotFoundError | OSError:
       OSError: If any error opening or reading the markdown file.
 
     """
-    # Possible TODO: Use a better(?) Markdown library for this
     try:
-        md_path = Path(md_file_path).resolve()
-        logger.debug(f"md path: {md_path}")
+        md_path = resolve_path(md_file)
+        logger.debug(f"markdown file path: {md_path}")
         with open(md_path) as md_data:
             return md_data.read()
 
-    except FileNotFoundError:
-        logger.exception(f"Unable to locate file: {md_file_path}")
-        raise FileNotFoundError(f"File not found: {md_file_path}")
+    except FileNotFoundError as err:
+        logger.exception(f"Could not find markdown file: {md_file}\n {err}")
 
     except OSError as err:
-        logger.exception(f"Error reading data from file: {md_file_path}\n{err}")
-        raise OSError(f"File error: {md_file_path}\n{err}")
+        logger.exception(f"Error reading data from file: {md_file} :: {err}")
 
 
 @get_func_exec_time
@@ -132,7 +126,7 @@ def create_page(
 
     """
 
-    logger.debug(inspect.signature(create_page))
+    # logger.debug(inspect.signature(create_page))
     output_file = Path(filename).resolve()
     output_filename = output_file.name
     project_folder_path = Path(project_folder).resolve()
@@ -325,7 +319,7 @@ def build_project(
     )
     logger.info(f"RSS feed created at:  {Path(rss_feed).resolve()}")
 
-    print(f"Project built successfully.")
+    print("Project built successfully.")
     logger.info(
         f"rupantar Project built at: {Path(project_folder, config.home_path).resolve()}"
     )
