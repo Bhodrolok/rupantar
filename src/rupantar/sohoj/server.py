@@ -95,7 +95,7 @@ def start_server(
         # Ephemeral/dynamic/private ports, think good for temporary stuff
         PORT = (
             randint(49152, 65535)
-            if ((port is None) or ((port in range(0, 1024))))
+            if ((port is None) or (port in range(0, 1024)))
             else port
         )
         logger.info("Using port: %s", PORT)

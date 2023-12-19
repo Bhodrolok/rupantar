@@ -197,7 +197,37 @@ A :construction: roadmap of this Python project can be found [here](https://gith
 
 <h2 id="contributing">Contributing :scroll: </h2>
 
-This is an open source project. Suggestions, bug fixes, documentation improvements, etc. are welcome through [Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and the [GitHub Issue Tracker](https://github.com/Bhodrolok/rupantar/issues).
+This is an open source project. Suggestions, bug reports, feature requests, documentation improvements, etc. are more than welcome through [Pull Requests (PRs)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and [Issues](https://github.com/Bhodrolok/rupantar/issues).
+
+The _usual_ steps for contributing via a PR are:
+
+1. Fork this repository to your own GitHub account 
+
+2. Clone the repository to your machine
+  
+  ```console
+$ git clone https://github.com/Bhodrolok/rupantar.git
+  ``` 
+
+3. `cd` to where you cloned the repo and create a local git branch
+
+```console
+$ git checkout -b new-feature-branch
+```
+
+4. Make your changes and commit them to that branch
+
+```console
+$ git commit -m "brief description about changes"
+```
+
+5. Push your changes to your remote fork
+
+```conole
+$ git push origin new-feature-branch
+```
+
+6. Create a new Pull Request!
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -214,7 +244,7 @@ _tldr_ is that `rupantar` is Free and Open Source Software (FOSS)!
 
 - [pidgeotto](https://github.com/niharokz/pidgeotto) - Primary inspiration for this project.
 - [Pelican](https://github.com/getpelican/pelican) - Python-based
-- [Jekyll](github.com/jekyll/jekyll) - Ruby-based
+- [Jekyll](https://github.com/jekyll/jekyll) - Ruby-based
 - [Hugo](https://github.com/gohugoio/hugo) - Go-based
 - [Zola](https://github.com/getzola/zola) - Rust-based
 - [Eleventy](https://github.com/11ty/eleventy) - JavaScript-based alternative to Jekyll
