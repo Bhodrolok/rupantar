@@ -24,18 +24,20 @@ jobs:
         with:
           python-version: '3.12'
           cache: 'poetry'
-      
-      - name: Install poetry
-        uses: pipx install poetry
+          
+      # https://github.com/abatilo/actions-poetry
+      - name: Set up Poetry 1.7.1
+        uses: abatilo/actions-poetry@v2.3.0
+        with:
+          poetry-version: '1.7.1'
 
-      - name: Install main & dev dependencies
+      - name: Install main & dev project dependencies
         run: poetry install --with dev
       
-      - name: Ruff
+      - name: Ruff lint & format
         run: |
           poetry run ruff check . -v
           poetry run ruff format . -v
 
       - name: Black
         run: poetry run black . -v
-      
