@@ -1,5 +1,5 @@
 name: Setup Python environment with Poetry
-run-name: ${{ github.actor }} is setting up rupantar for Python ${{ matrix.python-version }}! 
+run-name: ${{ github.actor }}'s trigger ${{ github.event_name }}@${{ github.sha}}  
 
 on:
   push:
