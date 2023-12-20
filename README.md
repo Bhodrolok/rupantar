@@ -8,12 +8,13 @@
 
 <div align="center">
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7524d0f5c0b1459b9dc54d3fd42b146c)](https://app.codacy.com/gh/Bhodrolok/rupantar/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![CodeClimate Maintain. Badge](https://api.codeclimate.com/v1/badges/9e514a85a4f9a27a3895/maintainability)](https://codeclimate.com/github/Bhodrolok/rupantar/maintainability)
+
 [![GitHub issues](https://img.shields.io/github/issues-raw/bhodrolok/rupantar?color=blue&style=plastic)](https://github.com/Bhodrolok/rupantar/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/bhodrolok/rupantar)](https://github.com/Bhodrolok/rupantar/issues?q=is%3Aissue+is%3Aclosed)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Pull Requests](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat&logo=cachet&logoColor=red)](https://github.com/Bhodrolok/rupantar/pulls)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7524d0f5c0b1459b9dc54d3fd42b146c)](https://app.codacy.com/gh/Bhodrolok/rupantar/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-
 <!--
 <p>Documentation available<a href="https://github.com/Bhodrolok/JobAppTrackr/tree/docs" target="_blank"> here </a></p>
 -->
