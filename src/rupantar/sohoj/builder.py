@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from shutil import copytree, rmtree
 from os import makedirs
 from pathlib import Path
@@ -10,6 +11,39 @@ from rupantar.sohoj.configger import Config
 from rupantar.sohoj.utils import get_func_exec_time, resolve_path
 
 logger = getLogger()
+
+
+# https://docs.python.org/3/library/dataclasses.html#module-dataclasses
+@dataclass(slots=True)
+class ProjectData:
+    """Store configuration data for a rupantar project.
+
+    Attributes:
+        project_name (str): Name of rupantar project. Relative path.
+        config (Config): The rupantar config object.
+    """
+
+    project_name: str
+    config: Config
+
+
+@dataclass(slots=True)
+class PageData:
+    """Store configuration data for rendering and creating a static page.
+
+    Attributes:
+        page_template (str): The Jinja2 template to use for rendering this page.
+        posts (list[str]): The list of posts to include in the new page.
+        page_metadata (dict[str]): The front matter-based details to be included. Eg: title, description, etc.
+        md_content (str): The content of the page, in markdown.
+        out_filename (str): The name of the file to create i.e. new page name.
+    """
+
+    page_template: str
+    posts: list[str]
+    page_metadata: dict[str]
+    md_content: str
+    out_filename: str
 
 
 @get_func_exec_time
@@ -100,13 +134,7 @@ def md_to_str(md_file: str) -> str:
 
 @get_func_exec_time
 def create_page(
-    rupantar_project: str,
-    config: Config,
-    page_template: str,
-    posts: list[str],
-    page_metadata: dict(str),
-    md_content: str,
-    out_filename: str,
+    project_data: ProjectData, page_data: PageData
 ) -> str | FileNotFoundError | OSError:
     """Create a new HTML page from a given Jinja2 template and markdown content.
 
@@ -114,13 +142,8 @@ def create_page(
     and create a new page with the given details. The new page will be saved to the same location as the original file.
 
     Args:
-        rupantar_project (str): The path to the rupantar project.
-        config (Config): The rupantar config object.
-        page_template (str): The Jinja2 template to use for rendering this page.
-        posts (list[str]): The list of posts to include in the new page.
-        page_metadata (dict[str]): The front matter-based details to be included.
-        md_content (str): The markdown content to include in the new page.
-        out_filename (str): The name of the file to create i.e. new page name.
+        project_date (ProjectData): rupantar project config data
+        page_data (PageData): page specific config data
 
     Returns:
         str: The name of the new static file.
@@ -132,48 +155,48 @@ def create_page(
     """
 
     # logger.debug(inspect.signature(create_page))
-    output_file = Path(out_filename)
+    output_file = Path(page_data.out_filename)
     output_filename = output_file.name
-    project_folder_path = resolve_path(rupantar_project)
-    page_template_path = resolve_path(project_folder_path, page_template)
+    project_folder_path = resolve_path(project_data.project_name)
+    page_template_path = resolve_path(project_folder_path, page_data.page_template)
     logger.info(
-        f"Creating page using Jinja template: {page_template}\nfrom: {page_template_path}"
+        f"Building page using template: {page_data.page_template} from: {page_template_path}"
     )
     rd_page_template = Environment(
         loader=FileSystemLoader(searchpath=project_folder_path),
         autoescape=select_autoescape(["html", "htm", "xml"]),
-    ).get_template(page_template)
+    ).get_template(page_data.page_template)
 
-    page_header = config.title
+    page_header = project_data.config.title
     post_date = (
         post_data
     ) = posts_list = last_date = next_page = post_meta = page_subtitle = post_file = ""
-    page_out_path = config.home_path
+    page_out_path = project_data.config.home_path
 
     if output_filename == "index.html":
-        post_file = out_filename
-        posts_list = posts
-        page_out_path = Path(project_folder_path, config.home_path)
+        post_file = page_data.out_filename
+        posts_list = page_data.posts
+        page_out_path = Path(project_folder_path, project_data.config.home_path)
     elif output_filename.endswith(".html"):
-        post_file = out_filename
-        posts_list = posts
+        post_file = page_data.out_filename
+        posts_list = page_data.posts
     elif output_filename.endswith(".xml"):
-        post_file = out_filename
-        posts_list = posts
-        page_out_path = Path(project_folder_path, config.home_path)
+        post_file = page_data.out_filename
+        posts_list = page_data.posts
+        page_out_path = Path(project_folder_path, project_data.config.home_path)
         last_date = posts_list[0].get("date")
-    elif page_metadata is None:
+    elif page_data.page_metadata is None:
         logger.info(f"Converting {output_file} to .html format")
         post_file = output_filename.replace(".md", ".html")
 
     else:
-        page_header = page_metadata.get("title")
-        page_subtitle = page_metadata.get("subtitle")  # Optional
-        post_date = page_metadata.get("date")
-        post_meta = page_metadata.get("meta")  # XD
+        page_header = page_data.page_metadata.get("title")
+        page_subtitle = page_data.page_metadata.get("subtitle")  # Optional
+        post_date = page_data.page_metadata.get("date")
+        post_meta = page_data.page_metadata.get("meta")  # XD
         # post_data = filename.split('/')
         page_out_path = Path(
-            project_folder_path, config.home_path
+            project_folder_path, project_data.config.home_path
         )  # Don't resolve just yet
         # post_file = post_data[2].replace('.md','.html')
         # Convert to HTML
@@ -191,24 +214,28 @@ def create_page(
         try:
             output_file.write(
                 rd_page_template.render(
+                    config=project_data.config.__dict__,
                     title=page_header,
-                    page_title=config.site_title,
+                    page_title=project_data.config.site_title,
                     page_desc=page_subtitle,
                     date=post_date,
                     metad=post_meta,
-                    url=Path(config.url, post_file),
-                    article=markdown(md_content),
+                    url=Path(project_data.config.url, post_file),
+                    article=markdown(page_data.md_content),
                     posts=posts_list,
-                    home=config.home_md,
+                    home=project_data.config.home_md,
                     header=markdown(
-                        md_to_str(Path(project_folder_path, config.header_md))
+                        md_to_str(
+                            Path(project_folder_path, project_data.config.header_md)
+                        )
                     ),
                     footer=markdown(
-                        md_to_str(Path(project_folder_path, config.footer_md))
+                        md_to_str(
+                            Path(project_folder_path, project_data.config.footer_md)
+                        )
                     ),
                     nextpage=next_page,
                     last_date=last_date,
-                    config=config.__dict__,
                 )
             )
             logger.info(f"Rendering and writing page: {post_file_new} complete")
@@ -256,6 +283,8 @@ def build_project(
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
 
+        project_data = ProjectData(project_folder_path, config)
+
         # Resource dir = Static assets (eg: static/); images, stylesheets, scrips, etc.
         resource_path_abs = resolve_path(project_folder, config.resource_path)
         # Home dir = Files to be served (eg: public/); web-accessible
@@ -270,27 +299,23 @@ def build_project(
             f"Finish copying static resources from {resource_path_abs}\n to output directory:  {home_path_abs}"
         )
 
-        # Create pages from content/notes/*.md
         posts = []
+
+        # Build the pages from markdown content based out of content/notes/*.md
         notes_path = resolve_path(project_folder_path, config.content_path, "notes")
         logger.info(f"Notes path: {notes_path}")
         for each_note_md in Path(notes_path).glob("*.md"):
             logger.info(f"Creating page using: {each_note_md}")
-            post_detail, md = parse_md(each_note_md)
+            post_detail, md_content = parse_md(each_note_md)
             # Create blog pages
             if post_detail is not None:
-                post_url = create_page(
-                    project_folder_path,
-                    config,
-                    config.note_template,
-                    posts,
-                    post_detail,
-                    md,
-                    each_note_md,
+                page_data_posts = PageData(
+                    config.note_template, posts, post_detail, md_content, each_note_md
                 )
+                post_url = create_page(project_data, page_data_posts)
                 ymd = post_detail
                 ymd.update({"url": "/" + post_url})
-                ymd.update({"note": markdown(md)})
+                ymd.update({"note": markdown(md_content)})
                 posts += [ymd]
 
         # Sort all blog posts based on date in a descending order
@@ -298,29 +323,19 @@ def build_project(
 
         # Create the other pages from data in content directory
         home_content_path = Path(project_folder_path, config.home_md)
-        home_page = create_page(
-            project_folder_path,
-            config,
-            config.home_template,
-            posts,
-            None,
-            md_to_str(home_content_path),
-            "index.html",
+        page_data_home = PageData(
+            config.home_template, posts, None, md_to_str(home_content_path), "index.html"
         )
+        home_page = create_page(project_data, page_data_home)
         logger.info(f"Home page created at:  {resolve_path(home_page)}")
 
-        # TODO: Check RSS content
-        rss_feed = create_page(
-            project_folder_path,
-            config,
-            config.feed_template,
-            posts,
-            None,
-            md_to_str(home_content_path),
-            "rss.xml",
+        page_data_rss = PageData(
+            config.feed_template, posts, None, md_to_str(home_content_path), "rss.xml"
         )
+        # TODO: Check RSS content
+        rss_feed = create_page(project_data, page_data_rss)
         logger.info(f"RSS feed created at:  {resolve_path(rss_feed)}")
-
+        # Finish
         print("Project built successfully.")
         logger.info(
             f"rupantar Project built at: {resolve_path(project_folder, config.home_path)}"
