@@ -1,10 +1,12 @@
 from argparse import ArgumentParser
-from sys import argv, exit
+import sys
+
+# from sys import argv
 from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
 
 
-def main(args=argv[1:]):
+def main(args=sys.argv[1:]):
     parser = ArgumentParser(
         prog="rupantar",
         description="Easily configurable static website generator with a focus on minimalism.",
@@ -140,4 +142,4 @@ def main(args=argv[1:]):
 
 # Entry point
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
