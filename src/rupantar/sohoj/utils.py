@@ -8,6 +8,7 @@ from datetime import datetime
 
 logger = getLogger()
 
+
 def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
     """Resolve the (absolute) path to a file or directory.
 

@@ -3,7 +3,7 @@ __pycache__
 .pytest_cache
 
 
-# Visual Studio Code 
+# Visual Studio Code
 .vscode/*
 #!.vscode/settings.json
 #!.vscode/tasks.json
