@@ -26,7 +26,8 @@ classifiers = [
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-    
+
+
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/bhodrolok/rupantar/issues"
 
@@ -55,6 +56,8 @@ black = "^23.11.0"
 ruff = "^0.1.6"
 pyupgrade = "^3.15.0"
 pre-commit = "^3.5.0"
+pytest-order = "^1.2.0"
+
 
 [tool.poetry.scripts]
 rupantar = "src.rupantar.start:main"
@@ -72,12 +75,16 @@ rup_script = { var = "python -m {rup_start_path}", recursive = true }
 [tool.taskipy.tasks]
 rupantar = { cmd = "{rup_script}", help = "Run rupantar start script as a module. Works as you'd expect..." }
 init = { cmd = "{rup_script} init -s hello", help = "Init. a default rupantar project, resulting dir is 'hello'" }
-# Init --> Build --> Serve
-just_work = { cmd = "{rup_script} init -s hello", help = "Initialize default rupantar project, build it, and serve it at port 12345." }
+
+# just_work = Init --> Build --> Serve
+just_work = { cmd = "{rup_script} init -s hello", help = "Initialize a rupantar project with default settings, build it, and serve it at port 55991." }
+
 post_just_work = "task build"
-build = { cmd = "{rup_script} build hello", help = "Build an existing rupantar project ('hello')!" }
+build_only = { cmd = "{rup_script} build hello", help = "Build rupantar project ('hello')" }
+build = { cmd = "{rup_script} build hello", help = "Build rupantar project ('hello') and serve it afterwards" }
 post_build = "task serve"
-serve = {cmd = "{rup_script} serve -p 12345 -O hello", help = "Serve an existing built rupantar project at port 12345 ('hello')!" }
+serve = {cmd = "{rup_script} serve -p 55991 -O hello", help = "Serve built rupantar project at port 55991 ('hello')!" }
+
 
 fmt_black = { cmd = "black {rup_path}", help = "PEP-8 compliant formatting" }
 check_ruff = { cmd = "ruff check {rup_path}", help = "Run ruff as a linter" }

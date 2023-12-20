@@ -43,7 +43,7 @@
     <li><a href="#install">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#structure">Project Structure</a></li>
-    <!--<li><a href="#features">Features</a></li> 
+    <!--<li><a href="#features">Features</a></li>
     <li><a href="#shots">Screenshots</a></li>-->
     <li><a href="#extra">Configuration</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -57,7 +57,7 @@
 
 Fork of <a href="https://github.com/niharokz/pidgeotto" target="_blank">pidgeotto</a>
 
-Rupantar is a command-line tool that enables quick generation of simple, minimally themed, static websites with extensive support for customizations.  
+Rupantar is a command-line tool that enables quick generation of simple, minimally themed, static websites with extensive support for customizations.
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -88,7 +88,7 @@ Rupantar has the following dependencies:
   - `cd` into the `rupantar` directory
   - ```console
     $ pip install -r requirements
-    ``` 
+    ```
 
 - Direct installation using **Git**:
   - ```console
@@ -116,7 +116,7 @@ To initiate a project ( say for example `notun`):
 ```console
 $ rupantar init notun
 ```
-- NB: Some generic questions will be asked running this command in order to set up some configuration values. 
+- NB: Some generic questions will be asked running this command in order to set up some configuration values.
 - To avoid this, pass the `-s` or `--skip` flag after `init`.
 
 To add a new post/page (say for example `kagoch`, to the existing `notun`):
@@ -146,15 +146,15 @@ $ rupantar serve notun
 The overall skeleton of a fully built & ready-to-serve rupantar project looks something like:
 ```
 rupantar_project/
-    ├── config.yml  <-- Config for the page title, CSS file, and other custom config (custom templates, etc.) 
-    ├── content/  <-- Directory to store Markdown files. 
-    │   ├── header.md 
+    ├── config.yml  <-- Config for the page title, CSS file, and other custom config (custom templates, etc.)
+    ├── content/  <-- Directory to store Markdown files.
+    │   ├── header.md
     │   ├── footer.md
     │   ├── home.md
     │   └── notes/  <-- Directory to store Markdown files for content of extra pages.
     │       └── example_blog.md
     └──static/  <-- Directory to store static content eg: CSS, images, etc.
-    │   └── demo.css  
+    │   └── demo.css
     ├── public/   <-- Directory to store generated static files.
     └── templates/  <-- Directory to store Jinja2 layouts for the pages.
         ├── home_template.html
@@ -172,8 +172,8 @@ A :construction: roadmap of this Python project can be found [here](https://gith
 <h2 id="extra"> Development & Configuration :plate_with_cutlery:</h2>
 
 - It is recommended to use [Poetry](https://github.com/python-poetry/poetry) for better dependency management, packaging, and release.
-  - A big reason is the ease in managing virtual environments. 
-  - Why consider `venvs` in the first place? Well you get an isolated environment, better reproducibility, better dependency management, and (most importantly!) minimize risk of any conflicts with other existing Python projects/dependencies locally on the system. Especially if they were installed globally system-wide using `pip`. 
+  - A big reason is the ease in managing virtual environments.
+  - Why consider `venvs` in the first place? Well you get an isolated environment, better reproducibility, better dependency management, and (most importantly!) minimize risk of any conflicts with other existing Python projects/dependencies locally on the system. Especially if they were installed globally system-wide using `pip`.
   - Just overall makes the development process more smoother.
 
 - After forking and cloning the repository:
@@ -197,7 +197,39 @@ A :construction: roadmap of this Python project can be found [here](https://gith
 
 <h2 id="contributing">Contributing :scroll: </h2>
 
-This is an open source project. Suggestions, bug fixes, documentation improvements, etc. are welcome through [Pull Requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and the [GitHub Issue Tracker](https://github.com/Bhodrolok/rupantar/issues).
+
+This is an open source project. Suggestions, bug reports, feature requests, documentation improvements, etc. are more than welcome through [Pull Requests (PRs)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and [Issues](https://github.com/Bhodrolok/rupantar/issues).
+
+The _usual_ steps for contributing via a PR are:
+
+1. Fork this repository to your own GitHub account
+
+2. Clone the repository to your machine
+
+  ```console
+$ git clone https://github.com/Bhodrolok/rupantar.git
+  ```
+
+3. `cd` to where you cloned the repo and create a local git branch
+
+```console
+$ git checkout -b new-feature-branch
+```
+
+4. Make your changes and commit them to that branch
+
+```console
+$ git commit -m "brief description about changes"
+```
+
+5. Push your changes to your remote fork
+
+```conole
+$ git push origin new-feature-branch
+```
+
+6. Create a new Pull Request!
+
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -206,14 +238,19 @@ This is an open source project. Suggestions, bug fixes, documentation improvemen
 
 This project is licensed under the [MIT License](./LICENSE).
 
+_tldr_ is that `rupantar` is Free and Open Source Software (FOSS)!
+
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
 <h2 id="alternatives">Similar Projects :goat:</h2>
 
 - [pidgeotto](https://github.com/niharokz/pidgeotto) - Primary inspiration for this project.
-- [pelican](https://github.com/getpelican/pelican)
-- [eleventy](https://github.com/11ty/eleventy)
-- [zola](https://github.com/getzola/zola)
+- [Pelican](https://github.com/getpelican/pelican) - Python-based
+- [Jekyll](https://github.com/jekyll/jekyll) - Ruby-based
+- [Hugo](https://github.com/gohugoio/hugo) - Go-based
+- [Zola](https://github.com/getzola/zola) - Rust-based
+- [Eleventy](https://github.com/11ty/eleventy) - JavaScript-based alternative to Jekyll
+- Some more Python-based static site generators can be found [here](https://wiki.python.org/moin/StaticSiteGenerator).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
