@@ -42,16 +42,18 @@ def parse_md(md_file_path: str) -> tuple[dict(str), str] | OSError | FileNotFoun
             logger.info(f"Parsing file: {md_file_path}")
             yaml_lines, ym_meta, md_contents = [], "", ""
 
-            for line in infile:
+            lines = iter(infile)
+            for line in lines:
                 if line.startswith("---"):
-                    for line in infile:
-                        if line.startswith("---"):
-                            break
-                        else:
-                            yaml_lines.append(line)
-                    ym_meta = "".join(yaml_lines)
-                    md_contents = "".join(infile)
                     break
+
+            for line in lines:
+                if line.startswith("---"):
+                    break
+                yaml_lines.append(line)
+
+            ym_meta = "".join(yaml_lines)
+            md_contents = "".join(lines)
 
         post_detail = safe_load(ym_meta)
         logger.debug(f"Metadata: {post_detail}")
