@@ -90,7 +90,7 @@ lint_check = "task fmt_black && task check_ruff && task fmt_ruff"
 # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#command-line-options
 [tool.black]
 line-length = 90
-target-version = ["py38", "py39", "py310", "py311", "py312"]
+target-version = ["py310", "py311", "py312"]
 verbose = "True"
 # quiet = "True"
 diff = "True"

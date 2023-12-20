@@ -1,7 +1,7 @@
 """This module is for setting up logging throughout the rupantar app.
 
-The main function in this module is `setup_logging`, which sets up the logging configuration for the application. 
-It creates a directory for storing application logs, configures the logging level, and sets up handlers for logging 
+The main function in this module is `setup_logging`, which sets up the logging configuration for the application.
+It creates a directory for storing application logs, configures the logging level, and sets up handlers for logging
 to both the console and/or a log file. The log file is created in the application's data directory with the run-time timestamp in its name.
 
 .. _Google Python Style Guide:
