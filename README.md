@@ -198,6 +198,7 @@ A :construction: roadmap of this Python project can be found [here](https://gith
 
 <h2 id="contributing">Contributing :scroll: </h2>
 
+
 This is an open source project. Suggestions, bug reports, feature requests, documentation improvements, etc. are more than welcome through [Pull Requests (PRs)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) and [Issues](https://github.com/Bhodrolok/rupantar/issues).
 
 The _usual_ steps for contributing via a PR are:
@@ -229,6 +230,7 @@ $ git push origin new-feature-branch
 ```
 
 6. Create a new Pull Request!
+
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 

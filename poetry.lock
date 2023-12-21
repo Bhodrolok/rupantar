@@ -582,6 +582,7 @@ setproctitle = ["setproctitle"]
 testing = ["filelock"]
 
 [[package]]
+
 name = "pyupgrade"
 version = "3.15.0"
 description = "A tool to automatically upgrade syntax for newer versions."
@@ -879,3 +880,4 @@ files = [
 lock-version = "2.0"
 python-versions = "^3.10"
 content-hash = "fac4ed013b62259b67f7f8bcc925387a1d940e11d98a835ec0f2e4a850ae5c33"
+

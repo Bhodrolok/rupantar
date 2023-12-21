@@ -56,31 +56,32 @@ def create_config(project_folder: str, user_choices: list[str | None]) -> None |
         with open(config_file_path, "w") as conf_file:
             conf_data = f"""# Required
 title : Demo website    # 'Title'/'Name' in home/landing page (NOT <title> HTML element)
-url : {url}    # Site URL 
+url : {url}    # Site URL
 
 # Jinja templates
 note_template : templates/note_template.html.jinja    # Blog posts i.e. notes page
 home_template : templates/home_template.html.jinja    # Home page
 feed_template : templates/feed_template.xml.jinja     # RSS feed
-{custom_needed}custom_templates: 
+{custom_needed}custom_templates:
 
 # Directories
 home_path : public      # Generated static files (served from here)
 content_path : content  # Markdown files (define page contents and front-matter metadata)
-resource_path : static  # Static assets (css, images, favicons, etc.) 
+resource_path : static  # Static assets (css, images, favicons, etc.)
 
 home_md : content/home.md       # Home page body
 header_md : content/header.md   # Header
-footer_md : content/footer.md   # Footer 
+footer_md : content/footer.md   # Footer
 
 # Optional (Custom configs included here)
-site_title : Demo Page Title                     
+site_title : Demo Page Title
 css : demo.css
 desc : {desc}   # page description
 mail : some@mail.com
 """
             conf_file.write(conf_data)
             logger.info(f"Created {config_file_path.name} at {config_file_path}")
+            return None
     except OSError as err:
         logger.exception(f"Failed to create config.yml: {err}")
 
@@ -195,11 +196,11 @@ def create_note_template(project_folder: str) -> None | OSError:
 
 <body>
     <header>
-    <h1>{{ page_title }} </h1>  
+    <h1>{{ page_title }} </h1>
     </header>
     <article>
     {{ article | safe }}
-    {% if date %} 
+    {% if date %}
     <p># Last updated on <time>{{ date.strftime('%d %b %Y') }}.</time></p>
     {% endif %}
     </article>
@@ -319,7 +320,7 @@ def create_footer(project_folder: str) -> None | OSError:
         with open(footer_content_path, "w") as footer_file:
             footer_data = """<a href="/">homepage</a> //
 <a href="https://github.com">git</a> //
-<a href="https://linkedin.com">linkedin</a> 
+<a href="https://linkedin.com">linkedin</a>
 *   powered by [Rupantar](/https://github.com/bhodrolok/rupantar)"""
             footer_file.write(footer_data)
             logger.info(f"Created {footer_content_path.name} at: {content_path}")
@@ -392,7 +393,7 @@ Sample paragraphs are like this. New paragraphs are created by leaving a blank l
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel velit iaculis, pretium nulla quis, pharetra eros. Suspendisse rhoncus aliquam elit, vel dapibus quam condimentum ac. Mauris mollis sollicitudin tristique. Nunc dolor neque, lobortis et urna et, congue ultrices felis. Donec egestas, nulla bibendum gravida dapibus, ex nunc imperdiet magna, vitae consectetur nibh neque et dolor. Duis vulputate ipsum ipsum, in interdum quam euismod et. Nam pulvinar volutpat egestas. Mauris urna ligula, consectetur nec odio vitae, tempor scelerisque urna. Quisque sagittis, eros non porta efficitur, massa ante dignissim leo, finibus scelerisque turpis libero at risus. Pellentesque eu mauris sem. Duis commodo lectus a augue pellentesque, placerat fringilla ex consectetur.
 
-## Text styling & emphasis 
+## Text styling & emphasis
 
 **Bold text sample**, *italic text sample*
 
@@ -416,15 +417,15 @@ Line breaks like the one above using \---
 1. ordered list - item 1
 2. ordered list - item 2
     1. indented ordered list item
-        a. more indentation is ***possible*** 
+        a. more indentation is ***possible***
 
 + [About Markdown](https://daringfireball.net/projects/markdown)
 + [Markdown syntax guide](/https://www.markdownguide.org/basic-syntax)
 
-Sample paragraphs are written like this. 
+Sample paragraphs are written like this.
 
 > Blockquotes like this with the '>'
-> - You can do this too! 
+> - You can do this too!
 > > Reckon they can even be nested!
 > > > Think I should stop here **tho**
 
