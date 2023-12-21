@@ -56,6 +56,8 @@ ruff = "^0.1.6"
 pyupgrade = "^3.15.0"
 pre-commit = "^3.5.0"
 pytest-order = "^1.2.0"
+pytest-xdist = "^3.5.0"
+pytest-mock = "^3.12.0"
 
 [tool.poetry.scripts]
 rupantar = "src.rupantar.start:main"

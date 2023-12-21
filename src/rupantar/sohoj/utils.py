@@ -87,7 +87,8 @@ def validate_network_address(interface_address: str) -> bool:
     Link-local and multicast addresses are considered to be invalid.
 
     Note:
-        The link-local addresses = reserved range of 169.254.1.0 to 169.254.254.255, as per the IETF.
+        link-local addresses = reserved range of 169.254.1.0 to 169.254.254.255, as per the IETF.
+        multicast addresses = reserved range of 224.0.0.0 to 239.255.255.255, as per the IANA
 
     Args:
       interface_address: Network address to validate
