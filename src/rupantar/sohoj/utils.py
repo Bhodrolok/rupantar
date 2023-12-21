@@ -32,10 +32,10 @@ def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
     try:
         # If args = single element
         if len(args) == 1:
-            return Path(args[0]).resolve()
+            return Path(args[0]).resolve(strict=True)
         # Otherwise, treat it as a tuple eg: ('path', 'to', 'dest')
         else:
-            return Path(*args).resolve()
+            return Path(*args).resolve(strict=True)
 
     except FileNotFoundError as err:
         logger.exception(f"{str(args)} does not exist")

@@ -1,7 +1,5 @@
 from argparse import ArgumentParser
 import sys
-
-# from sys import argv
 from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
 
