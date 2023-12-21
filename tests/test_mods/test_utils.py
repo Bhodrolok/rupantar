@@ -97,7 +97,7 @@ class TestUtils:
 
     def test_get_current_time_multiple_calls(self, setup_test_directory):
         time_a = get_current_time()
-        time.sleep(0.420)
+        time.sleep(1)
         time_b = get_current_time()
         assert time_a != time_b, "Expected different time values on separate calls"
 
