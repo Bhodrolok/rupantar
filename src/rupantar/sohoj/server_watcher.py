@@ -3,7 +3,7 @@ from watchfiles import run_process, DefaultFilter
 from logging import getLogger
 from pathlib import Path
 from rupantar.sohoj.server import start_server
-from rupantar.sohoj.utils import watch_dir_v2
+from rupantar.sohoj.utils import watch_dir_v2, resolve_path
 from rupantar.sohoj.configger import Config
 
 logger = getLogger()
@@ -34,7 +34,7 @@ def start_watchful_server(
     config_file_name: str,
     port: int,
     interface_address: str,
-    openURL=False,
+    open_url=False,
 ) -> None:
     """Start a HTTP web server to serve generated files of a rupantar project, re-builds and then re-serves on changes to the project.
 
@@ -58,7 +58,7 @@ def start_watchful_server(
         config_file_name (str): The name of the configuration file. Defaults to config.yml if not explicitly provided.
         port (int): The port number to use for the web server. If the port is None or in the range 0-1024, a random port in the range 49152-65535 is used as default.
         interface_address (str): The network address to use for the web server. If the address is not valid, '127.0.0.1' i.e. localhost is used as default.
-        openURL (bool): If True, opens the serving URL in a new tab of the default browser.
+        open_url (bool): If True, opens the serving URL in a new tab of the default browser. Defaults to False.
 
     Raises:
         Exception: If any error starting the web server (or while serving the files...).
@@ -66,12 +66,11 @@ def start_watchful_server(
     """
     try:
         config_file = "config.yml" if (config_file_name is None) else config_file_name
-        project_folder_path = Path(project_folder).resolve()
-        config_file_path = Path(project_folder_path, config_file).resolve()
-
+        project_folder_path = resolve_path(project_folder, strict=True)
+        config_file_path = resolve_path(project_folder_path, config_file, strict=True)
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
-
+        # Ignore changes in the output directory where rendered pages will be located
         exclude_dir = Path(project_folder_path, config.home_path)
 
         print(
@@ -81,7 +80,7 @@ def start_watchful_server(
         run_process(
             project_folder,
             target=start_server,
-            args=(project_folder, config_file_name, port, interface_address, openURL),
+            args=(project_folder, config_file_name, port, interface_address, open_url),
             callback=watch_dir_v2,
             watch_filter=OutputDirFilter(exclude_dirs=[config.home_path]),
         )
