@@ -18,22 +18,22 @@ class TestUtils:
         good_path = Path("existing", "directory")
         good_path.mkdir(parents=True)
         input_fp_str = "existing/directory"
-        assert resolve_path(input_fp_str) == good_path.resolve()
+        assert resolve_path(input_fp_str, strict=True) == good_path.resolve()
 
     def test_resolve_path_good_path_multiple_args(self, setup_test_directory):
         good_path = Path("i", "do", "exist")
         good_path.mkdir(parents=True)
-        assert resolve_path("i", "do", "exist") == good_path.resolve()
+        assert resolve_path("i", "do", "exist", strict=True) == good_path.resolve()
 
     def test_resolve_path_bad_path_single_arg(self, setup_test_directory):
         bad_path = Path("i", "do", "not", "exist")
         # Also works with a regular str instead of a Path
         with pytest.raises(FileNotFoundError):
-            _ = resolve_path(bad_path)
+            _ = resolve_path(bad_path, strict=True)
 
     def test_resolve_path_bad_path_multiple_args(self, setup_test_directory):
         with pytest.raises(FileNotFoundError):
-            _ = resolve_path("totally", "real", "path", "trust", "me!")
+            _ = resolve_path("totally", "real", "path", "trust", "me!", strict=True)
 
     # validate_network_address()
 
