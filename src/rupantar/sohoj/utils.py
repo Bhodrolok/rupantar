@@ -1,7 +1,6 @@
 from time import perf_counter
 from logging import getLogger
 from ipaddress import ip_address
-from typing import Union
 from pathlib import Path
 from watchfiles import watch
 from datetime import datetime
@@ -9,7 +8,7 @@ from datetime import datetime
 logger = getLogger()
 
 
-def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
+def resolve_path(*args: str | Path, strict: bool = False) -> Path | FileNotFoundError:
     """Resolve the (absolute) path to a file or directory.
 
     Accepts either a single argument or a tuple of arguments (multiple 'paths').
@@ -21,7 +20,8 @@ def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
         Pathlib in general: https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
 
     Args:
-        path (Path): Path to check for existence.
+        path (Path or str): Path to check for existence.
+        strict (bool): Strict checking or not. Defaults to False.
 
     Returns:
         Path: The resolved Path to the file or directory.
@@ -32,10 +32,10 @@ def resolve_path(*args: str | Path) -> Path | FileNotFoundError:
     try:
         # If args = single element
         if len(args) == 1:
-            return Path(args[0]).resolve(strict=True)
+            return Path(args[0]).resolve(strict=strict)
         # Otherwise, treat it as a tuple eg: ('path', 'to', 'dest')
         else:
-            return Path(*args).resolve(strict=True)
+            return Path(*args).resolve(strict=strict)
 
     except FileNotFoundError as err:
         logger.exception(f"{str(args)} does not exist")
@@ -120,7 +120,7 @@ def get_current_time() -> str:
 
 
 def watch_dir(
-    monitored_dir: Union[Path, str], project_folder: str, config_file_name: str
+    monitored_dir: Path | str, project_folder: str, config_file_name: str
 ) -> None:
     """Monitor the provided directory and print/log information about changes, if any.
 
