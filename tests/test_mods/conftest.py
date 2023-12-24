@@ -2,6 +2,7 @@ import pytest
 from os import getcwd, chdir
 from shutil import rmtree
 
+
 # Ref: https://docs.pytest.org/en/6.2.x/fixture.html#conftest-py-sharing-fixtures-across-multiple-files
 @pytest.fixture
 def setup_test_directory(tmp_path):

@@ -71,7 +71,7 @@ def parse_md(md_file_path: str) -> tuple[dict(str), str] | OSError | FileNotFoun
     """
     # TODO: Possibly look at: https://github.com/eyeseast/python-frontmatter ?
     try:
-        md_path = resolve_path(md_file_path)
+        md_path = resolve_path(md_file_path, strict=True)
         with open(md_path) as infile:
             logger.info(f"Parsing file: {md_file_path}")
             yaml_lines, ym_meta, md_contents = [], "", ""
@@ -120,7 +120,7 @@ def md_to_str(md_file: str) -> str:
 
     """
     try:
-        md_path = resolve_path(md_file)
+        md_path = resolve_path(md_file, strict=True)
         logger.debug(f"markdown file path: {md_path}")
         with open(md_path) as md_data:
             return md_data.read()
@@ -157,8 +157,10 @@ def create_page(
     # logger.debug(inspect.signature(create_page))
     output_file = Path(page_data.out_filename)
     output_filename = output_file.name
-    project_folder_path = resolve_path(project_data.project_name)
-    page_template_path = resolve_path(project_folder_path, page_data.page_template)
+    project_folder_path = resolve_path(project_data.project_name, strict=True)
+    page_template_path = resolve_path(
+        project_folder_path, page_data.page_template, strict=True
+    )
     logger.info(
         f"Building page using template: {page_data.page_template} from: {page_template_path}"
     )
@@ -274,11 +276,11 @@ def build_project(
     try:
         print("Building project...")
         # Get absolute paths for both the rupantar project and the config file (rather than keep 'em relative!)
-        project_folder_path = resolve_path(project_folder)
+        project_folder_path = resolve_path(project_folder, strict=True)
         logger.info(f"Rupantar project directory location: {project_folder_path}")
         # Default values for config here instead of directly on function signature
         config_file = "config.yml" if (config_file_name is None) else config_file_name
-        config_file_path = resolve_path(project_folder_path, config_file)
+        config_file_path = resolve_path(project_folder_path, config_file, strict=True)
         logger.info(f"Config file location: {config_file_path}")
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)
@@ -286,8 +288,10 @@ def build_project(
         project_data = ProjectData(project_folder_path, config)
 
         # Resource dir = Static assets (eg: static/); images, stylesheets, scrips, etc.
-        resource_path_abs = resolve_path(project_folder, config.resource_path)
-        # Home dir = Files to be served (eg: public/); web-accessible
+        resource_path_abs = resolve_path(
+            project_folder, config.resource_path, strict=True
+        )
+        # Home dir = Files to be served (eg: public/); web-accessible (NOT created at this point)
         home_path_abs = resolve_path(project_folder, config.home_path)
         # Clear out existing public/ folder
         if Path.exists(home_path_abs):
@@ -302,7 +306,9 @@ def build_project(
         posts = []
 
         # Build the pages from markdown content based out of content/notes/*.md
-        notes_path = resolve_path(project_folder_path, config.content_path, "notes")
+        notes_path = resolve_path(
+            project_folder_path, config.content_path, "notes", strict=True
+        )
         logger.info(f"Notes path: {notes_path}")
         for each_note_md in Path(notes_path).glob("*.md"):
             logger.info(f"Creating page using: {each_note_md}")

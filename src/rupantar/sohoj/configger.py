@@ -1,12 +1,13 @@
+from __future__ import annotations
 from sys import version_info
 
-# Python 3.11 and above ships with a TOML library out-of-the-box, use tomli (https://github.com/hukkin/tomli) otherwise
+# Python 3.11 and above ships with a TOML library out-of-the-box (https://docs.python.org/3/library/tomllib.html#module-tomllib)
+# Python 3.10 and below use tomli (https://github.com/hukkin/tomli)
 if version_info <= (3, 10):
     import tomli as tomllib
 else:
     import tomllib
-from typing import Union
-from yaml import safe_load
+from yaml import safe_load, YAMLError
 from pathlib import Path
 from logging import getLogger
 
@@ -27,7 +28,7 @@ class Config:
 
     """
 
-    def __init__(self, config_file_path: Union[Path, str]) -> None:
+    def __init__(self, config_file_path: Path | str) -> None:
         config_file_extension = Path(config_file_path).resolve().suffix
         # global config
         # YAML handling
@@ -36,6 +37,14 @@ class Config:
                 with open(config_file_path, "r") as yaml_file:
                     config = safe_load(yaml_file)
                 logger.info(f"Loaded configuration data from: {config_file_path}")
+            except YAMLError as err:
+                logger.exception(f"Error loading config data: {err}")
+                if hasattr(err, "problem_mark"):
+                    mark = err.problem_mark
+                    logger.exception(
+                        f"Error at position: Line {mark.line+1}, Column {mark.column+1})"
+                    )
+
             except OSError as err:
                 logger.exception(
                     f"Error reading and loading config data from {config_file_path}: {err}"
@@ -48,6 +57,8 @@ class Config:
                 with open(config_file_path, "rb") as toml_file:
                     config = tomllib.load(toml_file)
                 logger.info(f"Loaded configuration data from: {config_file_path}")
+            except tomllib.TOMLDecodeError as err:
+                logger.exception(f"Invalid TOML doc...: {err}")
             except OSError as err:
                 logger.exception(
                     f"Error reading and loading config data from {config_file_path}: {err}"

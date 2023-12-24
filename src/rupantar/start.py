@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 import sys
-
-# from sys import argv
+from xdg_base_dirs import xdg_data_home
 from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
 
@@ -18,7 +17,7 @@ def main(args=sys.argv[1:]):
         dest="loglevel",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="INFO",
-        help="Set logging level to control verbosity of log messages. Default INFO",
+        help=f"Set logging level to control verbosity of log messages. Default INFO. Logs will be stored in {xdg_data_home()}\\rupantar\\logs",
     )
     subparsers = parser.add_subparsers(
         dest="type", help="Supported commands", required=True

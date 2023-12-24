@@ -1,17 +1,18 @@
 """This module is for setting up logging throughout the rupantar app.
 
-The main function in this module is `setup_logging`, which sets up the logging configuration for the application. 
-It creates a directory for storing application logs, configures the logging level, and sets up handlers for logging 
+The main function in this module is `setup_logging`, which sets up the logging configuration for the application.
+It creates a directory for storing application logs, configures the logging level, and sets up handlers for logging
 to both the console and/or a log file. The log file is created in the application's data directory with the run-time timestamp in its name.
 
 .. _Google Python Style Guide:
    http://google.github.io/styleguide/pyguide.html
 """
 
-from logging import StreamHandler, getLogger, FileHandler, Formatter
+from logging import getLogger, FileHandler, Formatter
 from pathlib import Path
 from datetime import datetime
 from xdg_base_dirs import xdg_data_home
+import sysconfig
 
 
 def setup_logging(loglevel: int) -> None:
@@ -39,8 +40,8 @@ def setup_logging(loglevel: int) -> None:
     # Create directory for storing app info in running machine's application data files directory
     # as per XDG Base Directory specs (https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
     app_data_dir = xdg_data_home()
-    rupantar_data_dir = Path(app_data_dir, "rupantar").absolute()
-    rupantar_logs_dir = Path(rupantar_data_dir, "logs").absolute()
+    rupantar_data_dir = Path(app_data_dir, "rupantar").resolve()
+    rupantar_logs_dir = Path(rupantar_data_dir, "logs").resolve()
 
     # print(f"Application data files in this machine stored in: {str(app_data_dir)}")
 
@@ -67,16 +68,17 @@ def setup_logging(loglevel: int) -> None:
 
     # Set handler for destination of logs, default to sys.stderr
     # Log destination = console
-    logs_console_handler = StreamHandler()
-    logs_console_handler.setLevel(loglevel)
-    logs_console_handler.setFormatter(Formatter(log_format_string_default))
+    # logs_console_handler = StreamHandler()
+    # logs_console_handler.setLevel(loglevel)
+    # logs_console_handler.setFormatter(Formatter(log_format_string_default))
     # logger.addHandler(logs_console_handler)
 
     # Log destination = file
-    log_filename = "rupantar-" + datetime.now().strftime("%H-%M-%S_%p") + ".log"
-    # log_filename = f"rupantar-{datetime.datetime.now():%H-%M-%S_%p}.log"
-    log_filepath = Path(rupantar_logs_dir, log_filename).absolute()
-    logs_file_handler = FileHandler(filename=log_filepath)
+    # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+    time_stamp = datetime.now().strftime("%X").replace(":", "_")
+    log_filename = f"rupantar-{sysconfig.get_platform()}-{time_stamp}.log"
+    log_filepath = Path(rupantar_logs_dir, log_filename).resolve()
+    logs_file_handler = FileHandler(filename=log_filepath, mode="a")
     # Create formatter object
     file_handler_format = Formatter(log_format_string_default)
     logs_file_handler.setFormatter(file_handler_format)

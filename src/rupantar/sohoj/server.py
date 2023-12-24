@@ -8,7 +8,7 @@ from logging import getLogger
 import webbrowser as wb
 
 from rupantar.sohoj.configger import Config
-from rupantar.sohoj.utils import validate_network_address
+from rupantar.sohoj.utils import validate_network_address, resolve_path
 from rupantar.sohoj.builder import build_project
 
 logger = getLogger()
@@ -37,7 +37,7 @@ def run_web_server(
         openURL (bool): If True, opens the serving URL in a new tab of the default browser.
 
     Raises:
-        KeyboardInterrupt: If the web server is stopped by user intervention (pressing Ctrl + C or Delete).
+        KeyboardInterrupt: If the web server is stopped by user intervention (pressing Ctrl + C or Delete) i.e. SIGINT.
         Exception: If any other error while serving the web server.
 
     """
@@ -48,6 +48,7 @@ def run_web_server(
             # Allow immediate socket re-use
             httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
             print(f"Web server available at: {serving_url}")
+            print("Press Ctrl + C to stop!")
             # If ran with `-O/--open`, open the URL in a new tab of the default browser
             # https://docs.python.org/3/library/webbrowser.html#webbrowser.open_new_tab
             if openURL:
@@ -108,10 +109,10 @@ def start_server(
         logger.info("Using network address: %s", HOST)
         logger.info(f"Web server address: {serving_url}")
 
-        project_folder_path = Path(project_folder).resolve()
+        project_folder_path = resolve_path(project_folder, strict=True)
         logger.info(f"Rupantar project directory location: {project_folder_path}")
-        # Location of tconfig file, assumed to be in abovementioned project folder
-        config_file_path = Path(project_folder_path, config_file).resolve()
+        # Location of config file, assumed to be in abovementioned project folder
+        config_file_path = resolve_path(project_folder_path, config_file, strict=True)
         logger.info(f"Config file location: {config_file_path}")
         # Instantiate Config object for reading and loading config data values
         config = Config(config_file_path)

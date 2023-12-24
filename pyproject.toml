@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rupantar"
-version = "0.9.0"
+version = "0.9.5-a"
 description = "Simple hackable static website generator with a focus on minimalism"
 authors = ["bhodrolok <korbolorbo1214@proton.me>"]
 license = "MIT"
@@ -44,6 +44,9 @@ watchfiles = "^0.21.0"
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
+pytest-xdist = "^3.5.0"
+pytest-mock = "^3.12.0"
+# pytest-order = "^1.2.0"
 
 [tool.poetry.group.docs.dependencies]
 pyment = "^0.3.3"
@@ -59,8 +62,9 @@ pre-commit = "^3.5.0"
 pytest-order = "^1.2.0"
 
 
+
 [tool.poetry.scripts]
-rupantar = "src.rupantar.start:main"
+rupantar = "rupantar.start:main"
 
 # https://github.com/taskipy/taskipy#adding-tasks
 [tool.taskipy.settings]
@@ -95,7 +99,7 @@ lint_check = "task fmt_black && task check_ruff && task fmt_ruff"
 # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#command-line-options
 [tool.black]
 line-length = 90
-target-version = ["py38", "py39", "py310", "py311", "py312"]
+target-version = ["py310", "py311", "py312"]
 verbose = "True"
 # quiet = "True"
 diff = "True"
