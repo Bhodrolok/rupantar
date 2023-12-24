@@ -55,7 +55,7 @@ def create_config(project_folder: str, user_choices: list[str | None]) -> None |
         )
         with open(config_file_path, "w") as conf_file:
             conf_data = f"""# Required
-title : Demo website    # 'Title'/'Name' in home/landing page (NOT <title> HTML element)
+title : Demo website    # Title in home/landing page (NOT the Page Title!)
 url : {url}    # Site URL
 
 # Jinja templates
@@ -196,7 +196,7 @@ def create_note_template(project_folder: str) -> None | OSError:
 
 <body>
     <header>
-    <h1>{{ page_title }} </h1>
+    <h1>{{ post_title }} </h1>
     </header>
     <article>
     {{ article | safe }}
@@ -526,7 +526,9 @@ date : {t}
 
 
 @get_func_exec_time
-def create_project(project_folder: str, user_choices: list[str | None]) -> None | OSError:
+def create_project(
+    project_folder: str, user_choices: list[str | None]
+) -> None | FileNotFoundError | OSError:
     """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values.
 
     Creates the rupantar project skeleton and populates it with some default Jinja2 templates to be used when building the project & rendering content.
@@ -545,12 +547,15 @@ def create_project(project_folder: str, user_choices: list[str | None]) -> None 
 
     """
     try:
+        print(f"Setting up project {project_folder}...")
         rupantar_project_path = resolve_path(project_folder)
         # Delete existing folder (https://stackoverflow.com/a/53492792)
-        # TODO: Notify user?
         if rupantar_project_path.exists():
             logger.warning(
                 f"Existing rupantar project with name: {project_folder} found. Will overwrite it."
+            )
+            print(
+                f"Overwriting existing folder {project_folder} at {rupantar_project_path}"
             )
             rmtree(rupantar_project_path)
             logger.warning(
@@ -591,6 +596,10 @@ def create_project(project_folder: str, user_choices: list[str | None]) -> None 
         # Finish init-ing
         print(f"rupantar project skeleton created at: {rupantar_project_path}")
         logger.info(f"Project skeleton has been initialized at: {rupantar_project_path}")
+
+    except FileNotFoundError as err:
+        logger.exception(f"{err}")
+        print(err)
 
     except OSError as err:
         logger.exception(f"Error: Failed to initialize rupantar project.\n{err}")
