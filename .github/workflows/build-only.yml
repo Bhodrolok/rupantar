@@ -1,0 +1,43 @@
+name: Build rupantar using Poetry
+run-name: ${{ github.actor }}'s trigger ${{ github.event_name }}@${{ github.sha}}
+
+on:
+    push:
+        branches:
+            - 'develop'
+        # Pattern matched against refs/tags
+        tags:
+            - '*-bo'
+            - '*-build'
+    # Enable workflow to be manually run
+    workflow_dispatch:
+
+jobs:
+    build:
+        name: Build using Poetry
+        strategy:
+            # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#handling-failures
+            fail-fast: false
+            matrix:
+                python-version: ["3.12"]
+                poetry-version: ["1.7.1"]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        env:
+            OS: ${{ matrix.os }}
+            PYTHON: ${{ matrix.python-version }}
+            POETRY: ${{ matrix.poetry-version }}
+
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - name: Checkout code so the workflow can be accessed
+              uses: actions/checkout@v4.1.1
+
+            - name: Setup Python${{ env.PYTHON }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON }}
+
+            - name: Build using Poetry
+              run: poetry build -vv
+
