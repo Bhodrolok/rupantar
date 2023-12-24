@@ -38,6 +38,11 @@ jobs:
               with:
                   python-version: ${{ env.PYTHON }}
 
+            - name: Setup Poetry${{ env.POETRY}}
+              uses: abatilo/actions-poetry@v2.3.0
+              with:
+                poetry-version: ${{ env.POETRY }}
+
             - name: Build using Poetry
               run: poetry build -vv
 
