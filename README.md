@@ -40,6 +40,7 @@
   <summary>Table of Contents 🚩</summary>
   <ol>
     <li><a href="#description">Description</a></li>
+    <li><a href="#features">Features</a></li>
     <li><a href="#dependencies">Dependencies</a></li>
     <li><a href="#install">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
@@ -62,15 +63,34 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
+<h2 id="features"> Features :rocket: </h2>
+
+1. Customizable using [Jinja2 templates](https://jinja.palletsprojects.com/en/3.0.x/templates/)
+2. Fits well with multiple use cases
+   - Blogging, personal knowledge base, portfolio, etc.
+3. Completely [JavaScript-free](https://endtimes.dev/why-your-website-should-work-without-javascript/)
+   - Rely on the resilience of good ol' HTML and CSS
+4. RSS and Atom [feed](https://indieweb.org/RSS) generation
+5. Fast build times
+6. Bundled web server with live reload on changes
+7. Cross-platform
+8. Minimal system resource footprint
+
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
+
+
 <h2 id="dependencies"> Dependencies :bridge_at_night: </h2>
 
 Rupantar has the following dependencies:
 
-- <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Config and setting page metadata
-- <a href="https://pypi.org/project/tomli/" target="_blank">tomli</a>:  Config and setting page metadata, not required if running Python 3.11 (or above)
+- <a href="https://pypi.org/project/PyYAML/" target="_blank">PyYAML</a>:  Project configuration and page metadata management
+- <a href="https://pypi.org/project/tomli/" target="_blank">tomli</a>:  Same as above for [TOML](https://toml.io/en/) enjoyers
+    - **Not** required if running Python 3.11 or above
+
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
-- <a href="https://pypi.org/project/xdg-base-dirs/" target="_blank">xdg-base-dirs</a>:  App-runtime data storage location as per XDG Base Dir spec
+- <a href="https://pypi.org/project/xdg-base-dirs/" target="_blank">xdg-base-dirs</a>:  App-runtime data storage location as per the [XDG Base Dir spec](https://wiki.archlinux.org/title/XDG_Base_Directory)
+   - mostly for storing logs when running rupantar
 
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
