@@ -1,6 +1,5 @@
 <div align="center">
 <h1>
-    <a name="readme-top"></a>
     <img src="./assets/visuals/proj_logo.png" style="background-color:white" width="43px">
     <b> Rupantar </b>
     <p style="font-size: medium">No-frills website generation, powered by Python</p>
@@ -36,7 +35,7 @@
 
 ---
 
-<details>
+<details id="readme-top">
   <summary>Table of Contents 🚩</summary>
   <ol>
     <li><a href="#description">Description</a></li>
@@ -44,8 +43,10 @@
     <li><a href="#dependencies">Dependencies</a></li>
     <li><a href="#install">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
+    <ol>
+      <li><a href="#qdemo">Quick Demonstration</a></li>
+    </ol>
     <li><a href="#structure">Project Structure</a></li>
-    <!--<li><a href="#features">Features</a></li>
     <li><a href="#shots">Screenshots</a></li>-->
     <li><a href="#extra">Configuration</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -69,11 +70,12 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 2. Fits well with multiple use cases
    - Blogging, personal knowledge base, portfolio, etc.
 3. Completely [JavaScript-free](https://endtimes.dev/why-your-website-should-work-without-javascript/)
-   - Rely on the resilience of good ol' HTML and CSS
+   - Trust the resilience of good ol' HTML and CSS
 4. RSS and Atom [feed](https://indieweb.org/RSS) generation
 5. Fast build times
 6. Bundled web server with live reload on changes
 7. Cross-platform
+   - Runs in Windows, Linux, and macOS machines
 8. Minimal system resource footprint
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
@@ -89,7 +91,8 @@ Rupantar has the following dependencies:
 
 - <a href="https://pypi.org/project/Jinja2/" target="_blank">jinja2</a>:	Templating engine used to render the HTML/XML pages
 - <a href="https://pypi.org/project/markdown2/" target="_blank">markdown2</a>:	Reading Markdown files
-- <a href="https://pypi.org/project/xdg-base-dirs/" target="_blank">xdg-base-dirs</a>:  App-runtime data storage location as per the [XDG Base Dir spec](https://wiki.archlinux.org/title/XDG_Base_Directory)
+- <a href="https://pypi.org/project/xdg-base-dirs/" target="_blank">xdg-base-dirs</a>:  Getting location for app runtime data storage ('AppData')
+   - as per the [XDG Base Dir spec](https://wiki.archlinux.org/title/XDG_Base_Directory)
    - mostly for storing logs when running rupantar
 
 
@@ -99,23 +102,28 @@ Rupantar has the following dependencies:
 <h2 id="install"> Installation :coconut: </h2>
 
 - Rupantar needs [Python](https://www.python.org/downloads/) installed locally.
-  - **CPython** version compatibility: needs Python interpreter (**version 3.10 or higher**)
+  - **CPython** version compatibility: Python interpreter **version 3.10 _or higher_**.
 
-- `pip`, Python's default package management tool, can be used for either of the methods.
+- [`pip`](https://pip.pypa.io/en/stable/installation/), Python's default package management tool, can be used.
+- _If_ [`pipx`](https://pipx.pypa.io/stable/) is available, it is recommended to use that instead.
 
 - Installation from **source**:
   - Install [Git](https://git-scm.com/downloads)
   - Clone this [git repository](https://github.com/bhodrolok/rupantar.git)
   - `cd` into the `rupantar` directory
-  - ```console
+  ```console
     $ pip install -r requirements
     ```
 
 - Direct installation using **Git**:
-  - ```console
+  ```console
     $ pip install git+https://github.com/bhodrolok/rupantar
     ```
 
+- Using **pipx**:
+  ```console
+    $ pipx install rupantar==0.9.5a0
+    ```
 <!-- NB: Any major differences b/w Windows and MacOS and GNULinux, mention here-->
 
 
@@ -126,11 +134,20 @@ Rupantar has the following dependencies:
 
 - NB: Rupantar is a pure CLI tool, without any GUI.
 
-To get a comprehensive list of commands and flags:
+To get a comprehensive list of commands and options:
 ```console
 $ rupantar -h
 ```
 
+To get the detailed usage of a specific command:
+```console
+$ rupantar cmd_name -h
+```
+
+<p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
+
+
+<h2 id="qdemo">Quick Demo :barber: </h2>
 
 To initiate a project ( say for example `notun`):
 
@@ -139,8 +156,9 @@ $ rupantar init notun
 ```
 - NB: Some generic questions will be asked running this command in order to set up some configuration values.
 - To avoid this, pass the `-s` or `--skip` flag after `init`.
+  - They will be filled with some sane defaults.
 
-To add a new post/page (say for example `kagoch`, to the existing `notun`):
+To add a new post/page (say for example `kagoch`, to the existing `notun` project):
 
 ```console
 $ rupantar new notun kagoch
@@ -176,16 +194,18 @@ rupantar_project/
     │       └── example_blog.md
     └──static/  <-- Directory to store static content eg: CSS, images, etc.
     │   └── demo.css
-    ├── public/   <-- Directory to store generated static files.
+    ├── public/   <-- Directory to store the generated static site.
     └── templates/  <-- Directory to store Jinja2 layouts for the pages.
-        ├── home_template.html
-        ├── note_template.html
-        └── feed_template.xml
+        ├── home_template.html.jinja
+        ├── note_template.html.jinja
+        ├── your_custom_template.html.jinja
+        └── feed_template.xml.jinja
+
 ```
 
-Rupantar itself is developed with a "src layout" so as to follow a more standardized and organized way of managing everything. To read more about that, click <a href="#readme-top">here</a>.
+Rupantar itself is developed with a "src layout" structure so as to follow a more modern, standardized, and organized way of managing everything. To read more about that, click <a href="#readme-top">here</a>.
 
-A :construction: roadmap of this Python project can be found [here](https://github.com/users/Bhodrolok/projects/3).
+A :construction: features roadmap of this Python project can be found [here](https://github.com/users/Bhodrolok/projects/3).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
@@ -209,7 +229,7 @@ A :construction: roadmap of this Python project can be found [here](https://gith
     ```
   - Run rupantar:
     ```console
-    $ python src/rupantar/start.py -h
+    $ poetry run rupantar -h
     ```
 
 
