@@ -50,7 +50,7 @@ def create_config(project_folder: str, user_choices: list[str | None]) -> None |
     )
     try:
         config_file_path = resolve_path(project_folder, "config.yml")
-        logger.info(
+        logger.debug(
             f"{config_file_path.name} file to be generated at: {config_file_path}"
         )
         with open(config_file_path, "w") as conf_file:
@@ -80,7 +80,7 @@ desc : {desc}   # page description
 mail : some@mail.com
 """
             conf_file.write(conf_data)
-            logger.info(f"Created {config_file_path.name} at {config_file_path}")
+            logger.debug(f"Created {config_file_path.name} at: {config_file_path}")
             return None
     except OSError as err:
         logger.exception(f"Failed to create config.yml: {err}")
@@ -103,7 +103,7 @@ def create_home_template(project_folder: str) -> None | OSError:
     try:
         templates_path = resolve_path(project_folder, "templates")
         home_template_path = resolve_path(templates_path, "home_template.html.jinja")
-        logger.info(f"{home_template_path.name} to be created at: {templates_path}")
+        logger.debug(f"{home_template_path.name} to be created at: {templates_path}")
         with open(home_template_path, "w") as temp_file:
             temp_data = """<!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -150,9 +150,7 @@ def create_home_template(project_folder: str) -> None | OSError:
 </body>
 </html>"""
             temp_file.write(temp_data)
-            logger.info(
-                f"{home_template_path.name} has been created at: {templates_path}"
-            )
+            logger.debug(f"Created {home_template_path.name} at: {templates_path}")
     except OSError as err:
         logger.exception(f"Error: Failed to create home_template.html.jinja\n{err}")
 
@@ -174,7 +172,7 @@ def create_note_template(project_folder: str) -> None | OSError:
     try:
         templates_path = resolve_path(project_folder, "templates")
         note_template_path = resolve_path(templates_path, "note_template.html.jinja")
-        logger.info(f"{note_template_path.name} to be created at: {templates_path}")
+        logger.debug(f"{note_template_path.name} to be created at: {templates_path}")
         # https://getoutofmyhead.dev/x-ua-compatible/
         with open(note_template_path, "w") as temp_file:
             temp_data = """<!DOCTYPE html>
@@ -210,9 +208,7 @@ def create_note_template(project_folder: str) -> None | OSError:
 </body>
 </html>"""
             temp_file.write(temp_data)
-            logger.info(
-                f"{note_template_path.name} has been created at: {templates_path}"
-            )
+            logger.debug(f"Created {note_template_path.name} at: {templates_path}")
     except OSError as err:
         logger.exception(f"Error: Failed to create note_template.html.jinja\n{err}")
 
@@ -234,7 +230,7 @@ def create_feed_template(project_folder: str) -> None | OSError:
     try:
         templates_path = resolve_path(project_folder, "templates")
         feed_template_path = resolve_path(templates_path, "feed_template.xml.jinja")
-        logger.info(f"{feed_template_path.name} to be created at: {templates_path}")
+        logger.debug(f"{feed_template_path.name} to be created at: {templates_path}")
         with open(feed_template_path, "w") as feed_file:
             feed_data = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -265,7 +261,7 @@ def create_feed_template(project_folder: str) -> None | OSError:
 
 </rss>"""
             feed_file.write(feed_data)
-            logger.info(f"Created {feed_template_path.name} at: {templates_path}")
+            logger.debug(f"Created {feed_template_path.name} at: {templates_path}")
 
     except OSError:
         logger.exception("Error: Failed to create feed_template.xml.jinja\n")
@@ -288,13 +284,13 @@ def create_header(project_folder: str) -> None | OSError:
     try:
         content_path = resolve_path(project_folder, "content")
         header_content_path = resolve_path(content_path, "header.md")
-        logger.info(f"{header_content_path.name} to be created at: {content_path}")
+        logger.debug(f"{header_content_path.name} to be created at: {content_path}")
         with open(header_content_path, "w") as header_file:
             header_data = """<nav>From content/header.md //
             <a href="/">homepage</a>
             </nav>"""
             header_file.write(header_data)
-            logger.info(f"Created {header_content_path.name} at: {content_path}")
+            logger.debug(f"Created {header_content_path.name} at: {content_path}")
     except OSError:
         logger.exception("Error: Failed to create header.md\n")
 
@@ -316,14 +312,14 @@ def create_footer(project_folder: str) -> None | OSError:
     try:
         content_path = resolve_path(project_folder, "content")
         footer_content_path = resolve_path(content_path, "footer.md")
-        logger.info(f"{footer_content_path.name} to be created at: {content_path}")
+        logger.debug(f"{footer_content_path.name} to be created at: {content_path}")
         with open(footer_content_path, "w") as footer_file:
             footer_data = """<a href="/">homepage</a> //
 <a href="https://github.com">git</a> //
 <a href="https://linkedin.com">linkedin</a>
 *   powered by [Rupantar](/https://github.com/bhodrolok/rupantar)"""
             footer_file.write(footer_data)
-            logger.info(f"Created {footer_content_path.name} at: {content_path}")
+            logger.debug(f"Created {footer_content_path.name} at: {content_path}")
     except OSError:
         logger.exception("Error: Failed to create footer.md\n")
 
@@ -344,7 +340,7 @@ def create_home(project_folder: str) -> None | OSError:
     try:
         content_path = resolve_path(project_folder, "content")
         home_content_path = resolve_path(content_path, "home.md")
-        logger.info(f"{home_content_path.name} to be created at: {content_path}")
+        logger.debug(f"{home_content_path.name} to be created at: {content_path}")
         with open(home_content_path, "w") as homepage_file:
             homepage_data = """Welcome to Rupantar!
     <br> This is a sample homepage which can be edited at /content/home.md
@@ -353,7 +349,7 @@ def create_home(project_folder: str) -> None | OSError:
     *   [Documentation](/).
     *   [Source code](/)."""
             homepage_file.write(homepage_data)
-            logger.info(f"Created {home_content_path.name} at: {content_path}")
+            logger.debug(f"Created {home_content_path.name} at: {content_path}")
     except OSError:
         logger.exception("Error: Failed to create home.md\n")
 
@@ -374,7 +370,7 @@ def create_example_blog(project_folder: str) -> None | OSError:
         content_path = resolve_path(project_folder, "content")
         posts_content_path = resolve_path(content_path, "notes")
         sample_blog_content_path = resolve_path(posts_content_path, "example_blog.md")
-        logger.info(
+        logger.debug(
             f"{sample_blog_content_path.name} to be created at: {sample_blog_content_path}"
         )
         with open(sample_blog_content_path, "w") as post_file:
@@ -433,8 +429,8 @@ Sample paragraphs are written like this.
 Aenean enim dolor, tincidunt eget ante nec, dictum auctor tellus. Sed dictum velit quis nibh dictum vulputate. Etiam luctus justo elit, fermentum consectetur tellus sagittis sed. Praesent nibh lacus, dapibus at diam at, faucibus tempus augue. Donec et nulla velit. Pellentesque id congue justo, ac suscipit ex. Donec pretium nec odio id sodales. Vivamus ullamcorper posuere tortor, in porta mi rutrum sit amet. Sed sit amet semper nunc, volutpat laoreet augue. Cras malesuada imperdiet dui, sit amet euismod tortor. Phasellus convallis velit vitae ligula porta, ac pretium lorem pretium. Nulla facilisi. Donec rhoncus enim turpis, vel hendrerit lectus mattis feugiat."""
             ).format(t=datetime.now().strftime("%Y-%m-%d"))
             post_file.write(post_data)
-            logger.info(
-                f"Created {sample_blog_content_path.name} at:  {posts_content_path}"
+            logger.debug(
+                f"Created {sample_blog_content_path.name} at: {posts_content_path}"
             )
     except OSError:
         logger.exception("Error: Failed to create example_blog.md\n")
@@ -456,7 +452,7 @@ def create_static(project_folder: str) -> None | OSError:
     try:
         static_path = resolve_path(project_folder, "static")
         demo_css_static_path = resolve_path(static_path, "demo.css")
-        logger.info(f"{demo_css_static_path.name} to be created at: {static_path}")
+        logger.debug(f"{demo_css_static_path.name} to be created at: {static_path}")
         with open(demo_css_static_path, "w") as css_file:
             css_data = """:root{--bg:#DDD;--txt:#333;--thm:#357670}
 body{background:var(--bg);color:var(--txt);font:1.2em/1.6em sans-serif;max-width:900px;margin:7% auto auto;padding:0 5%}
@@ -473,7 +469,9 @@ pre code{background:none}
 @media(max-width:480px){body{font:1em/1.4em sans-serif}}
             """
             css_file.write(css_data)
-            logger.info(f"Created {demo_css_static_path.name} at: {demo_css_static_path}")
+            logger.debug(
+                f"Created {demo_css_static_path.name} at: {demo_css_static_path}"
+            )
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
@@ -517,7 +515,7 @@ date : {t}
             ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_in_home)
             f.write(conf_data)
             print(f"Created new page {post_filename}\nEdit it at: {post_filename_path}")
-            logger.info(
+            logger.debug(
                 f"Created new page/post: {post_filename} at: {post_filename_path}"
             )
 
@@ -529,7 +527,7 @@ date : {t}
 def create_project(
     project_folder: str, user_choices: list[str | None]
 ) -> None | FileNotFoundError | OSError:
-    """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values.
+    """Initialize a rupantar project at the given project_folder path, with some optional user_choices list values, which get populated with sane defaults otherwise.
 
     Creates the rupantar project skeleton and populates it with some default Jinja2 templates to be used when building the project & rendering content.
 
@@ -538,12 +536,13 @@ def create_project(
 
     Args:
       project_folder (str): The name of the rupantar project.
-      user_choices (list): A list with 3 string values to give user some freedom when creating the rupantar project and populating the config file.
+      user_choices (list): A list with 3 string values to give user some freedom when creating the rupantar project and setting values in the config file.
       Currently, they are all optional and as such can be None.
 
     Raises:
         OSError: If any error opening or writing to the file/folder.
-        PermissionError
+        PermissionError: If no permission to create the folder.
+        FileNotFoundError:
 
     """
     try:
@@ -555,11 +554,11 @@ def create_project(
                 f"Existing rupantar project with name: {project_folder} found. Will overwrite it."
             )
             print(
-                f"Overwriting existing folder {project_folder} at {rupantar_project_path}"
+                f"Overwriting existing folder {project_folder} at: {rupantar_project_path}"
             )
             rmtree(rupantar_project_path)
             logger.warning(
-                f"Old rupantar project: {project_folder} at {rupantar_project_path} removed. Recreating anew..."
+                f"Old rupantar project {project_folder} at: {rupantar_project_path} removed. Recreating anew..."
             )
         # TODO: Maybe try a few times before giving up?
         while True:
@@ -599,7 +598,6 @@ def create_project(
 
     except FileNotFoundError as err:
         logger.exception(f"{err}")
-        print(err)
 
     except OSError as err:
         logger.exception(f"Error: Failed to initialize rupantar project.\n{err}")
