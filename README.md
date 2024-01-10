@@ -47,7 +47,6 @@
       <li><a href="#qdemo">Quick Demonstration</a></li>
     </ol>
     <li><a href="#structure">Project Structure</a></li>
-    <li><a href="#shots">Screenshots</a></li>-->
     <li><a href="#extra">Configuration</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -206,6 +205,8 @@ rupantar_project/
 Rupantar itself is developed with a "src layout" structure so as to follow a more modern, standardized, and organized way of managing everything. To read more about that, click <a href="#readme-top">here</a>.
 
 A :construction: features roadmap of this Python project can be found [here](https://github.com/users/Bhodrolok/projects/3).
+
+And lastly, there is also a [TODO.md](TODO.md) for some transparency and organization (and quick notes/documentation :P).
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
