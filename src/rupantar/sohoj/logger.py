@@ -94,7 +94,7 @@ def setup_logging(loglevel: int = 20) -> None:
     # Init the root logger
     logger = getLogger()
     logger.setLevel(loglevel)
-    log_format_string_default = "%(asctime)s | [%(levelname)s] at %(name)s: (%(filename)s).%(funcName)s(%(lineno)d) => %(message)s"
+    log_format_string_default = "{%(filename)s} | %(asctime)s | [%(levelname)s] at %(name)s: %(funcName)s, line %(lineno)d => %(message)s"
 
     # Log destination = console
     # logs_console_handler = StreamHandler()
