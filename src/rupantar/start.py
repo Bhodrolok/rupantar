@@ -6,6 +6,8 @@ from rupantar import __version__
 
 
 def main(args=sys.argv[1:]):
+    LOGS_LOCATION = f"{xdg_data_home()}\\rupantar\\logs"
+
     parser = ArgumentParser(
         prog="rupantar",
         description="Easily configurable static website generator with a focus on minimalism.",
@@ -17,23 +19,25 @@ def main(args=sys.argv[1:]):
         dest="loglevel",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="INFO",
-        help=f"Set logging level to control verbosity of log messages. Default INFO. Logs will be stored in {xdg_data_home()}\\rupantar\\logs",
+        help=f"Set logging severity level. Default INFO. Logs stored in {LOGS_LOCATION}",
     )
     subparsers = parser.add_subparsers(
-        dest="type", help="Supported commands", required=True
+        dest="type",
+        help="Supported commands. Add -h or --help after a command for detailed usage.",
+        required=True,
     )
     parser_init = subparsers.add_parser(
         "init", help="Create a new rupantar project at the given directory."
     )
     parser_init.add_argument(
-        "mool",
+        "project",
         help="Name of project. A new (sub-)directory with this name will be created in the current directory. ",
     )
     parser_init.add_argument(
         "-s",
         "--skip",
         action="store_true",
-        help="Skip the prompts for selecting some config values. Can be updated by editing `config.yml` in the project directory.",
+        help="Skip the prompts for setting up some config values. Can be updated by editing `config.yml` in the project's root directory.",
     )
 
     parser_new = subparsers.add_parser(
@@ -41,7 +45,7 @@ def main(args=sys.argv[1:]):
         help="Create a new blog post at the given rupantar project's content/notes directory.",
     )
     parser_new.add_argument(
-        "mool",
+        "project",
         help="Name of rupantar project. Path is relative to the current directory.",
     )
     parser_new.add_argument("name", help="New blog post filename (without extension).")
@@ -58,7 +62,7 @@ def main(args=sys.argv[1:]):
         help="Build a rupantar project, generate the static pages. Deletes pre-existing output directory and creates a new one.",
     )
     parser_build.add_argument(
-        "mool",
+        "project",
         help="Name of rupantar project. Path is relative to the current directory.",
     )
     parser_build.add_argument(
@@ -73,7 +77,7 @@ def main(args=sys.argv[1:]):
         help="Start a local web server for serving and previewing generated pages.",
     )
     parser_serve.add_argument(
-        "mool",
+        "project",
         help="Name of rupantar project. Path to this project is relative to the current directory.",
     )
     parser_serve.add_argument(
@@ -105,10 +109,10 @@ def main(args=sys.argv[1:]):
     # Configure logging, log level based on input
     logger.setup_logging(args.loglevel)
 
-    if args.type == "init" and args.mool:
+    if args.type == "init" and args.project:
         # Interactive prompts for setting some default config.yml fields
         if args.skip:
-            creator.create_project(args.mool, [None, None, None])
+            creator.create_project(args.project, [None, None, None])
         else:
             print(
                 "Hello there!\nPlease answer the following questions to set up your website's configuration!"
@@ -117,7 +121,7 @@ def main(args=sys.argv[1:]):
                 "This is completely optional and the questions can be skipped by leaving them blank."
             )
             print(
-                "Choices can always be updated by modifying the `config.yml` file at project directory!"
+                "Choices can always be updated by modifying the `config.yml` file in the project directory. Happy hacking!"
             )
             user_prompts = []
             site_url = input("Site URL? (yourdomain.tld): ")
@@ -126,14 +130,14 @@ def main(args=sys.argv[1:]):
             user_prompts.append(site_desc)
             need_custom = input("Do you want to add custom templates? (Y/N): ")
             user_prompts.append(need_custom)
-            creator.create_project(args.mool, user_prompts)
-    elif args.type == "new" and args.mool and args.name:
-        creator.create_note(args.mool, args.name, args.show_home)
-    elif args.type == "build" and args.mool:
-        builder.build_project(args.mool, args.config)
-    elif args.type == "serve" and args.mool:
+            creator.create_project(args.project, user_prompts)
+    elif args.type == "new" and args.project and args.name:
+        creator.create_note(args.project, args.name, args.show_home)
+    elif args.type == "build" and args.project:
+        builder.build_project(args.project, args.config)
+    elif args.type == "serve" and args.project:
         server_watcher.start_watchful_server(
-            args.mool, args.config, args.port, args.interface, args.open
+            args.project, args.config, args.port, args.interface, args.open
         )
     else:
         parser.print_help()
