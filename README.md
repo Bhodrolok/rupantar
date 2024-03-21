@@ -65,17 +65,17 @@ Rupantar is a command-line tool that enables quick generation of simple, minimal
 
 <h2 id="features"> Features :rocket: </h2>
 
-1. Customizable using [Jinja2 templates](https://jinja.palletsprojects.com/en/3.0.x/templates/)
+1. Customizable templates using [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/templates/)
 2. Fits well with multiple use cases
    - Blogging, personal knowledge base, portfolio, etc.
-3. Completely [JavaScript-free](https://endtimes.dev/why-your-website-should-work-without-javascript/)
+3. Fully [JavaScript-free](https://endtimes.dev/why-your-website-should-work-without-javascript/)
    - Trust the resilience of good ol' HTML and CSS
 4. RSS and Atom [feed](https://indieweb.org/RSS) generation
 5. Fast build times
 6. Bundled web server with live reload on changes
 7. Cross-platform
    - Runs in Windows, Linux, and macOS machines
-8. Minimal system resource footprint
+8. Minimal system resource usage/footprint
 
 <p align="right">(<a href="#readme-top">back to top :arrow_up: </a>)</p>
 
