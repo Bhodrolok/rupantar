@@ -10,7 +10,7 @@ from markdown2 import markdown
 from rupantar.sohoj.configger import Config
 from rupantar.sohoj.utils import get_func_exec_time, resolve_path
 
-logger = getLogger()
+logger = getLogger(__name__)
 
 
 # https://docs.python.org/3/library/dataclasses.html#module-dataclasses

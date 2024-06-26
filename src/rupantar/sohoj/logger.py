@@ -4,20 +4,19 @@ The main function in this module is `setup_logging`, which sets up the logging c
 It uses two helper functions: `create_logs_directory` and `setup_logging_dir` to setup the logging directory.
 It creates a directory for storing application logs, configures the logging level, and sets up handlers for logging
 to both the console and/or a log file on the disk.
-The log file is created in the app data directory with the platform name as well as the run-time timestamp in the filename.
+The log file is created in the app data directory with the platform name as well as the application run-time timestamp in the filename.
 
 .. _Google Python Style Guide:
    http://google.github.io/styleguide/pyguide.html
 """
 
-from logging import getLogger, FileHandler, Formatter
+from rupantar.sohoj.utils import resolve_path
+from logging import StreamHandler, getLogger, FileHandler, Formatter
+import sys
 from pathlib import Path
 from datetime import datetime
 from xdg_base_dirs import xdg_data_home
 import sysconfig
-
-from rupantar.sohoj.utils import resolve_path
-
 
 def create_logs_directory(path: Path) -> None:
     """Create a directory for storing application run-time logs if it does not exist.
@@ -61,7 +60,10 @@ def setup_logging_dir(
     return logs_dir
 
 
-def setup_logging(loglevel: int = 20) -> None:
+def setup_logging(
+        logger_name: str = None, 
+        log_level: int = 20, 
+        log_to_console: bool = False) -> None:
     """Set up logging configuration for rupantar, app-wide.
 
     Create a centralized directory for storing application logs, where will this be created in the machine running rupantar?
@@ -71,51 +73,54 @@ def setup_logging(loglevel: int = 20) -> None:
 
     Also configure the logging level and set up handlers for logging to both the console and/or a log file.
     The log files generated will have the platform name along with a timestamp in their filenames.
-    NB: The console handler is commented out currently.
 
     Note:
-        loglevel can be passed when running the script with the -l or --log flag, this is of course entirely optional
+        log_level can be passed when running the script with the -l or --log flag, this is of course entirely optional
+        https://docs.python.org/3/library/logging.html#logging-levels
+        Level name - Logging level mapping: {'CRITICAL': 50, 'CRITICAL': 50, 'ERROR': 40, 'WARN': 30, 'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
 
     Args:
-        loglevel (int): The logging level to set for the application. This should be one of the
+        logger_name (str): The name of the Python module that creates the logger instance to include in the timestamp
+        log_level (int): The logging level to set for the application. This should be one of the
         levels specified in the logging module, e.g., logging.INFO, logging.DEBUG, etc.
         Defaults to 20 i.e. INFO level.
-        https://docs.python.org/3/library/logging.html#logging-levels
-        Level name - Logging level mapping: {'CRITICAL': 50, 'FATAL': 50, 'ERROR': 40, 'WARN': 30, 'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
+        log_to_console (bool): Whether or not to also print out the log messages to the console (stdout) on top of saving to disk.
 
     Raises:
         OSError: If any error creating the directories or the log file.
 
     """
+    time_stamp = datetime.now().strftime("%X").replace(":", "_")
     rupantar_logs_dir = setup_logging_dir("rupantar", xdg_data_home())
 
     # Configure logging
     # https://sematext.com/blog/python-logging/#basic-logging-configuration
-    # Init the root logger
-    logger = getLogger()
-    logger.setLevel(loglevel)
-    log_format_string_default = "{%(filename)s} | %(asctime)s | [%(levelname)s] at %(name)s: %(funcName)s, line %(lineno)d => %(message)s"
+    # Init the root logger instance
+    root_logger = getLogger()
+    root_logger.setLevel(log_level)
+
+    # Log message format string
+    log_msg_fmt = "[%(levelname).1s]/%(asctime)s.%(msecs).03d -- {%(filename)s} | %(funcName)s at line %(lineno)d => %(message)s"
 
     # Log destination = console
-    # logs_console_handler = StreamHandler()
-    # logs_console_handler.setFormatter(Formatter(log_format_string_default))
-    # logs_console_handler.setLevel(loglevel)
-    # logger.addHandler(logs_console_handler)
+    if log_to_console:
+        logs_console_handler = StreamHandler(sys.stdout)
+        logs_console_handler.setFormatter(fmt=Formatter(fmt=log_msg_fmt, datefmt='%m%d %H:%M:%S'))
+        logs_console_handler.setLevel(log_level)
+        root_logger.addHandler(logs_console_handler)
 
     # Log destination = (disk log) file
     # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
-    time_stamp = datetime.now().strftime("%X").replace(":", "_")
-    log_filename = f"rupantar-{sysconfig.get_platform()}-{time_stamp}.log"
+    # Eg: rupantar-win-amd64-10_51_10.log
+    log_filename = f"{logger_name}-{sysconfig.get_platform()}-{time_stamp}.log"
     log_filepath = resolve_path(rupantar_logs_dir, log_filename)
     logs_file_handler = FileHandler(filename=log_filepath, mode="a")
 
     # Create formatter objects
-    file_handler_format = Formatter(
-        fmt=log_format_string_default, datefmt="%d-%b-%Y %H:%M:%S"
-    )
+    file_handler_format = Formatter(fmt=log_msg_fmt, datefmt="%d-%b-%Y %H:%M:%S")
     logs_file_handler.setFormatter(file_handler_format)
-    # Set level for file handler to be always debug-lvl
+    # Set level for the file handler to be always debug-level
     logs_file_handler.setLevel(10)
 
-    # Assign handler(s) to the root logger
-    logger.addHandler(logs_file_handler)
+    # Assign the defined handler(s) to the root logger
+    root_logger.addHandler(logs_file_handler)
