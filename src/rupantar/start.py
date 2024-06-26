@@ -1,148 +1,204 @@
-from argparse import ArgumentParser
-import sys
-from xdg_base_dirs import xdg_data_home
-from rupantar.sohoj import builder, creator, logger, server_watcher
 from rupantar import __version__
+from rupantar.sohoj import builder, creator, logger, server_watcher, utils
+from xdg_base_dirs import xdg_data_home
+import typer
+from typing_extensions import Annotated
+from typing import Optional
+from rich import print
 
+LOGS_LOCATION = f"{xdg_data_home()}\\rupantar\\logs"
 
-def main(args=sys.argv[1:]):
-    LOGS_LOCATION = f"{xdg_data_home()}\\rupantar\\logs"
-
-    parser = ArgumentParser(
-        prog="rupantar",
-        description="Easily configurable static website generator with a focus on minimalism.",
-    )
-    parser.add_argument("-v", "--version", action="version", version=f"{__version__}")
-    parser.add_argument(
-        "-l",
-        "--log",
-        dest="loglevel",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        default="INFO",
-        help=f"Set logging severity level. Default INFO. Logs stored in {LOGS_LOCATION}",
-    )
-    subparsers = parser.add_subparsers(
-        dest="type",
-        help="Supported commands. Add -h or --help after a command for detailed usage.",
-        required=True,
-    )
-    parser_init = subparsers.add_parser(
-        "init", help="Create a new rupantar project at the given directory."
-    )
-    parser_init.add_argument(
-        "project",
-        help="Name of project. A new (sub-)directory with this name will be created in the current directory. ",
-    )
-    parser_init.add_argument(
-        "-s",
-        "--skip",
-        action="store_true",
-        help="Skip the prompts for setting up some config values. Can be updated by editing `config.yml` in the project's root directory.",
+app = typer.Typer(
+    name="rupantar", 
+    help="Simple configurable static website generator with a focus on minimalism.",
+    rich_markup_mode="markdown"
     )
 
-    parser_new = subparsers.add_parser(
-        "new",
-        help="Create a new blog post at the given rupantar project's content/notes directory.",
-    )
-    parser_new.add_argument(
-        "project",
-        help="Name of rupantar project. Path is relative to the current directory.",
-    )
-    parser_new.add_argument("name", help="New blog post filename (without extension).")
-    parser_new.add_argument(
-        "-sh",
-        "--show-home",
-        dest="show_home",
-        action="store_true",
-        help="If the post is to be shown in the home page.",
-    )
+def version_callback(value: bool):
+    if value:
+        print(f"rupantar version: {__version__}")
+        raise typer.Exit()
 
-    parser_build = subparsers.add_parser(
-        "build",
-        help="Build a rupantar project, generate the static pages. Deletes pre-existing output directory and creates a new one.",
-    )
-    parser_build.add_argument(
-        "project",
-        help="Name of rupantar project. Path is relative to the current directory.",
-    )
-    parser_build.add_argument(
-        "-c",
-        "--config",
-        nargs="?",
-        help="Name of the config file to use. Path to this file is relative to the project directory. Default `config.yml`",
-    )
+def log_location_callback(value: bool):
+    if value:
+        print(f"Logs are stored here: {LOGS_LOCATION}")
+        raise typer.Exit()
 
-    parser_serve = subparsers.add_parser(
-        "serve",
-        help="Start a local web server for serving and previewing generated pages.",
-    )
-    parser_serve.add_argument(
-        "project",
-        help="Name of rupantar project. Path to this project is relative to the current directory.",
-    )
-    parser_serve.add_argument(
-        "-c",
-        "--config",
-        nargs="?",
-        help="Name of the config file to use. Path to this file is relative to the project directory. Default `config.yml`",
-    )
-    parser_serve.add_argument(
-        "-p",
-        "--port",
-        help="Network port where the server will listen for requests. Default random ephemeral port (between 49152 and 65535).",
-        type=int,
-    )
-    parser_serve.add_argument(
-        "-i",
-        "--interface",
-        help="Network interface to bind the server to. Default localhost/loopback interface (127.0.0.1).",
-    )
-    parser_serve.add_argument(
-        "-O",
-        "--open",
-        action="store_true",
-        help="Open the generated site using the default browser. Tries to do so in a new tab.",
-    )
+@app.callback()
+def main(
+    version: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--version", "-V",
+            callback=version_callback,
+            is_eager=True, 
+            help="Show the *version* and exit." 
+            ),
+        ] = None,
+    verbosity: Annotated[
+        int,
+        typer.Option(
+            "--verbose", "-v",
+            count=True,
+            help="Set the level of verbosity of **output** on the **console** :computer:. `-vvv` is max verbosity, followed by `-vv` and then `-v`."   
+            ),
+        ] = 0,
+    log_location: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--logs", "-l",
+            callback=log_location_callback,
+            help="Show the location of the logs directory and exit."
+            ),
+        ] = None,
+    log_to_console: Annotated[
+        bool,
+        typer.Option(
+            "--log-to-console", "-l2c",
+            help="Display the app logs to console. Off by default.",
+            is_flag=True,
+        ),
+    ] = False,
+    ):
+    # Configure logging and instantiate the root logger
+    logger.setup_logging(logger_name=__name__, log_to_console=log_to_console)
+    utils.set_verbosity(verbosity)
 
-    args = parser.parse_args(args)
+@app.command("init")
+def init_project(
+    project: Annotated[
+        str, 
+        typer.Argument(help="Name of your project.", show_default=False)
+        ],
+    skip: Annotated[
+        bool,
+        typer.Option(
+            "--skip", "-s",
+            help="Skip asking for prompts for setting up some config values for the project. Can be updated by editing `config.yml` in the project's root directory.",
+            show_default="Doesn't skip!",
+            is_flag=True
+            ),
+    ] = False, 
+    ):
+    """
+    Create a new skeleton rupantar project.
 
-    # Configure logging, log level based on input
-    logger.setup_logging(args.loglevel)
+    This command will create a (sub-)directory, with the provided name, in the current working directory.
+    """
 
-    if args.type == "init" and args.project:
-        # Interactive prompts for setting some default config.yml fields
-        if args.skip:
-            creator.create_project(args.project, [None, None, None])
-        else:
-            print(
-                "Hello there!\nPlease answer the following questions to set up your website's configuration!"
-            )
-            print(
-                "This is completely optional and the questions can be skipped by leaving them blank."
-            )
-            print(
-                "Choices can always be updated by modifying the `config.yml` file in the project directory. Happy hacking!"
-            )
-            user_prompts = []
-            site_url = input("Site URL? (yourdomain.tld): ")
-            user_prompts.append(site_url)
-            site_desc = input("Site description? : ")
-            user_prompts.append(site_desc)
-            need_custom = input("Do you want to add custom templates? (Y/N): ")
-            user_prompts.append(need_custom)
-            creator.create_project(args.project, user_prompts)
-    elif args.type == "new" and args.project and args.name:
-        creator.create_note(args.project, args.name, args.show_home)
-    elif args.type == "build" and args.project:
-        builder.build_project(args.project, args.config)
-    elif args.type == "serve" and args.project:
-        server_watcher.start_watchful_server(
-            args.project, args.config, args.port, args.interface, args.open
-        )
+    if skip:
+        creator.create_project(project, [None, None, None])
     else:
-        parser.print_help()
+        print(
+                "Hello there!\nPlease answer the following questions to set up your website's configuration!"
+        )
+        print(
+            "This is a completely optional step and the questions can be skipped by simply leaving them blank."
+        )
+        print(
+            "Choices can always be updated by modifying the `config.yml` file in the project directory. Happy hacking!"
+        )
+        user_prompts = []
+        site_url = typer.prompt("Site URL", default="your.domain.tld")
+        user_prompts.append(site_url)
+        site_desc = typer.prompt("Site description i.e. content in the HTML <meta> tag", default="Very cool webpage with a lot of content")
+        user_prompts.append(site_desc)
+        need_custom = typer.prompt("Do you want to add any custom templates? (Y/N)", default="N")
+        user_prompts.append(need_custom)
+        creator.create_project(project, user_prompts)
 
+@app.command("new")
+def add_new_page(
+    project: Annotated[
+        str, 
+        typer.Argument(help="Name of rupantar project.", show_default=False)
+        ], 
+    name: Annotated[
+        str, 
+        typer.Argument(help="New post filename (without extension).", show_default=False)
+        ],
+    show_home: Annotated[
+        bool,
+        typer.Option(
+            "--show-home", "-sh",
+            help="If new page is to be shown in the home page. New posts are not shown in the home page by default.",    
+            is_flag=True
+            ),
+        ] = False,
+    ):
+    """
+    Create a new blog post.
+    
+    This command will create a new post in the given rupantar project's content/notes directory.
+    """
 
-# Entry point
+    creator.create_note(project, name, show_home)
+
+@app.command("build")
+def build_site(
+    project: Annotated[
+        str, 
+        typer.Argument(help="Name of rupantar project. Path relative to the current directory.", show_default=False),
+        ],
+    config: Annotated[
+        str, 
+        typer.Option(
+            "--config", "-c",
+            help="Path to the config file, relative to project directory. Defaults to `config.yml` in the project's root directory.",
+            ),
+        ] = None,
+    ):
+    """
+    Build a rupantar project.
+
+    This command generates the static pages for your website and stores them in the output directory.
+    It also deletes any pre-existing output directory and creates a new one.
+    The site is then ready for deployment to a static hosting service such as GitHub Pages (or your own hardware!).
+    
+    """
+
+    builder.build_project(project, config)
+
+@app.command("serve")
+def serve_site(
+    project: Annotated[
+        str, 
+        typer.Argument(help="Name of rupantar project.", show_default=False)
+        ],
+    port: Annotated[
+        int,
+        typer.Option(
+            "--port", "-p",
+            help="Network port where the server will listen for requests. Default random ephemeral port (between 49152 and 65535).",
+            ),
+        ] = None,
+    config: Annotated[
+        str, 
+        typer.Option(
+            "--config", "-c",
+            help="Path to the config file, relative to project directory. Defaults to `config.yml` in the project's root directory.",
+            ),
+        ] = None,
+    interface: Annotated[
+        str,
+        typer.Option(
+            "--interface", "-i",
+            help="Network interface to bind the server to. Defaults to the localhost/loopback interface.",
+            ),
+        ] = "127.0.0.1",
+    open: Annotated[
+        bool,
+        typer.Option(
+            "--open", "-o",
+            help="Open the generated site in the default browser. Tries to do so in a new tab if a browser window's already open. Defaults to False.",
+            ),
+        ] = False,
+    ):
+    """
+    Start a local web server for serving and previewing generated pages of your website.
+    """
+
+    server_watcher.start_watchful_server(project, config, port, interface, open)
+
 if __name__ == "__main__":
-    sys.exit(main())
+    app()
