@@ -186,7 +186,7 @@ def serve_site(
             help="Network interface to bind the server to. Defaults to the localhost/loopback interface.",
             ),
         ] = "127.0.0.1",
-    open: Annotated[
+    open_site: Annotated[
         bool,
         typer.Option(
             "--open", "-o",
@@ -198,7 +198,7 @@ def serve_site(
     Start a local web server for serving and previewing generated pages of your website.
     """
 
-    server_watcher.start_watchful_server(project, config, port, interface, open)
+    server_watcher.start_watchful_server(project, config, port, interface, open_site)
 
 if __name__ == "__main__":
     app()

@@ -2,12 +2,12 @@ from pathlib import Path
 from shutil import rmtree
 from datetime import datetime
 from logging import getLogger
-from rupantar.sohoj.utils import get_func_exec_time, resolve_path
+from rupantar.sohoj.utils import get_func_exec_time, resolve_path, verbose_print
 
-# Use root logger = same instance from start.py [ https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial ]
+# Get reference to root logger instance from start.py 
+# https://docs.python.org/3/howto/logging.html#advanced-logging-tutorial
 # 'Child loggers propagate messages up to the handlers associated with their ancestor loggers.'
-logger = getLogger()
-
+logger = getLogger(__name__)
 
 def create_config(project_folder: str, user_choices: list[str | None]) -> None | OSError:
     """Create a configuration file for a rupantar project based on some user input.
@@ -546,15 +546,15 @@ def create_project(
 
     """
     try:
-        print(f"Setting up project {project_folder}...")
+        verbose_print(f"Setting up project {project_folder} ...", 0)
         rupantar_project_path = resolve_path(project_folder)
         # Delete existing folder (https://stackoverflow.com/a/53492792)
         if rupantar_project_path.exists():
             logger.warning(
                 f"Existing rupantar project with name: {project_folder} found. Will overwrite it."
             )
-            print(
-                f"Overwriting existing folder {project_folder} at: {rupantar_project_path}"
+            verbose_print(
+                f"Overwriting existing folder {project_folder} at: {rupantar_project_path}", 1
             )
             rmtree(rupantar_project_path)
             logger.warning(
@@ -593,7 +593,7 @@ def create_project(
         create_example_blog(rupantar_project_path)
 
         # Finish init-ing
-        print(f"rupantar project skeleton created at: {rupantar_project_path}")
+        print(f"Project skeleton has been created at: {rupantar_project_path}\nHappy hacking!")
         logger.info(f"Project skeleton has been initialized at: {rupantar_project_path}")
 
     except FileNotFoundError as err:
