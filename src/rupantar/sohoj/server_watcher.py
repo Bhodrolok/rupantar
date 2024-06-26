@@ -34,7 +34,7 @@ def start_watchful_server(
     config_file_name: str,
     port: int,
     interface_address: str,
-    open_url=False,
+    open_url: bool,
 ) -> None:
     """Start a HTTP web server to serve generated files of a rupantar project, re-builds and then re-serves on changes to the project.
 

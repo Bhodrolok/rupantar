@@ -20,18 +20,18 @@ class QuietHTTPRequestHandler(SimpleHTTPRequestHandler):
     # https://docs.python.org/3/library/http.server.html#http.server.SimpleHTTPRequestHandler
 
     def log_message(self, format, *args):
-        # Don't do anything in the log_message method to suppress output
+        # Don't do anything in the log_message method to suppress the output
         pass
 
 
 def run_web_server(
-    HOST: str, PORT: int, serving_url: str, serving_dir: str, openURL: bool
+    host: str, port: int, serving_url: str, serving_dir: str, openURL: bool
 ) -> None:
     """Run a HTTP web server at the given host and port, serving files from the given directory.
 
     Args:
-        HOST (str): The hostname to use for the web server.
-        PORT (int): The port number to use for the web server.
+        host (str): The hostname to use for the web server.
+        port (int): The port number to use for the web server.
         serving_url (str): The URL where the web server will be available at.
         serving_dir (Path or str): The directory from which files will be served.
         openURL (bool): If True, opens the serving URL in a new tab of the default browser.
@@ -44,7 +44,7 @@ def run_web_server(
     try:
         # stackoverflow.com/a/69088143
         handler = partial(QuietHTTPRequestHandler, directory=serving_dir)
-        with TCPServer((HOST, PORT), handler) as httpd:
+        with TCPServer((host, port), handler) as httpd:
             # Allow immediate socket re-use
             httpd.socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
             print(f"Web server available at: {serving_url}")
