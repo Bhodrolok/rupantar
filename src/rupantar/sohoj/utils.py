@@ -5,8 +5,9 @@ from pathlib import Path
 from watchfiles import watch
 from datetime import datetime
 
-logger = getLogger()
-
+logger = getLogger(__name__)
+# Default stdout verbosity level
+OUTPUT_VERBOSITY = 0
 
 def resolve_path(*args: str | Path, strict: bool = False) -> Path | FileNotFoundError:
     """Resolve the (absolute) path to a file or directory.
@@ -41,7 +42,6 @@ def resolve_path(*args: str | Path, strict: bool = False) -> Path | FileNotFound
         logger.exception(f"{str(args)} does not exist")
         err.add_note(f"Unable to resolve: {str(args)}")
         raise
-
 
 def get_func_exec_time(function):
     """Simple decorator function to get a function's execution time, start to finish.
@@ -81,7 +81,6 @@ def get_func_exec_time(function):
 
     return wrap
 
-
 def validate_network_address(interface_address: str) -> bool:
     """Validate a given network address to check if it is a valid IP address.
 
@@ -92,7 +91,7 @@ def validate_network_address(interface_address: str) -> bool:
         multicast addresses = reserved range of 224.0.0.0 to 239.255.255.255, as per the IANA
 
     Args:
-      interface_address: Network address to validate
+      interface_address: Network address to validate.
 
     Returns:
         bool: True if the given network address is a valid, non-link-local, non-multicast IP address. False otherwise.
@@ -106,7 +105,6 @@ def validate_network_address(interface_address: str) -> bool:
     except ValueError:
         return False
 
-
 def get_current_time() -> str:
     """Get the current local time.
 
@@ -118,7 +116,6 @@ def get_current_time() -> str:
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
     return dt_string
-
 
 def watch_dir(
     monitored_dir: Path | str, project_folder: str, config_file_name: str
@@ -167,3 +164,44 @@ def watch_dir_v2(changes):
         print(f"Change detected at: {get_current_time()}")
         print(f"File(s) changed: {change_location}")
         print("Re-building...\n")
+
+
+def set_verbosity(value: int):
+    """Setter method for setting verbosity level of output messages.
+
+    Note:
+        The verbosity level will be stored as a global variable. 
+        The default value is set to 0, which is the same as running rupantar with no `-v` flag(s).
+
+    TODO:
+        Limit max value to 3. Makes no sense beyond `-vvv` anyways...
+        
+    Args:
+        value (int): The verbosity level. 
+
+    """
+    global OUTPUT_VERBOSITY
+    OUTPUT_VERBOSITY = value
+
+def get_verbosity() -> int:
+    """Getter method for accessing the value of the verbosity level.
+
+    Returns:
+        int: The current verbosity level.
+
+    """
+    return OUTPUT_VERBOSITY
+
+def verbose_print(message: str, verbosity_level: int = 0):
+    """Print messages to stdout based on defined verbosity level.
+    
+    Note:
+        `-vvv` includes messages that would have been displayed under `-vv` and `-v`.
+
+    Args:
+        message (str): The message to be printed.
+        verbosity_level (int): The minimum level for the message to be printed. Defaults to 0.
+
+    """
+    if (verbosity_level <= get_verbosity()):
+        print(message)
