@@ -1,6 +1,5 @@
 from __future__ import annotations
 from sys import version_info
-
 # Python 3.11 and above ships with a TOML library out-of-the-box (https://docs.python.org/3/library/tomllib.html#module-tomllib)
 # Python 3.10 and below use tomli (https://github.com/hukkin/tomli)
 if version_info <= (3, 10):
@@ -11,14 +10,12 @@ from yaml import safe_load, YAMLError
 from pathlib import Path
 from logging import getLogger
 
-
 logger = getLogger()
 
-
 class Config:
-    """Class to represent a literal Configuration object. Makes loading and managing configuration data, from TOML or YAML files, easier.
+    """Class to represent a literal Configuration object. Makes loading and managing rupantar configuration data, from TOML or YAML files, easier.
 
-    Object instantiation accomplished by the __init__ method.
+    Object instantiation is done by the __init__ method.
 
     Args:
       config_file_path(str or Path): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
