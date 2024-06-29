@@ -10,18 +10,20 @@ from yaml import safe_load, YAMLError
 from pathlib import Path
 from logging import getLogger
 
-logger = getLogger()
+logger = getLogger(__name__)
 
-class Config:
+class ProjectConfig:
     """Class to represent a literal Configuration object. Makes loading and managing rupantar configuration data, from TOML or YAML files, easier.
 
     Object instantiation is done by the __init__ method.
 
     Args:
-      config_file_path(str or Path): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
+        config_file_path(str or Path): Relative path to the configuration file. Accepted file formats are TOML(.toml/.tml) and YAML(.yaml/.yml).
 
     Raises:
-      OSError: If any error opening or reading the configuration file.
+        YAMLError: If any error opening or reading the YAML file.
+        TOMLDecodeError: If the TOML file is invalid.
+        OSError: If any error opening or reading the configuration file.
 
     """
 

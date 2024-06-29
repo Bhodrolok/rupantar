@@ -7,7 +7,7 @@ from logging import getLogger
 from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown2 import markdown
-from rupantar.sohoj.configger import Config
+from rupantar.sohoj.projectconfig import ProjectConfig
 from rupantar.sohoj.utils import get_func_exec_time, resolve_path
 
 logger = getLogger(__name__)
@@ -24,7 +24,7 @@ class ProjectData:
     """
 
     project_name: str
-    config: Config
+    config: ProjectConfig
 
 
 @dataclass(slots=True)

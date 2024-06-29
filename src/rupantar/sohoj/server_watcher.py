@@ -4,7 +4,7 @@ from logging import getLogger
 from pathlib import Path
 from rupantar.sohoj.server import start_server
 from rupantar.sohoj.utils import watch_dir_v2, resolve_path
-from rupantar.sohoj.configger import Config
+from rupantar.sohoj.projectconfig import ProjectConfig
 
 logger = getLogger()
 

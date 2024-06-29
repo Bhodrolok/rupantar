@@ -29,21 +29,17 @@ def create_config(project_folder: str, user_choices: list[str | None]) -> None |
 
     # Define the default values of the choices incase the user skips/provides blank input
     default_conf_values = [
-        "yourdomain.tld",
+        "your.domain.tld",
         "Just another little corner on the interwebs.",
         "#",
     ]
 
     # Only set user prompts if they are NOT NONE + NOT JUST EMPTY SPACES (else no real validation done)
     url = (
-        user_choices[0]
-        if (user_choices[0] and user_choices[0].strip())
-        else default_conf_values[0]
+        user_choices[0] if (user_choices[0] and user_choices[0].strip()) else default_conf_values[0]
     )
     desc = (
-        user_choices[1]
-        if (user_choices[1] and user_choices[1].strip())
-        else default_conf_values[1]
+        user_choices[1] if (user_choices[1] and user_choices[1].strip()) else default_conf_values[1]
     )
     custom_needed = (
         "" if (user_choices[-1] and user_choices[-1].strip()) else default_conf_values[-1]
@@ -84,7 +80,6 @@ mail : some@mail.com
             return None
     except OSError as err:
         logger.exception(f"Failed to create config.yml: {err}")
-
 
 def create_home_template(project_folder: str) -> None | OSError:
     """Create a home-page/landing-page Jinja2 template file in the templates/ directory of the given rupantar project folder.
@@ -154,7 +149,6 @@ def create_home_template(project_folder: str) -> None | OSError:
     except OSError as err:
         logger.exception(f"Error: Failed to create home_template.html.jinja\n{err}")
 
-
 def create_note_template(project_folder: str) -> None | OSError:
     """Create a generic blog-post Jinja2 template file in the templates/ directory of the given rupantar project folder.
 
@@ -212,7 +206,6 @@ def create_note_template(project_folder: str) -> None | OSError:
     except OSError as err:
         logger.exception(f"Error: Failed to create note_template.html.jinja\n{err}")
 
-
 def create_feed_template(project_folder: str) -> None | OSError:
     """Create a Really Simple Syndication feed template file in the templates/ directory of the given rupantar project folder.
 
@@ -266,7 +259,6 @@ def create_feed_template(project_folder: str) -> None | OSError:
     except OSError:
         logger.exception("Error: Failed to create feed_template.xml.jinja\n")
 
-
 # content/ data
 def create_header(project_folder: str) -> None | OSError:
     """Create a header markdown file in the content/ directory of the given rupantar project folder.
@@ -293,7 +285,6 @@ def create_header(project_folder: str) -> None | OSError:
             logger.debug(f"Created {header_content_path.name} at: {content_path}")
     except OSError:
         logger.exception("Error: Failed to create header.md\n")
-
 
 def create_footer(project_folder: str) -> None | OSError:
     """Create a footer markdown file in the content/ directory of the given rupantar project folder.
@@ -323,7 +314,6 @@ def create_footer(project_folder: str) -> None | OSError:
     except OSError:
         logger.exception("Error: Failed to create footer.md\n")
 
-
 def create_home(project_folder: str) -> None | OSError:
     """Create a home/landing page markdown file in the content/ directory of the given rupantar project folder.
 
@@ -352,7 +342,6 @@ def create_home(project_folder: str) -> None | OSError:
             logger.debug(f"Created {home_content_path.name} at: {content_path}")
     except OSError:
         logger.exception("Error: Failed to create home.md\n")
-
 
 def create_example_blog(project_folder: str) -> None | OSError:
     """Create a sample blog markdown file in the content/ directory of the given rupantar project folder.
@@ -435,7 +424,6 @@ Aenean enim dolor, tincidunt eget ante nec, dictum auctor tellus. Sed dictum vel
     except OSError:
         logger.exception("Error: Failed to create example_blog.md\n")
 
-
 def create_static(project_folder: str) -> None | OSError:
     """Create a static/ directory at the root of the given rupantar project folder along with a demo CSS for the static pages.
 
@@ -475,7 +463,6 @@ pre code{background:none}
     except OSError:
         logger.exception("Error: Failed to create demo.css\n")
 
-
 def create_note(
     project_folder: Path | str, post_filename: str, show_in_home=False
 ) -> None | OSError:
@@ -514,14 +501,13 @@ date : {t}
             """
             ).format(t=datetime.now().strftime("%Y-%m-%d"), s=show_in_home)
             f.write(conf_data)
-            print(f"Created new page {post_filename}\nEdit it at: {post_filename_path}")
+            verbose_print(f"Created new page {post_filename}\nEdit it at: {post_filename_path}")
             logger.debug(
                 f"Created new page/post: {post_filename} at: {post_filename_path}"
             )
 
     except OSError:
         logger.exception("Error: Failed to create %s", post_filename)
-
 
 @get_func_exec_time
 def create_project(
@@ -592,9 +578,8 @@ def create_project(
         create_home(rupantar_project_path)
         create_example_blog(rupantar_project_path)
 
-        # Finish init-ing
-        print(f"Project skeleton has been created at: {rupantar_project_path}\nHappy hacking!")
-        logger.info(f"Project skeleton has been initialized at: {rupantar_project_path}")
+        verbose_print(f"Project skeleton created at: {rupantar_project_path}\nHappy hacking!")
+        logger.info(f"Project skeleton initialized at: {rupantar_project_path}")
 
     except FileNotFoundError as err:
         logger.exception(f"{err}")

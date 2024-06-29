@@ -7,7 +7,7 @@ from random import randint
 from logging import getLogger
 import webbrowser as wb
 
-from rupantar.sohoj.configger import Config
+from rupantar.sohoj.projectconfig import ProjectConfig
 from rupantar.sohoj.utils import validate_network_address, resolve_path
 from rupantar.sohoj.builder import build_project
 
